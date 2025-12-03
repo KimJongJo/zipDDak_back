@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Spring]]></title><description><![CDATA[Level up your Java code and explore what Spring can do for you.]]></description><link>https://spring.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 02 Dec 2025 12:05:08 GMT</lastBuildDate><item><title><![CDATA[Towards Spring Tools 5 - Stereotypes and a new Structural View]]></title><link>https://spring.io/blog/2025/11/28/towards-spring-tools-5-part2</link><guid isPermaLink="true">https://spring.io/blog/2025/11/28/towards-spring-tools-5-part2</guid><dc:creator><![CDATA[martinlippert]]></dc:creator><pubDate>Fri, 28 Nov 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;When working on Spring projects, developers do not only think in terms of low-level concepts like classes and interfaces. When using Spring, you think about higher-level abstractions and concepts like services, repositories, configuration classes, entities, aggregate roots, and so on. To bring these concepts front and center for developers in their coding environments, the Spring Tools analyzes your source code from a Spring perspective and provides overviews and quick navigation based on those concepts - and we have done that for a long time already.&lt;/p&gt;
+&lt;p&gt;In the past, we did this using the “Go To Symbol” functionality. The Spring Tools created specialized symbols for those Spring concepts by analyzing the source code and extracting the necessary information. That resulted, for example, in symbols being created for request mappings that all looked like &lt;code&gt;/greeting – GET&lt;/code&gt; - similarly for beans, repositories, etc. Having those symbols around is quite handy in your IDE. They allow you to quickly navigate through the project, to quickly search through them, and to provide a nice overview of all request mappings (in this example), if used wisely.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://static.spring.io/blog/mlippert/20251128/01-goto-symbols-in-workspace.png&quot; alt=&quot;Spring symbols showing up in Go To Symbols in Workspace action&quot; width=&quot;596&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;stereotypes-and-a-logical-view-of-the-project&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#stereotypes-and-a-logical-view-of-the-project&quot; aria-label=&quot;stereotypes and a logical view of the project permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Stereotypes and a logical view of the project&lt;/h2&gt;
+&lt;p&gt;While these Spring-specific symbols continue to exist in the Spring Tools, the new major release brings this to a whole new level. In cooperation with the Spring Modulith and the jMolecules project, we integrated deeply with the concept of stereotypes as introduced by jMolecules 2.0 to visualize Spring projects in a unique and different way: the logical structure view.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://static.spring.io/blog/mlippert/20251128/02-simple-structure-view.png&quot; alt=&quot;Structure of a simple Spring project in the logical structure view&quot; width=&quot;506&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Oliver Drotbohm, the author and creator of these stereotype foundations in jMolecules and Spring Modulith, introduces this concept nicely in a &lt;a href=&quot;https://odrotbohm.github.io/2025/11/jmolecules-2.0-stereotypical/&quot;&gt;comprehensive blog post&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The logical structure view builds on this foundation and provides you with a stereotype-focused perspective of your entire project. Instead of showing files and folders, it shows you the elements of your projects, grouped by their stereotypes. You see web controllers grouped together, configuration classes, request mappings, repositories, and entities - those higher-level concepts that you typically have in mind when working with Spring projects.&lt;/p&gt;
+&lt;p&gt;The logical structure view allows you to also control which stereotypes you would like to see in the tree structure as individual groups. Alongside the project node in the view, you can invoke the action to select the groups you would like to take into account for each project. That way, you can, for example, decide whether you would like to see stereotypes from Spring Web as individual sections in the tree or not. This gives you a lot of flexibility and control over the structure view and allows you to customize the view exactly to your needs.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://static.spring.io/blog/mlippert/20251128/03-grouping.png&quot; alt=&quot;Dialog to select the groups that should be used in the structure view for a specific project&quot; width=&quot;608&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;module-structure-on-top-via-spring-modulith&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#module-structure-on-top-via-spring-modulith&quot; aria-label=&quot;module structure on top via spring modulith permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Module structure on top (via Spring Modulith)&lt;/h2&gt;
+&lt;p&gt;In case the project uses an up-to-date version of Spring Modulith to define its internal architecture and structure, the logical structure view in the Spring Tools will automatically take this into account. It not only groups the elements of your project by their stereotypes but also by the modular structure of the project.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://static.spring.io/blog/mlippert/20251128/04-modulith-structure-view.png&quot; alt=&quot;Dialog to select the groups that should be used in the structure view for a specific project&quot; width=&quot;509&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;custom-stereotypes&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#custom-stereotypes&quot; aria-label=&quot;custom stereotypes permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Custom stereotypes&lt;/h2&gt;
+&lt;p&gt;Another fantastic aspect of this is the ability for you to define your own stereotypes. All you need to do is to create a corresponding &lt;code&gt;META-INF/jmolecules-stereotypes.json&lt;/code&gt; file, fill in the definitions, and add this file to your projects. Alternatively, you can use jMolecules’ &lt;code&gt;@Stereotype&lt;/code&gt; annotation to define your own stereotype annotations or interfaces and use them throughout your project.&lt;/p&gt;
+&lt;p&gt;The logic inside the Spring Tools will automatically pick up those definitions, independently of whether they are defined in metadata files or in source code. They will show up alongside all the other stereotypes detected in dependencies of your project in the logical structure view. This gives you the power to customize the structural view of your project inside the IDE without changing or configuring the IDE itself.&lt;/p&gt;
+&lt;h2 id=&quot;looking-forward&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#looking-forward&quot; aria-label=&quot;looking forward permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Looking forward&lt;/h2&gt;
+&lt;p&gt;If you want to try the latest release candidates of Spring Tools 5, please go to the &lt;a href=&quot;https://spring.io/tools5&quot;&gt;tools preview page&lt;/a&gt; or switch to the pre-releases of the extensions in Visual Studio Code.&lt;/p&gt;
+&lt;p&gt;The upcoming third part of this series around the Spring Tools 5 release will look into the new integration with AI coding assistants, followed by the GA of the Spring Tools 5. Stay tuned.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[A Bootiful Podcast: Spring community legend and friend Simon Martinelli]]></title><link>https://spring.io/blog/2025/11/27/a-bootiful-podcast-simon-martinelli</link><guid isPermaLink="true">https://spring.io/blog/2025/11/27/a-bootiful-podcast-simon-martinelli</guid><dc:creator><![CDATA[joshlong]]></dc:creator><pubDate>Thu, 27 Nov 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Hi, Spring fans! Happy Thanksgiving from me, and I am sure the entire Spring team, to you! We are, it should be clear, oh so very grateful.. thankful.. for you, the community. This week it is my great pleasure to chat with Spring community legend Simon Martinelli.&lt;/p&gt;
+&lt;iframe title=&quot;Spring community legend and friend Simon Martinelli&quot; allowtransparency=&quot;true&quot; height=&quot;150&quot; width=&quot;100%&quot; style=&quot;border: none; min-width: min(100%, 430px);height:150px;&quot; scrolling=&quot;no&quot; data-name=&quot;pb-iframe-player&quot; src=&quot;https://www.podbean.com/player-v2/?i=3wbhp-19d5eee-pb&amp;from=pb6admin&amp;share=1&amp;download=1&amp;rtl=0&amp;fonts=Arial&amp;skin=1&amp;font-color=&amp;logo_link=episode_page&amp;btn-skin=7&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</content:encoded></item><item><title><![CDATA[Spring Cloud 2025.1.0 (aka Oakwood) has been released]]></title><link>https://spring.io/blog/2025/11/25/spring-cloud-2025-1-0-aka-oakwood-has-been-released</link><guid isPermaLink="true">https://spring.io/blog/2025/11/25/spring-cloud-2025-1-0-aka-oakwood-has-been-released</guid><dc:creator><![CDATA[spencergibb]]></dc:creator><pubDate>Tue, 25 Nov 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;On behalf of the community, I am pleased to announce that the General Availability (RELEASE) of the &lt;a href=&quot;https://cloud.spring.io&quot;&gt;Spring Cloud 2025.1.0&lt;/a&gt; Release Train is available today. The release can be found in &lt;a href=&quot;https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dependencies/2025.1.0/&quot;&gt;Maven Central&lt;/a&gt;. You can check out the 2025.1.0 &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-release/wiki/Spring-Cloud-2025.1-Release-Notes&quot;&gt;release notes for more information&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;notable-changes-in-the-202510-release-train&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#notable-changes-in-the-202510-release-train&quot; aria-label=&quot;notable changes in the 202510 release train permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Notable Changes in the 2025.1.0 Release Train&lt;/h2&gt;
+&lt;p&gt;This is a major release, each project has been updated to version 5.0.0. This release is based on Spring Framework 7 and Spring Boot 4.&lt;/p&gt;
+&lt;p&gt;A complete list of changes for this release can found in the &lt;a href=&quot;https://github.com/orgs/spring-cloud/projects/186&quot;&gt;2025.1.0 GitHub Project&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;spring-cloud-release&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-release&quot; aria-label=&quot;spring cloud release permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Release&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;code&gt;spring-cloud-stater-parent&lt;/code&gt; artifact has been removed (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-release/issues/437&quot;&gt;#437&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-gateway&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-gateway&quot; aria-label=&quot;spring cloud gateway permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Gateway&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Spring Cloud Gateway now has null-safety annotations for all public API classes with JSpecify (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/issues/3953&quot;&gt;#3953&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Retry filter based on Spring Framework&apos;s retry functionality (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/pull/3970&quot;&gt;#3970&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Initial support for JSpecify (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/pull/3944&quot;&gt;#3944&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Use Google libraries for JSON processing in gRPC (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/pull/3853&quot;&gt;#3853&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Remove deprecated artifacts in favor of new ones. The new artifacts are &lt;code&gt;spring-cloud-gateway-server-web{flux|mvc}&lt;/code&gt; and &lt;code&gt;spring-cloud-gateway-proxyexchange-web{flux|mvc}&lt;/code&gt; &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/issues/3858&quot;&gt;#3858&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;New API Versioning Predicate in Server WebFlux &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/issues/3864&quot;&gt;#3864&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-commons&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-commons&quot; aria-label=&quot;spring cloud commons permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Commons&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Spring Cloud Commons now has null-safety annotations for all public API classes with JSpecify (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-commons/pull/1594&quot;&gt;#1594&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Add LoadBalancer API versioning support &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-commons/pull/1582&quot;&gt;#1582&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;LoadBalancer integration for Spring Interface Clients AutoConfiguration &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-commons/pull/1491&quot;&gt;#1491&lt;/a&gt;, &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-commons/pull/1492&quot;&gt;#1492&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CircuitBreaker integration for Spring Interface Clients AutoConfiguration &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-commons/issues/1538&quot;&gt;#1538&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-circuitbreaker&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-circuitbreaker&quot; aria-label=&quot;spring cloud circuitbreaker permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Circuitbreaker&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;A new module has been added with a Spring Cloud Circuitbreaker implementation using the new &lt;a href=&quot;https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-7.0-Release-Notes#resilience-features-retrytemplate-retryable-concurrencylimit&quot;&gt;resilience support in Spring Framework 7.0.0&lt;/a&gt;. (#&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-circuitbreaker/pull/256&quot;&gt;256&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The module &lt;code&gt;spring-cloud-circuitbreaker-spring-retry&lt;/code&gt; has been placed in maintenance only mode and will be removed when &lt;a href=&quot;https://github.com/spring-projects/spring-retry&quot;&gt;Spring Retry&lt;/a&gt; is no longer supported.&lt;/li&gt;
+&lt;li&gt;Upgrade Resilience4j to 2.3.0&lt;/li&gt;
+&lt;li&gt;The version of Spring Cloud Circuit Breaker has moved to 5.0.x to align with the rest of the release train, skipping version 4.0.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-config&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-config&quot; aria-label=&quot;spring cloud config permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Config&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Transition to use Jackson 3 (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-config/pull/3131&quot;&gt;#3131&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Removed all deprecated classes and methods (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-config/pull/2908&quot;&gt;#2908&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-stream&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-stream&quot; aria-label=&quot;spring cloud stream permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Stream&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Support for caching and logging control options for KTable materialization&lt;/li&gt;
+&lt;li&gt;Support for consumer priority support in Rabbit binder properties&lt;/li&gt;
+&lt;li&gt;Migration to Jackson 3&lt;/li&gt;
+&lt;li&gt;The artifact &lt;code&gt;org.springframework.cloud:spring-cloud-stream-binder-kafka-reactive&lt;/code&gt; has been removed as Reactor Kafka has been discontinued. See &lt;a href=&quot;https://spring.io/blog/2025/05/20/reactor-kafka-discontinued&quot;&gt;this blog post&lt;/a&gt; for more information.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-netflix&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-netflix&quot; aria-label=&quot;spring cloud netflix permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Netflix&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Remove RestTemplate support (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-netflix/pull/4504&quot;&gt;#4504&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-consul&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-consul&quot; aria-label=&quot;spring cloud consul permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Consul&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Replaced &lt;code&gt;ewcid-api&lt;/code&gt; with a non-blocking interface client (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-consul/issues/475&quot;&gt;#475&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Replaced 3rd party Consul HTTP Client with Interface Clients &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-consul/pull/840&quot;&gt;#840&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-function&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-function&quot; aria-label=&quot;spring cloud function permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Function&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Significant enhancements in the discovery of complex input/output types.&lt;/li&gt;
+&lt;li&gt;Support for post-processing Kotlin functions. Although the feature is mostly used in Spring Cloud Stream, the supporting implementation is in Spring Cloud Functions.&lt;/li&gt;
+&lt;li&gt;Support for preserving AWS Context in AWS Custom Runutime support of AWS Lambda&lt;/li&gt;
+&lt;li&gt;Migration to Jackson 3&lt;/li&gt;
+&lt;li&gt;Discontinue spring-cloud-function-rscoket&lt;/li&gt;
+&lt;li&gt;Discontinue spring-cloud-function-deployer&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-contract&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-contract&quot; aria-label=&quot;spring cloud contract permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Contract&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Removed support for REST Assured due to &lt;a href=&quot;https://github.com/spring-projects/spring-restdocs/issues/1000&quot;&gt;support being dropped in Spring REST Docs&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;stubrunner. -&gt; spring.cloud.contract.stubrunner. property migration (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-contract/pull/2309&quot;&gt;#2309&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Removed &lt;code&gt;javax.inject&lt;/code&gt; and &lt;code&gt;javax.annotation&lt;/code&gt; support &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-contract/issues/2206&quot;&gt;#2206&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-kubernetes&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-kubernetes&quot; aria-label=&quot;spring cloud kubernetes permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Kubernetes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Leader election info contributor can now be disabled by setting &lt;code&gt;management.info.leader.enabled=false&lt;/code&gt; (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-kubernetes/issues/2085&quot;&gt;#2085&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Deprecated classes and methods have been removed, and numerous other improvements to public classes have been made. See the &lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-kubernetes/issues?q=is%3Aclosed%20milestone%3A%225.0.0-M4%22&quot;&gt;milestone&lt;/a&gt; for a complete list of changes&lt;/li&gt;
+&lt;li&gt;Upgraded Kubernetes Java Client to 24.0.0&lt;/li&gt;
+&lt;li&gt;Upgraded Fabric8 Kubernetes Client to 7.4.0&lt;/li&gt;
+&lt;li&gt;The version of Spring Cloud Kuberentes has moved to 5.0.x to align with the rest of the release train, skipping version 4.0.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;spring-cloud-openfeign&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#spring-cloud-openfeign&quot; aria-label=&quot;spring cloud openfeign permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Spring Cloud Openfeign&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Remove deprecations. (&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-openfeign/pull/1268&quot;&gt;#1268&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The following modules were updated as part of 2025.1.0:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Module&lt;/th&gt;
+&lt;th&gt;Version&lt;/th&gt;
+&lt;th&gt;Issues&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Stream&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-stream/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Netflix&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-netflix/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Starter Build&lt;/td&gt;
+&lt;td&gt;2025.1.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-starter-build/releases/tag/v2025.1.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Commons&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-commons/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Circuitbreaker&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-circuitbreaker/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Gateway&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-gateway/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Config&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-config/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Build&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-build/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Consul&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-consul/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Function&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-function/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Contract&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-contract/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Vault&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-vault/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Task&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-task/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Kubernetes&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-kubernetes/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Openfeign&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-openfeign/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Zookeeper&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-zookeeper/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Spring Cloud Bus&lt;/td&gt;
+&lt;td&gt;5.0.0&lt;/td&gt;
+&lt;td&gt;(&lt;a href=&quot;https://github.com/spring-cloud/spring-cloud-bus/releases/tag/v5.0.0&quot;&gt;issues&lt;/a&gt;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;As always, we welcome feedback on &lt;a href=&quot;https://github.com/spring-cloud/&quot;&gt;GitHub&lt;/a&gt;, on &lt;a href=&quot;https://gitter.im/spring-cloud/spring-cloud&quot;&gt;Gitter&lt;/a&gt;, on &lt;a href=&quot;https://stackoverflow.com/questions/tagged/spring-cloud&quot;&gt;Stack Overflow&lt;/a&gt;, or on &lt;a href=&quot;https://twitter.com/SpringCloud&quot;&gt;Twitter&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To get started with Maven with a BOM (dependency management only):&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;#x3C;dependencyManagement&gt;
+    &amp;#x3C;dependencies&gt;
+        &amp;#x3C;dependency&gt;
+            &amp;#x3C;groupId&gt;org.springframework.cloud&amp;#x3C;/groupId&gt;
+            &amp;#x3C;artifactId&gt;spring-cloud-dependencies&amp;#x3C;/artifactId&gt;
+            &amp;#x3C;version&gt;2025.1.0&amp;#x3C;/version&gt;
+            &amp;#x3C;type&gt;pom&amp;#x3C;/type&gt;
+            &amp;#x3C;scope&gt;import&amp;#x3C;/scope&gt;
+        &amp;#x3C;/dependency&gt;
+    &amp;#x3C;/dependencies&gt;
+&amp;#x3C;/dependencyManagement&gt;
+&amp;#x3C;dependencies&gt;
+    &amp;#x3C;dependency&gt;
+        &amp;#x3C;groupId&gt;org.springframework.cloud&amp;#x3C;/groupId&gt;
+        &amp;#x3C;artifactId&gt;spring-cloud-starter-config&amp;#x3C;/artifactId&gt;
+    &amp;#x3C;/dependency&gt;
+    &amp;#x3C;dependency&gt;
+        &amp;#x3C;groupId&gt;org.springframework.cloud&amp;#x3C;/groupId&gt;
+        &amp;#x3C;artifactId&gt;spring-cloud-starter-netflix-eureka-client&amp;#x3C;/artifactId&gt;
+    &amp;#x3C;/dependency&gt;
+    ...
+&amp;#x3C;/dependencies&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or with Gradle:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-groovy&quot;&gt;plugins {
+  id &apos;java&apos;
+  id &apos;org.springframework.boot&apos; version &apos;4.0.0&apos;
+  id &apos;io.spring.dependency-management&apos; version &apos;1.1.7&apos;
+}
+
+group = &apos;com.example&apos;
+version = &apos;0.0.1-SNAPSHOT&apos;
+description = &apos;Demo project for Spring Boot&apos;
+
+repositories {
+  mavenCentral()
+}
+
+ext {
+  set(&apos;springCloudVersion&apos;, &quot;2025.1.0&quot;)
+}
+
+dependencies {
+  implementation &apos;org.springframework.cloud:spring-cloud-starter-config&apos;
+  implementation &apos;org.springframework.cloud:spring-cloud-starter-netflix-eureka-client&apos;
+  //...
+}
+
+dependencyManagement {
+  imports {
+    mavenBom &quot;org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}&quot;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;</content:encoded></item><item><title><![CDATA[Spring Data Ahead of Time Repositories - Part 2]]></title><link>https://spring.io/blog/2025/11/25/spring-data-ahead-of-time-repositories-part-2</link><guid isPermaLink="true">https://spring.io/blog/2025/11/25/spring-data-ahead-of-time-repositories-part-2</guid><dc:creator><![CDATA[christophstrobl]]></dc:creator><pubDate>Tue, 25 Nov 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Concluding the &lt;a href=&quot;https://spring.io/blog/2025/09/02/road_to_ga_introduction&quot;&gt;Road to GA&lt;/a&gt; blog post series, let&apos;s explore benefits of Spring Data AOT Repositories.&lt;/p&gt;
+&lt;p&gt;Back in May 2025, we first introduced &lt;a href=&quot;https://spring.io/blog/2025/05/22/spring-data-ahead-of-time-repositories&quot;&gt;Ahead of Time (AOT) repositories&lt;/a&gt; as a preview feature for &lt;em&gt;JPA&lt;/em&gt; and &lt;em&gt;MongoDB&lt;/em&gt; with the &lt;a href=&quot;https://spring.io/blog/2025/05/16/spring-data-2025-1-0-M3-released&quot;&gt;3rd Milestone of the next Spring Data generation&lt;/a&gt;.
+This feature, in short, uses AOT processing to implement your repository query methods using actual source code by relying on the store-specific nature of the repository.&lt;/p&gt;
+&lt;p&gt;Since then, we&apos;ve incorporated feedback, ironed out rough edges, and onboarded two more modules: Apache Cassandra and JDBC.
+This means, with the &lt;a href=&quot;https://spring.io/blog/2025/11/14/spring-data-2025-1-goes-ga&quot;&gt;&lt;code&gt;2025.1.0&lt;/code&gt; release&lt;/a&gt;, you are be able to use AOT generated repositories with four Spring Data modules:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Spring Data for &lt;a href=&quot;https://spring.io/projects/spring-data-cassandra&quot;&gt;Apache Cassandra&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Spring Data &lt;a href=&quot;https://spring.io/projects/spring-data-jdbc&quot;&gt;JDBC&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Spring Data &lt;a href=&quot;https://spring.io/projects/spring-data-jpa&quot;&gt;JPA&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Spring Data &lt;a href=&quot;https://spring.io/projects/spring-data-mongodb&quot;&gt;MongoDB&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;what-you-get&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#what-you-get&quot; aria-label=&quot;what you get permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;What you get&lt;/h1&gt;
+&lt;p&gt;By leveraging the general &lt;a href=&quot;https://docs.spring.io/spring-framework/reference/7.0/core/aot.html&quot;&gt;Spring AOT&lt;/a&gt; infrastructure, we have a lot of insight into your application&apos;s configuration allowing for better integration than it would be possible with an annotation processor. A pre-initialized application context configuration for AOT processing gives us access to all registered beans, their types and properties, capturing your opinions and configuration.
+As you can imagine, this insight is crucial when you want to work with integrations like Data JDBC: While targeting standard SQL, the JDBC module needs to be aware of potential specifics of the target database that often come with their very own dialect deviations. Having access to registered beans, like the &lt;code&gt;JdbcDialect&lt;/code&gt;, makes it possible to generate the right statements.&lt;/p&gt;
+&lt;p&gt;So when we look at the generated code, it shares common principles with the individual modules while sticking as close as possible to the underlying technology.&lt;/p&gt;
+&lt;p&gt;Just as each Spring Data module is specific to its target technology, so is the generated code.
+A simple query method like &lt;code&gt;findByLastnameStartingWith&lt;/code&gt; in &lt;em&gt;JDBC&lt;/em&gt; looks way different from the one generated for &lt;em&gt;JPA&lt;/em&gt; or &lt;em&gt;Apache Cassandra&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Spring Data JDBC&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public List&amp;#x3C;User&gt; findByLastnameStartingWith(String lastname) {
+  Criteria criteria = Criteria.where(&quot;lastname&quot;).like(escape(lastname) + &quot;%&quot;);
+  StatementFactory.SelectionBuilder builder = getStatementFactory().select(User.class).filter(criteria);
+
+  RowMapper rowMapper = getRowMapperFactory().create(User.class);
+  List result = (List) builder.executeWith((sql, paramSource) -&gt; getJdbcOperations().query(sql, paramSource, new RowMapperResultSetExtractor&amp;#x3C;&gt;(rowMapper)));
+  return (List&amp;#x3C;User&gt;) convertMany(result, User.class);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;Spring Data JPA&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public List&amp;#x3C;User&gt; findByLastnameStartingWith(String lastname) {
+  String queryString = &quot;SELECT u FROM example.springdata.aot.User u WHERE u.lastname LIKE :lastname ESCAPE &apos;\\&apos;&quot;;
+  Query query = entityManager.createQuery(queryString);
+  query.setParameter(&quot;lastname&quot;, &quot;%s%%&quot;.formatted(lastname));
+
+  return (List&amp;#x3C;User&gt;) query.getResultList();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;Spring Data for Apache Cassandra&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public List&amp;#x3C;User&gt; findByLastnameStartingWith(String lastname) {
+  Query query = Query.query(Criteria.where(&quot;lastname&quot;).like(lastname + &quot;%&quot;));
+
+  ExecutableSelectOperation.TerminatingSelect&amp;#x3C;User&gt; select = operations.query(User.class).matching(query);
+  return select.all();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;AOT Repositories are generated and mounted by default when building with general Spring AOT support.
+You may opt out of generating repository code via &lt;code&gt;spring.aot.repositories.enabled=false&lt;/code&gt; or select single modules like &lt;code&gt;spring.aot.jdbc.repositories.enabled=false&lt;/code&gt; if you wish.&lt;/p&gt;
+&lt;p&gt;To actually use them, your application must be started in AOT mode (either by using the &lt;code&gt;spring.aot.enabled&lt;/code&gt; property or as GraalVM Native Image).&lt;/p&gt;
+&lt;p&gt;But, let us also have a look at some of the advantages for development and debugging.&lt;/p&gt;
+&lt;h1 id=&quot;debuggability-and-metadata&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#debuggability-and-metadata&quot; aria-label=&quot;debuggability and metadata permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Debuggability and Metadata&lt;/h1&gt;
+&lt;p&gt;AOT generated repositories not only explain in code how your query is being executed, but you can also set breakpoints in your IDE to debug statements when needed.&lt;/p&gt;
+&lt;p&gt;Following the line of thought of knowing what the queries look like during AOT processing, we&apos;ve introduced a JSON metadata representation for your Spring Data interfaces.
+Like for the above repository, let&apos;s call it &lt;code&gt;UserRepository&lt;/code&gt; for now, Spring Data generates a &lt;code&gt;UserRepository.json&lt;/code&gt; resource that resides in the same package as your repository interface.
+That particular file contains information about query methods, which implementation they are targeting and what query they will run.
+It can be used for documentation purposes, but can also be read by your favorite IDE to display additional information while you&apos;re still developing.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Spring Data JDBC&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+ &quot;name&quot;: &quot;example.springdata.UserRepository&quot;,
+ &quot;module&quot;: &quot;JDBC&quot;,
+ &quot;type&quot;: &quot;IMPERATIVE&quot;,
+ &quot;methods&quot;: [
+ {
+   &quot;name&quot;: &quot;findByLastnameStartingWith&quot;,
+   &quot;signature&quot;: &quot;public abstract List&amp;#x3C;User&gt; UserRepository.findByLastnameStartingWith(String)&quot;,
+   &quot;query&quot;: {
+     &quot;query&quot;: &quot;SELECT &apos;USER&apos;.&apos;ID&apos; AS &apos;ID&apos;, &apos;USER&apos;.&apos;LAST_NAME&apos; AS &apos;LAST_NAME&apos;, &apos;USER&apos;.&apos;FIRST_NAME&apos; AS &apos;FIRST_NAME&apos; FROM &apos;USER&apos; WHERE &apos;USER&apos;.&apos;LASTNAME&apos; LIKE :name&quot;
+   }
+ }
+ //...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;Spring Data JPA&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+ // ...
+ &quot;query&quot;: {
+   &quot;query&quot;: &quot;SELECT u FROM example.springdata.User u WHERE u.lastname LIKE ?1 ESCAPE &apos;\\&apos;&quot;
+ }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;Spring Data for Apache Cassandra&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+ // ...
+ &quot;query&quot;: {
+   &quot;query&quot;: &quot;SELECT * FROM users WHERE last_name LIKE ?&quot;
+ }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can optionally disable metadata generation by setting &lt;code&gt;spring.aot.repositories.metadata.enabled=false&lt;/code&gt;.&lt;/p&gt;
+&lt;h1 id=&quot;aot-cache-and-project-leyden&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#aot-cache-and-project-leyden&quot; aria-label=&quot;aot cache and project leyden permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;AOT Cache and Project Leyden&lt;/h1&gt;
+&lt;p&gt;Generating repository code upfront not only has debuggability benefits but also goes very well with recent developments in the latest Java releases.
+Unlike runtime-generated pieces that make things work, pre-generated repositories can be seen and analyzed by the JVM during an &lt;a href=&quot;https://openjdk.org/jeps/483&quot;&gt;AOT Cache&lt;/a&gt; training run.
+This helps you reduce startup times by serving repository implementations already fully loaded and linked from the Java shared objects file.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[info][class,load] example.springdata.aot.UserRepositoryImpl__AotRepository source: shared objects file
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A well known feature of especially the Spring Data NoSQL implementations is their object mapping capabilities.
+Not so well known is the fact that at runtime, Spring Data will try to optimize creating new instances and accessing properties of your domain objects by generating bytecode that uses &lt;code&gt;MethodHandle&lt;/code&gt; to improve load/save performance.&lt;/p&gt;
+&lt;p&gt;Collecting information about your domain model paved the way for generated bytecode inclusion that is used for property accessors and entity instantiators at build time.
+Having generated bytecode already available removes the need to use runtime optimizations. Additionally, captured entity instantiators and property accessors are packaged into the bundled JAR and therefore available through the class loader directly serving things even more efficiently.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[info][class,load] example.springdata.User__Instantiator_cu2hga source: shared objects file
+[info][class,load] example.springdata.User__Accessor_cu2hga source: shared objects file
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&quot;any-downsides&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#any-downsides&quot; aria-label=&quot;any downsides permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Any downsides?&lt;/h1&gt;
+&lt;p&gt;Obviously, computation time does not simply disappear, it shifts to somewhere else.
+In this case, to the build phase. So yes, analyzing the application and preparing the data, as well as doing JVM training runs takes time and potentially requires changes to your build and deployment pipeline.
+You also trade certain dynamic aspects of the framework for less memory consumption and faster startup times.
+Parts of your configuration need to be frozen when opting in for AOT. Remember the &lt;code&gt;JdbcDialect&lt;/code&gt; from earlier?
+That&apos;s exactly one of those frozen spots since you cannot generate SQL optimized for one database and switch to the other as if nothing has changed.&lt;/p&gt;
+&lt;p&gt;Also Ahead of Time repositories do currently only support imperative repository interfaces. Reactive ones will not trigger any code generation.&lt;/p&gt;
+&lt;p&gt;If you&apos;re curious, you may just build and run your application with &lt;code&gt;spring.aot.enabled&lt;/code&gt; or head over to our &lt;a href=&quot;https://github.com/spring-projects/spring-data-examples&quot;&gt;Spring Data Examples&lt;/a&gt; where we already prepared demo applications for you to try.&lt;/p&gt;
+&lt;p&gt;In any case, you can always fall back to starting your application without the &lt;code&gt;spring.aot.enabled&lt;/code&gt; flag, which will disable all Ahead of Time enhancements.
+This enables you to build and test the application in AOT mode while having a back off strategy built in.&lt;/p&gt;
+&lt;p&gt;We&apos;re excited to see how you leverage Ahead of Time features.&lt;br&gt;
+And, as always, your feedback matters!
+So, we&apos;re looking forward to hearing from you and your experiences on ways to improve.&lt;/p&gt;</content:encoded></item></channel></rss>
