@@ -15,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @DynamicInsert
 @Entity
+@Table(name = "orders")
 public class Order {
 
     @Id
