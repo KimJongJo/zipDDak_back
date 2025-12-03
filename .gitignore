@@ -1,1 +1,4 @@
 /.metadata/
+
+# application.properties 보안 설정
+application.properties
