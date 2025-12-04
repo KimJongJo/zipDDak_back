@@ -38,9 +38,6 @@ public class OrderItem {
 	@Column(nullable = false)
 	private Integer orderIdx;
 
-	@Column(nullable = false)
-	private String sellerUsername;
-
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "productIdx")
 	private Product product;

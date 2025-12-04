@@ -1,6 +1,5 @@
 package com.zipddak.config;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
-
 
 @Configuration
 @EnableWebSecurity
@@ -21,15 +18,16 @@ public class SecurityConfig {
 
 	@Autowired
 	private CorsFilter corsFilter;
-	
+
 //	@Autowired
 //	private UserRepository userRepository;
-	
+
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
-	
+
 //	@Bean
 //	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception{
 //		http.addFilter(corsFilter) // 다른 도메인 접근 허용
@@ -49,10 +47,21 @@ public class SecurityConfig {
 //		
 //		return http.build();
 //	}
-	
+
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.formLogin(form -> form.disable()).httpBasic(basic -> basic.disable())
+				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+		return http.build();
+	}
+
 	@Bean
 	public BCryptPasswordEncoder encoderPassword() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 }
