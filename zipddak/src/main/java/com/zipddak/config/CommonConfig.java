@@ -10,13 +10,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Configuration
 public class CommonConfig {
-	
+
 	@Autowired
 	EntityManager entityManager;
 	
 	@Bean
-	public JPAQueryFactory jpqQueryFactory() {
+	public JPAQueryFactory jpaQueryFactory() {
 		return new JPAQueryFactory(entityManager);
 	}
-	
 }

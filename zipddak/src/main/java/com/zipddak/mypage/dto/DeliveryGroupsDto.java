@@ -1,5 +1,14 @@
 package com.zipddak.mypage.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DeliveryGroupsDto {
 	private String brandName; // 브랜드 이름
 	private String deliveryType; // “택배배송" | "직접픽업”
