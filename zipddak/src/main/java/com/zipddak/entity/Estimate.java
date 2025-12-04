@@ -6,9 +6,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -32,8 +35,9 @@ public class Estimate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer estimateIdx;
 
-    @Column(nullable = false)
-    private Integer expertIdx;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "expertIdx")
+    private Expert expert;
 
     @Column(nullable = false)
     private Integer requestIdx;

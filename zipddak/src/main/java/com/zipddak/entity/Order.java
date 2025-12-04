@@ -42,6 +42,10 @@ public class Order {
 
 	@Column(nullable = false)
 	private Long subtotalAmount;
+	
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userUsername")
+    private User user;
 
 	@Column(nullable = false)
 	private Long shippingAmount;

@@ -28,7 +28,7 @@ public class Reply {
     private String writer; // user.username
 
     @Column
-    private Integer communityIdx; 
+    private Integer communityIdx;
 
     @CreationTimestamp
     private Date createdate;
