@@ -37,15 +37,15 @@ public class OrderDslRepository {
 				.select(Projections.bean(OrderItemDto.class, product.productIdx, product.name.as("productName"),
 						productOption1.name.as("optionName"), orderItem.quantity, orderItem.unitPrice.as("price"),
 						productFile.storagePath.as("thumbnail"), orderItem.orderStatus,
-						orderItem.orderStatus.eq(OrderStatus.배송완료)
-								.and(JPAExpressions.selectOne().from(reviewProduct)
-										.where(reviewProduct.orderIdx.eq(orderIdx)
-												.and(reviewProduct.productIdx.eq(product.productIdx)))
-										.notExists())
-								.as("reviewAvailable"),
+//						orderItem.orderStatus.eq(OrderStatus.배송완료)
+//								.and(JPAExpressions.selectOne().from(reviewProduct)
+//										.where(reviewProduct.orderIdx.eq(orderIdx)
+//												.and(reviewProduct.productIdx.eq(product.productIdx)))
+//										.notExists())
+//								.as("reviewAvailable"),
 						productOption2.name.as("exchangeOption")))
 				.from(orderItem).leftJoin(order).on(order.orderIdx.eq(orderItem.orderIdx)).leftJoin(product)
-				.on(product.productIdx.eq(orderItem.productIdx)).leftJoin(seller)
+//				.on(product.productIdx.eq(orderItem.productIdx)).leftJoin(seller)
 				.on(seller.username.eq(orderItem.sellerUsername)).leftJoin(productOption1)
 				.on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx)).leftJoin(productOption2)
 				.on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx)).leftJoin(productFile)
