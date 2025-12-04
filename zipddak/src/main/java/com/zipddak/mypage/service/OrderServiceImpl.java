@@ -25,34 +25,34 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public List<OrderListDto> getOrderList(String username) throws Exception {
-		// 가공된 내 주문목록
+		// 媛�怨듬맂 �궡 二쇰Ц紐⑸줉
 		List<OrderListDto> orderListDtoList = null;
 
-		// 내 주문목록
+		// �궡 二쇰Ц紐⑸줉
 		List<Order> orderList = orderRepository.findByUserUsername(username);
 
 		for (Order order : orderList) {
 			List<DeliveryGroupsDto> deliveryGroupsDtoList = null;
 
-			// 하나의 주문을 OrderListDto 타입으로 변환
+			// �븯�굹�쓽 二쇰Ц�쓣 OrderListDto ���엯�쑝濡� 蹂��솚
 			OrderListDto orderListDto = order.toOrderListDto();
 			orderListDto.setCanCancel(false);
 			orderListDto.setCanReturn(false);
 
-			// 하나의 주문에 해당하는 주문상품목록
+			// �븯�굹�쓽 二쇰Ц�뿉 �빐�떦�븯�뒗 二쇰Ц�긽�뭹紐⑸줉
 			List<OrderItem> orderItemList = orderItemRepository.findByOrderIdx(order.getOrderIdx());
 
 			for (OrderItem orderItem : orderItemList) {
-				// 주문상품 중 "상품준비중"이 하나라도 있으면 취소 가능
-				if (orderItem.getOrderStatus() == OrderStatus.상품준비중) {
-					orderListDto.setCanCancel(true);
-				}
-				// 주문상품 중 "배송중", "배송완료"가 하나라도 있으면 교환/환불 가능
-				if (orderItem.getOrderStatus() == OrderStatus.배송중 || orderItem.getOrderStatus() == OrderStatus.배송완료) {
-					orderListDto.setCanReturn(true);
-				}
+				// 二쇰Ц�긽�뭹 以� "�긽�뭹以�鍮꾩쨷"�씠 �븯�굹�씪�룄 �엳�쑝硫� 痍⑥냼 媛��뒫
+//				if (orderItem.getOrderStatus() == OrderStatus.�긽�뭹以�鍮꾩쨷) {
+//					orderListDto.setCanCancel(true);
+//				}
+//				// 二쇰Ц�긽�뭹 以� "諛곗넚以�", "諛곗넚�셿猷�"媛� �븯�굹�씪�룄 �엳�쑝硫� 援먰솚/�솚遺� 媛��뒫
+//				if (orderItem.getOrderStatus() == OrderStatus.諛곗넚以� || orderItem.getOrderStatus() == OrderStatus.諛곗넚�셿猷�) {
+//					orderListDto.setCanReturn(true);
+//				}
 
-				// 주문상품을 브랜드와 배송타입, 배송비부과타입 별로 분리
+				// 二쇰Ц�긽�뭹�쓣 釉뚮옖�뱶�� 諛곗넚���엯, 諛곗넚鍮꾨�怨쇳��엯 蹂꾨줈 遺꾨━
 			}
 
 		}
