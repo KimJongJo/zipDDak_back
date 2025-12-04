@@ -11,7 +11,6 @@ import lombok.*;
 public class OrderDto {
     private Integer orderIdx;
     private String orderCode;
-    private String userUsername;
     private Long subtotalAmount;
     private Long shippingAmount;
     private Long totalAmount;
@@ -23,4 +22,7 @@ public class OrderDto {
     private String postRecipient;
     private String postNote;
     private Date createdAt;
+    
+    private String username;
+    private String name;
 }

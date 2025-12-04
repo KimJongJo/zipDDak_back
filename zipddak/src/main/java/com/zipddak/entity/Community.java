@@ -36,8 +36,9 @@ public class Community {
     @Column
     private Integer views;
 
-    @Column
-    private String writer;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "username")
+    private User user;
 
     @Column
     private Integer img1;

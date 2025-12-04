@@ -10,10 +10,12 @@ import lombok.*;
 @Builder
 public class ProductOptionDto {
     private Integer productOptionIdx;
-    private Integer productIdx;
     private String name;
     private String value;
     private Long price;
     private Date createdAt;
     private Date updatedAt;
+    
+    private Integer productIdx;
+    private String productName;
 }

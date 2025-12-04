@@ -12,7 +12,6 @@ public class OrderItemDto {
     private Integer orderItemIdx;
     private Integer orderIdx;
     private String sellerUsername;
-    private Integer productIdx;
     private Integer productOptionIdx;
     private Long unitPrice;
     private Integer quantity;
@@ -24,4 +23,7 @@ public class OrderItemDto {
     private Integer exchangeIdx;
     private Integer exchangeNewOptIdx;
     private Date createdAt;
+    
+    private Integer productIdx;
+    private String name;
 }

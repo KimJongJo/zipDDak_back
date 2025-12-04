@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class EstimateDto {
     private Integer estimateIdx;
-    private Integer expertIdx;
     private Integer requestIdx;
     private Integer largeServiceIdx;
     private String workDurationType;
@@ -28,4 +27,7 @@ public class EstimateDto {
     private Integer reportProductionCost;
     private Integer etcFee;
     private Date createdAt;
+    
+    private Integer expertIdx;
+    private String activityName;
 }
