@@ -6,6 +6,8 @@ import javax.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
+import com.zipddak.entity.OrderItem.OrderStatus;
+
 import lombok.*;
 
 @Getter

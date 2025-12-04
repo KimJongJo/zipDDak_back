@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import com.zipddak.entity.User;
 
 import lombok.Data;
 
@@ -21,18 +22,18 @@ import lombok.Data;
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User{
 
-//	private User user;
+	private User user;
 	private Map<String, Object> attributes;
 	
 	
-//	public PrincipalDetails(User user){
-//		this.user = user;
-//	}
-//	public PrincipalDetails(User user, Map<String, Object> attributes) {
-//		super();
-//		this.user = user;
-//		this.attributes = attributes;
-//	}
+	public PrincipalDetails(User user){
+		this.user = user;
+	}
+	public PrincipalDetails(User user, Map<String, Object> attributes) {
+		super();
+		this.user = user;
+		this.attributes = attributes;
+	}
 	
 	
 	
@@ -41,7 +42,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 //		Collection<GrantedAuthority> collect = new ArrayList<GrantedAuthority>();
 //		collect.add(() -> user.getRoles());
 //		return collect;
-		
+//		
 		return null;
 	}
 
