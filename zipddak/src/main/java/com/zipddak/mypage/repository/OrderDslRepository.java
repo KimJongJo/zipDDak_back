@@ -29,6 +29,7 @@ public class OrderDslRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
+	// 주문배송목록 조회
 	public List<OrderItemFlatDto> selectOrderItemFlatList(String username, PageRequest pageRequest, Date startDate,
 			Date endDate) throws Exception {
 		QOrder order = QOrder.order;
@@ -107,6 +108,7 @@ public class OrderDslRepository {
 
 	}
 
+	// 주문배송목록 개수
 	public Long selectOrderItemFlatCount(String username) throws Exception {
 		QOrder order = QOrder.order;
 		QOrderItem orderItem = QOrderItem.orderItem;
