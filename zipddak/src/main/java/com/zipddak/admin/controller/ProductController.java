@@ -26,12 +26,11 @@ public class ProductController {
 	@GetMapping("productList")
 	public ResponseEntity<List<ProductDto>> productList(
 			@RequestParam(required = false, defaultValue = "1") Integer sortId,
-			@RequestParam(required = false) String keyword,
 			@RequestParam("cate1") Integer cate1,
 			@RequestParam(required = false) Integer cate2) {
 		
 		try {
-				List<ProductDto> productList = productService.productList(sortId, keyword, cate1, cate2);
+				List<ProductDto> productList = productService.productList(sortId, cate1, cate2);
 				
 				return ResponseEntity.ok(productList);
 

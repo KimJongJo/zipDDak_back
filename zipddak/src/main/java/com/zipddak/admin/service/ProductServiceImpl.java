@@ -16,8 +16,8 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductDslRepository productDslRepository;
 
 	@Override
-	public List<ProductDto> productList(Integer sortId, String keyword, Integer cate1, Integer cate2) throws Exception {
-		return productDslRepository.productList(sortId, keyword, cate1, cate2);
+	public List<ProductDto> productList(Integer sortId, Integer cate1, Integer cate2) throws Exception {
+		return productDslRepository.productList(sortId, cate1, cate2);
 		
 	}
 

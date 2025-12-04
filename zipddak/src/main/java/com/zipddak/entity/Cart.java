@@ -24,8 +24,9 @@ public class Cart {
     @Column(nullable = false)
     private String userUsername;
 
-    @Column(nullable = false)
-    private Integer productIdx;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "productIdx")
+    private Product product;
 
     @Column
     private Integer optionIdx;

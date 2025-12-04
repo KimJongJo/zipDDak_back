@@ -25,8 +25,9 @@ public class Order {
     @Column(nullable = false, unique = true)
     private String orderCode;
 
-    @Column(nullable = false)
-    private String userUsername;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userUsername")
+    private User user;
 
     @Column(nullable = false)
     private Long subtotalAmount;

@@ -14,7 +14,9 @@ import com.zipddak.dto.ProductDto;
 import com.zipddak.entity.QFavoritesProduct;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
+import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QReviewProduct;
+import com.zipddak.entity.QSeller;
 
 @Repository
 public class ProductDslRepository {
@@ -22,12 +24,21 @@ public class ProductDslRepository {
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
 	
-	public List<ProductDto> productList(Integer sortId, String keyword, Integer cate1, Integer cate2) throws Exception {
+	// ProductCardDto 타입으로 반환
+	public List<ProductDto> productList(Integer sortId, Integer cate1, Integer cate2) throws Exception {
 		
-//		QProduct product = QProduct.product;
-//		QReviewProduct review = QReviewProduct.reviewProduct;
-//		QFavoritesProduct favorite = QFavoritesProduct.favoritesProduct;
-//		QOrderItem orderItem = QOrderItem.orderItem;
+		// 자재 상품
+		QProduct product = QProduct.product;
+		// 리뷰 평점, 리뷰 수
+		QReviewProduct review = QReviewProduct.reviewProduct;
+		// 로그인 한 사용자가 관심 상품으로 등록했는지 여부
+		QFavoritesProduct favorite = QFavoritesProduct.favoritesProduct;
+		// 인기순 정렬에서 사용
+		QOrderItem orderItem = QOrderItem.orderItem;
+		// 썸네일 이미지
+		QProductFile productFile = QProductFile.productFile;
+		// 상품 판매 업체
+		QSeller seller = QSeller.seller;
 		
 		// 정렬조건
 		// 1 -> 인기순
@@ -41,32 +52,36 @@ public class ProductDslRepository {
 		
 		// 카테고리가 3 이상일 경우
 		// cate2는 없음
-	
-		// 키워드가 있을 경우
-		// 키워드에 대한 결과만 보여주기
-//		if(keyword != null && !keyword.isBlank()) {
-//			return jpaQueryFactory.select(Projections.bean(ProductDto.class, 
-//					product.productIdx,
-//					product.name,
-//					product.discount,
-//					product.salePrice,
-//					review.score.count().as("reviewCount")
-//					))
-//					.from(product)
-//					.leftJoin(review).on(product.productIdx.eq(review.productIdx))
-//					.where(product.productIdx())
-//				
-//				    
-//					
-//					
-//					
-//				)); 
-//		}else { // 키워드가 없을 경우
-//			// 정렬조건, 카테고리에 맞는 상품들을 보여줌
-//			
-//		}
-//		
-		return null;
+		
+		// 썸네일 이미지 파일 조인
+		
+		if(cate1 == 1 || cate1 == 2) {
+
+			return jpaQueryFactory.select(Projections.bean(ProductDto.class, 
+					product.productIdx,
+					product.name,
+					product.discount,
+					product.salePrice,
+					product.sellerUsername,
+					productFile.fileRename,
+					productFile.storagePath,
+					review.score.avg().coalesce(0.0).as("avgRating"),
+                    review.count().as("reviewCount")
+            ))
+            .from(product)
+            .leftJoin(review).on(review.productIdx.eq(product.productIdx))
+            .leftJoin(productFile).on(productFile.productFileIdx.eq(product.thumbnailFileIdx))
+            .leftJoin(seller).on(seller.username.eq(product.sellerUsername))
+            .groupBy(product.productIdx)
+            .fetch();
+				
+				
+		}else { // 키워드가 없을 경우
+			// 정렬조건, 카테고리에 맞는 상품들을 보여줌
+			return null;
+		}
+		
+		
 	}
 
 }

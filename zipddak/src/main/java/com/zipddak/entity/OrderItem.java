@@ -27,8 +27,9 @@ public class OrderItem {
     @Column(nullable = false)
     private String sellerUsername;
 
-    @Column(nullable = false)
-    private Integer productIdx;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "productIdx")
+    private Product product;
 
     @Column
     private Integer productOptionIdx;

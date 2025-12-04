@@ -25,6 +25,8 @@ public class RentalDto {
     private String borrower;
     private String owner;
     private Integer paymentIdx;
-    private Integer toolIdx;
     private Date createdAt;
+    
+    private Integer toolIdx;
+    private String name;
 }

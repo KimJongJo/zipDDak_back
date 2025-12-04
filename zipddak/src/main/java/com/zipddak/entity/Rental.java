@@ -69,8 +69,9 @@ public class Rental {
     @Column
     private Integer paymentIdx;
 
-    @Column
-    private Integer toolIdx;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "toolIdx")
+    private Tool tool;
     
     @CreationTimestamp
     private Date createdAt;
