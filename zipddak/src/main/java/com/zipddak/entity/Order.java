@@ -41,9 +41,6 @@ public class Order {
 	private String orderCode;
 
 	@Column(nullable = false)
-	private String userUsername;
-
-	@Column(nullable = false)
 	private Long subtotalAmount;
 
 	@ManyToOne(fetch = FetchType.EAGER)
