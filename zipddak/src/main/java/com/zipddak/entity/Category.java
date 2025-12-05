@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import com.zipddak.dto.CategoryDto;
+
 import lombok.*;
 
 @Getter
@@ -27,4 +29,26 @@ public class Category {
 
     @Column
     private Integer parentIdx;
+    
+    @Column(nullable = false)
+    private CategoryType type;
+    
+    
+    public enum CategoryType {
+        product, expert, community, tool
+    }
+    
+    
+//    public CategoryDto toDto() {
+//		return CategoryDto.builder()
+//				.categoryIdx(categoryIdx) //DTO의 변수명 (내가 갖고있는 변수명)
+//				.name(name)
+//				.depth(depth)
+//				.parentIdx(parentIdx)
+//				.type(type)
+//				.build();
+//	}
+    
+    
+    
 }
