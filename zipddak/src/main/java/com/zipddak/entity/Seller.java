@@ -3,6 +3,7 @@ package com.zipddak.entity;
 import java.sql.Date;
 import javax.persistence.*;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -37,6 +38,9 @@ public class Seller {
 
     @Column
     private String compHp;
+    
+    @Column
+    private String ceoName;
 
     @Column(nullable = false)
     private String managerName;
@@ -72,6 +76,7 @@ public class Seller {
     private Long freeChargeAmount;
     
     @Column(nullable = false)
+    @ColumnDefault("0")
     private Boolean approvalYn;
 
     @CreationTimestamp

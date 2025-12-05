@@ -2,11 +2,13 @@ package com.zipddak.entity;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import com.zipddak.dto.CategoryDto;
 
 import lombok.*;
+import lombok.Builder.Default;
 
 @Getter
 @Setter
