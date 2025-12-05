@@ -1,6 +1,8 @@
 package com.zipddak.admin.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.admin.dto.ProductCardDto;
+import com.zipddak.admin.dto.ProductDetailResponseDto;
 import com.zipddak.admin.service.ProductService;
 import com.zipddak.util.PageInfo;
 
@@ -45,5 +48,24 @@ public class ProductController {
 		}
 		
 	}
+	
+	// 상품 상세 페이지
+	@GetMapping("product")
+	public ResponseEntity<ProductDetailResponseDto> productInfo(@RequestParam("productId") Integer productId){
+		
+		try {
+			ProductDetailResponseDto productInfo = productService.productInfo(productId);
+			
+			System.out.println(productInfo);
+			
+			return ResponseEntity.ok(productInfo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	
 	
 }

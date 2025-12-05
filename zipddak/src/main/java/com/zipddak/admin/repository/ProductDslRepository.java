@@ -12,13 +12,20 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.admin.dto.ProductCardDto;
+import com.zipddak.admin.dto.ProductDetailDto;
+import com.zipddak.admin.dto.ProductImagesDto;
+import com.zipddak.admin.dto.ProductInquiriesDto;
+import com.zipddak.admin.dto.ProductReviewsDto;
+import com.zipddak.entity.Inquiries;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QFavoritesProduct;
+import com.zipddak.entity.QInquiries;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QReviewProduct;
 import com.zipddak.entity.QSeller;
+import com.zipddak.entity.QUser;
 
 @Repository
 public class ProductDslRepository {
@@ -27,6 +34,7 @@ public class ProductDslRepository {
 	private JPAQueryFactory jpaQueryFactory;
 	
 	// ProductCardDto 타입으로 반환
+	// 자재 상품 목록 조회
 	public List<ProductCardDto> productList(String keyword, PageRequest pageRequest, Integer sortId, Integer cate1, Integer cate2) throws Exception {
 		
 		// 자재 상품
@@ -143,8 +151,91 @@ public class ProductDslRepository {
 		        .limit(pageRequest.getPageSize())
 		        .fetch();
 
-		
-		
 	}
+	
+	public ProductDetailDto productInfo(Integer productId) {
+		
+		QProduct product = QProduct.product;
+		QCategory category1 = new QCategory("category1");
+		QCategory category2 = new QCategory("category2");
+
+		QSeller seller = QSeller.seller;
+		
+		return jpaQueryFactory.select(Projections.bean(ProductDetailDto.class, 
+					category1.name.as("category"),
+					category2.name.as("subCategory"),
+					product.name,
+					product.discount,
+					product.price,
+					product.salePrice,
+					product.postCharge,
+					product.optionYn,
+					product.postType,
+					product.postYn,
+					product.pickupYn,
+					product.zonecode,
+					product.pickupAddr1,
+					product.pickupAddr2,
+					seller.brandName
+				))
+				.from(product)
+				.leftJoin(category1).on(category1.categoryIdx.eq(product.categoryIdx))
+				.leftJoin(category2).on(category2.categoryIdx.eq(product.subCategoryIdx))
+				.leftJoin(seller).on(seller.username.eq(product.sellerUsername))
+				.where(product.productIdx.eq(productId))
+				.fetchFirst();
+	}
+
+//	// 해당 상품에 해당하는 이미지들 불러오기
+//	public List<ProductImagesDto> productImages(Integer productId) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	// 해당 상품에 해당하는 리뷰 불러오기
+//	public List<ProductReviewsDto> productReviews(Integer productId, PageRequest pageRequest) {
+//
+//		QReviewProduct reviewProduct = QReviewProduct.reviewProduct;
+//		
+//		return jpaQueryFactory.select(Projections.bean(ProductReviewsDto.class, 
+//					
+//				));
+//	}
+
+	// 해당 상품에 해당하는 문의 불러오기
+	public List<ProductInquiriesDto> productInquiries(Integer productId, PageRequest pageRequest) {
+
+		// 문의
+		QInquiries inquiries = QInquiries.inquiries;
+		// 글쓴이
+		QUser user = QUser.user;
+		// 상품
+		QProduct product = QProduct.product;
+		// 판매업체
+		QSeller seller = QSeller.seller;
+		
+		return jpaQueryFactory.select(Projections.bean(ProductInquiriesDto.class,
+				inquiries.inquiryIdx,
+				user.nickname.as("writerNickname"),
+				inquiries.content,
+				inquiries.answer,
+				inquiries.writeAt,
+				inquiries.answerAt,
+				seller.brandName
+				))
+				.from(inquiries)
+				.leftJoin(user).on(inquiries.writerUsername.eq(user.username))
+				.leftJoin(product).on(inquiries.productIdx.eq(product.productIdx))
+				.leftJoin(seller).on(product.sellerUsername.eq(seller.username))
+				.where(product.productIdx.eq(productId))
+				.orderBy(inquiries.answerAt.desc())
+				.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
+				.fetch();
+	}
+
+
+
+	
 
 }

@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.zipddak.dto.ProductDto;
+
 import lombok.*;
 
 @Getter
@@ -104,4 +106,48 @@ public class Product {
     public enum PostType {
         bundle, single
     }
+    
+    public ProductDto toProductDetailDto() {
+        return ProductDto.builder()
+                .productIdx(productIdx)
+                .sellerUsername(sellerUsername)
+                .name(name)
+
+                .thumbnailFileIdx(thumbnailFileIdx)
+                .image1FileIdx(image1FileIdx)
+                .image2FileIdx(image2FileIdx)
+                .image3FileIdx(image3FileIdx)
+                .image4FileIdx(image4FileIdx)
+                .image5FileIdx(image5FileIdx)
+
+                .detail1FileIdx(detail1FileIdx)
+                .detail2FileIdx(detail2FileIdx)
+
+                .categoryIdx(categoryIdx)
+                .subCategoryIdx(subCategoryIdx)
+
+                .price(price)
+                .salePrice(salePrice)
+                .discount(discount)
+
+                .optionYn(optionYn)
+                .postYn(postYn)
+
+                // enum -> String
+                .postType(postType != null ? postType.name() : null)
+
+                .postCharge(postCharge)
+                .pickupYn(pickupYn)
+
+                .zonecode(zonecode)
+                .pickupAddr1(pickupAddr1)
+                .pickupAddr2(pickupAddr2)
+
+                .visibleYn(visibleYn)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+
+                .build();
+    }
+
 }
