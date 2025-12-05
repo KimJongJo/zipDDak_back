@@ -2,6 +2,7 @@ package com.zipddak.config;
 
 import javax.persistence.EntityManager;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,5 +18,10 @@ public class CommonConfig {
 	@Bean
 	public JPAQueryFactory jpaQueryFactory() {
 		return new JPAQueryFactory(entityManager);
+	}
+	
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
 	}
 }
