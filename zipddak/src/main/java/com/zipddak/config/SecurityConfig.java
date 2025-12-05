@@ -12,6 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
 
+import com.zipddak.config.jwt.JwtAuthenticationFilter;
+import com.zipddak.config.jwt.JwtAuthorizationFilter;
+import com.zipddak.user.repository.UserRepository;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -19,8 +23,10 @@ public class SecurityConfig {
 	@Autowired
 	private CorsFilter corsFilter;
 
-//	@Autowired
-//	private UserRepository userRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -28,36 +34,27 @@ public class SecurityConfig {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
-//	@Bean
-//	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception{
-//		http.addFilter(corsFilter) // 다른 도메인 접근 허용
-//		.csrf().disable() // ccsfr 공격 비활성화
-//		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // session 비활성화
-//		
-//		http.formLogin().disable() // 로그인 폼 비활성화
-//		.httpBasic().disable() // httpBasic은 header에 username, password를 암호화하지 않은 상태로 주고받는다. 이를 사용하지 않겠다는 의미
-//		.addFilterAt(new JwtAuthenticationFilter(authenticationManager, userRepository), UsernamePasswordAuthenticationFilter.class);
-//		
-//		http.addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
-//		.authorizeRequests()
-//		.antMatchers("/user/**").authenticated() // 로그인 필요
-//		.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
-//		.antMatchers("/manager/**").access("hasRole('ROLE_MANAGER')")
-//		.anyRequest().permitAll();
-//		
-//		return http.build();
-//	}
-
+	
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.formLogin(form -> form.disable()).httpBasic(basic -> basic.disable())
-				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-
+	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception{
+		http.addFilter(corsFilter) // 다른 도메인 접근 허용
+		.csrf().disable() // ccsfr 공격 비활성화
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // session 비활성화
+		
+		http.formLogin().disable() // 로그인 폼 비활성화
+		.httpBasic().disable() // httpBasic은 header에 username, password를 암호화하지 않은 상태로 주고받는다. 이를 사용하지 않겠다는 의미
+		.addFilterAt(new JwtAuthenticationFilter(authenticationManager, userRepository), UsernamePasswordAuthenticationFilter.class);
+		
+		http.addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+		.authorizeRequests()
+		.antMatchers("/user/**").authenticated() // 로그인 필요
+		.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
+		.antMatchers("/manager/**").access("hasRole('ROLE_MANAGER')")
+		.anyRequest().permitAll();
+		
 		return http.build();
 	}
+	
 
 	@Bean
 	public BCryptPasswordEncoder encoderPassword() {
