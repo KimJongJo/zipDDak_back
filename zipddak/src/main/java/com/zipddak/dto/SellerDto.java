@@ -18,6 +18,7 @@ public class SellerDto {
     private Integer onlinesalesFileIdx;
     private String compName;
     private String compHp;
+    private String ceoName;
     private String managerName;
     private String managerTel;
     private String managerEmail;
