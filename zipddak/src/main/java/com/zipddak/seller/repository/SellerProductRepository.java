@@ -1,13 +1,15 @@
 package com.zipddak.seller.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import lombok.RequiredArgsConstructor;
+
 @Repository
-public interface SellerProductRepository {
+@RequiredArgsConstructor
+public class SellerProductRepository {
+
 	
-//	@Autowired
-//	private JPAQueryFactory jpaQueryFactory;
+	private final JPAQueryFactory jpaQueryFactory;
 }
