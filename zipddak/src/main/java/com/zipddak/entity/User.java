@@ -60,8 +60,9 @@ public class User {
     @Column
     private String fcmToken;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserRole role; // USER, ADMIN
+    private UserRole role; // USER, ADMIN, APPROVAL_SELLER
 
     @Column
     private Boolean expert; // 전문가 전환 여부
@@ -73,6 +74,6 @@ public class User {
     private Integer profileImg;
 
     public enum UserRole {
-        USER, ADMIN
+        USER, ADMIN, APPROVAL_SELLER
     }
 }
