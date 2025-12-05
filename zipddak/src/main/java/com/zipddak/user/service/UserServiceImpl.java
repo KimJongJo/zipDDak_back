@@ -2,11 +2,13 @@ package com.zipddak.user.service;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.zipddak.dto.UserDto;
 import com.zipddak.entity.User;
 import com.zipddak.user.repository.UserRepository;
 
+@Service
 public class UserServiceImpl implements UserService {
 	
 	@Autowired
