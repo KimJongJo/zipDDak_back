@@ -99,6 +99,9 @@ public class Seller {
 
     @Column
     private Long freeChargeAmount;
+    
+    @Column(nullable = false)
+    private String role;
 
     @Column(nullable = false)
     private Boolean approvalYn;

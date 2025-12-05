@@ -35,6 +35,7 @@ public class SellerDto {
     private String pickupAddr2;
     private Long basicPostCharge;
     private Long freeChargeAmount;
+    private String role;
     private Boolean approvalYn;
     private Date createdAt;
     private Date updatedAt;
