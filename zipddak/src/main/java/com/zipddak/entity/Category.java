@@ -29,7 +29,9 @@ public class Category {
 
     @Column
     private Integer parentIdx;
+    //매니투원 관계안맺으면 데이터타입 일반으로 (포린키를 할수 없음)
     
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CategoryType type;
     
