@@ -80,6 +80,7 @@ public class Inquiries {
         SUGGESTION,
         MEMBERSHIP,
         SYSTEM,
+        PRODUCT,
         ETC
     }
 
