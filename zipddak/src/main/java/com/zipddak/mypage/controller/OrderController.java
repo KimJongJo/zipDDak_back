@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,18 +43,6 @@ public class OrderController {
 			res.put("pageInfo", pageInfo);
 
 			return ResponseEntity.ok(res);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.badRequest().body(null);
-		}
-	}
-
-	// 주문 취소
-	@PostMapping("/market/cancel")
-	public ResponseEntity<Boolean> orderCancel(@RequestBody List<Integer> orderItemIdxs) {
-		try {
-			orderService.cancelOrderItem(orderItemIdxs);
-			return ResponseEntity.ok(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);

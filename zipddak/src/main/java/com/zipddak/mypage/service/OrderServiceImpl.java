@@ -10,7 +10,6 @@ import java.util.Map;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.mypage.dto.DeliveryGroupsDto;
 import com.zipddak.mypage.dto.OrderDetailDto;
@@ -19,7 +18,6 @@ import com.zipddak.mypage.dto.OrderItemFlatDto;
 import com.zipddak.mypage.dto.OrderListDto;
 import com.zipddak.mypage.dto.OrderStatusSummaryDto;
 import com.zipddak.mypage.repository.OrderDslRepository;
-import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 public class OrderServiceImpl implements OrderService {
 
 	private final OrderDslRepository orderDslRepository;
-	private final OrderItemRepository orderItemRepository;
 
 	// 주문배송목록 조회
 	@Override
@@ -259,20 +256,6 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		return new ArrayList<>(orderListDtoMap.values());
-	}
-
-	// 주문상품 취소
-	@Override
-	public void cancelOrderItem(List<Integer> orderItemIdxs) throws Exception {
-		for (Integer orderItemIdx : orderItemIdxs) {
-			OrderItem orderItem = orderItemRepository.findById(orderItemIdx)
-					.orElseThrow(() -> new RuntimeException("잘못된 주문상품 아이디"));
-
-			if (orderItem.getOrderStatus() == OrderStatus.상품준비중)
-				orderItem.setOrderStatus(OrderStatus.취소완료);
-
-			orderItemRepository.save(orderItem);
-		}
 	}
 
 	// 상품주문상태 요약

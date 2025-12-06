@@ -13,8 +13,6 @@ public interface OrderService {
 
 	List<OrderListDto> getReturnList(String username, PageInfo pageInfo, Date startDate, Date endDate) throws Exception;
 
-	void cancelOrderItem(List<Integer> orderItemIdxs) throws Exception;
-
 	OrderStatusSummaryDto getOrderStatusSummary(String username) throws Exception;
 
 	OrderDetailDto getOrderDetail(Integer orderIdx) throws Exception;
