@@ -1,8 +1,6 @@
 package com.zipddak.admin.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.admin.dto.ProductCardDto;
 import com.zipddak.admin.dto.ProductDetailResponseDto;
+import com.zipddak.admin.dto.ProductInquiriesDto;
+import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.admin.service.ProductService;
 import com.zipddak.util.PageInfo;
 
@@ -49,7 +49,7 @@ public class ProductController {
 		
 	}
 	
-	// 상품 상세 페이지
+	// 상품 상세
 	@GetMapping("product")
 	public ResponseEntity<ProductDetailResponseDto> productInfo(@RequestParam("productId") Integer productId){
 		
@@ -65,6 +65,31 @@ public class ProductController {
 		}
 		
 	}
+	
+	// 상품 리뷰 더보기
+	@GetMapping("reviews")
+	public ResponseEntity<List<ProductReviewsDto>> moreReview(@RequestParam("productId") Integer productId, @RequestParam("page") Integer page) {
+		try {
+			List<ProductReviewsDto> reviewList = productService.moreReview(productId, page);
+			return ResponseEntity.ok(reviewList);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+	
+	// 상품 문의 더보기
+	@GetMapping("inquiries")
+	public ResponseEntity<List<ProductInquiriesDto>> moreInquiry(@RequestParam("productId") Integer productId, @RequestParam("page") Integer page) {
+		try {
+			List<ProductInquiriesDto> inquiryList = productService.moreInquiry(productId, page);
+			return ResponseEntity.ok(inquiryList);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+	
 	
 	
 	

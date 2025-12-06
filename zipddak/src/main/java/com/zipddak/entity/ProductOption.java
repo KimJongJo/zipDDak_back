@@ -5,6 +5,9 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.zipddak.dto.ProductOptionDto;
+
 import org.hibernate.annotations.DynamicInsert;
 
 import lombok.*;
@@ -40,4 +43,17 @@ public class ProductOption {
 
     @UpdateTimestamp
     private Date updatedAt;
+    
+    public ProductOptionDto toProductOptionDto() {
+    	return ProductOptionDto.builder()
+    			.productOptionIdx(productOptionIdx)
+    			.name(name)
+    			.value(value)
+    			.price(price)
+    			.createdAt(createdAt)
+    			.updatedAt(updatedAt)
+    			.productIdx(product.getProductIdx())
+    			.productName(product.getName())
+    			.build();
+    }
 }

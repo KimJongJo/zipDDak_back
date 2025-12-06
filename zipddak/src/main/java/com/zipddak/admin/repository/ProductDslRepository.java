@@ -23,6 +23,7 @@ import com.zipddak.entity.QInquiries;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
+import com.zipddak.entity.QReviewFile;
 import com.zipddak.entity.QReviewProduct;
 import com.zipddak.entity.QSeller;
 import com.zipddak.entity.QUser;
@@ -69,7 +70,10 @@ public class ProductDslRepository {
 		
 		
 		BooleanBuilder where = new BooleanBuilder();
-
+ 
+		// 상품 공개 유무가 1인 상품만
+		where.and(product.visibleYn.eq(true));
+		
 		if (cate1 == 1 || cate1 == 2) {
 			if(cate2 == 1) {
 				where.and(product.categoryIdx.eq(cate1));
@@ -81,7 +85,7 @@ public class ProductDslRepository {
 		    where.and(product.categoryIdx.eq(cate1));
 		}
 		
-		if(keyword != null || keyword.isBlank()) {
+		if(keyword != null && !keyword.isBlank()) {
 			where.and(product.name.contains(keyword));
 		}
 		
@@ -153,6 +157,7 @@ public class ProductDslRepository {
 
 	}
 	
+	// 상품 상세 정보
 	public ProductDetailDto productInfo(Integer productId) {
 		
 		QProduct product = QProduct.product;
@@ -186,21 +191,6 @@ public class ProductDslRepository {
 				.fetchFirst();
 	}
 
-//	// 해당 상품에 해당하는 이미지들 불러오기
-//	public List<ProductImagesDto> productImages(Integer productId) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	// 해당 상품에 해당하는 리뷰 불러오기
-//	public List<ProductReviewsDto> productReviews(Integer productId, PageRequest pageRequest) {
-//
-//		QReviewProduct reviewProduct = QReviewProduct.reviewProduct;
-//		
-//		return jpaQueryFactory.select(Projections.bean(ProductReviewsDto.class, 
-//					
-//				));
-//	}
 
 	// 해당 상품에 해당하는 문의 불러오기
 	public List<ProductInquiriesDto> productInquiries(Integer productId, PageRequest pageRequest) {
@@ -227,8 +217,40 @@ public class ProductDslRepository {
 				.leftJoin(user).on(inquiries.writerUsername.eq(user.username))
 				.leftJoin(product).on(inquiries.productIdx.eq(product.productIdx))
 				.leftJoin(seller).on(product.sellerUsername.eq(seller.username))
-				.where(product.productIdx.eq(productId))
+				.where(product.productIdx.eq(productId).and(inquiries.answer.isNotNull()))
 				.orderBy(inquiries.answerAt.desc())
+				.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
+				.fetch();
+	}
+
+	// 해당 상품에 해당하는 리뷰 불러오기
+	public List<ProductReviewsDto> productReviews(Integer productId, PageRequest pageRequest) {
+
+		QReviewProduct reviewProduct = QReviewProduct.reviewProduct;
+		QUser user = QUser.user;
+		QReviewFile reviewFile = QReviewFile.reviewFile;
+		
+		return jpaQueryFactory.select(Projections.bean(ProductReviewsDto.class, 
+					reviewProduct.reviewProductIdx,
+					reviewProduct.score,
+					reviewProduct.content,
+					reviewProduct.createdate,
+					user.nickname,
+					reviewFile.fileRename.as("img1Name"),
+					reviewFile.fileRename.as("img2Name"),
+					reviewFile.fileRename.as("img3Name"),
+					reviewFile.storagePath.as("img1Path"),
+					reviewFile.storagePath.as("img2Path"),
+					reviewFile.storagePath.as("img3Path")
+				))
+				.from(reviewProduct)
+				.leftJoin(user).on(reviewProduct.writer.eq(user.username))
+				.leftJoin(reviewFile).on(reviewProduct.img1.eq(reviewFile.reviewFileIdx))
+				.leftJoin(reviewFile).on(reviewProduct.img2.eq(reviewFile.reviewFileIdx))
+				.leftJoin(reviewFile).on(reviewProduct.img3.eq(reviewFile.reviewFileIdx))
+				.where(reviewProduct.productIdx.eq(productId))
+				.orderBy(reviewProduct.createdate.desc())
 				.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
 				.fetch();
