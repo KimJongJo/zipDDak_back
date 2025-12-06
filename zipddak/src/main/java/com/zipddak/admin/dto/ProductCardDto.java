@@ -18,4 +18,5 @@ public class ProductCardDto {
 	private Double avgRating; // 평점
 	private Long reviewCount; // 리뷰 수
 	private String brandName; // 상호명
+	private Boolean favorite; // 관심 표시
 }

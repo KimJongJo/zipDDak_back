@@ -4,25 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.ColorOption;
+import com.zipddak.admin.dto.OptionListDto;
+import com.zipddak.admin.dto.OrderListDto;
+import com.zipddak.admin.dto.OrderListResponseDto;
 import com.zipddak.admin.dto.ProductCardDto;
 import com.zipddak.admin.dto.ProductDetailDto;
 import com.zipddak.admin.dto.ProductDetailResponseDto;
-import com.zipddak.admin.dto.ProductImagesDto;
 import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.admin.repository.ProductDslRepository;
-import com.zipddak.dto.ProductDto;
 import com.zipddak.dto.ProductOptionDto;
+import com.zipddak.entity.FavoritesProduct;
+import com.zipddak.repository.FavoriteProductRepository;
 import com.zipddak.repository.InquiriesRepository;
 import com.zipddak.repository.ProductOptionRepository;
-import com.zipddak.repository.ProductRepository;
 import com.zipddak.repository.ReviewProductRepository;
 import com.zipddak.util.PageInfo;
 
@@ -37,25 +39,21 @@ public class ProductServiceImpl implements ProductService {
 	private final ReviewProductRepository reviewProductRepository;
 	private final ProductOptionRepository productOptionRepository;
 	private final InquiriesRepository inquiriesRepository;
+	private final FavoriteProductRepository favoriteProductRepository;
 
 	@Override
-	public List<ProductCardDto> productList(String keyword, PageInfo pageInfo, Integer sortId, Integer cate1, Integer cate2) throws Exception {
+	public List<ProductCardDto> productList(String keyword, PageInfo pageInfo, Integer sortId, Integer cate1, Integer cate2, String username) throws Exception {
 		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 16);
-		return productDslRepository.productList(keyword, pageRequest, sortId, cate1, cate2);
+		return productDslRepository.productList(keyword, pageRequest, sortId, cate1, cate2, username);
 		
 	}
 
 	// 상품 정보들을 포함한 map 반환
 	@Override
-	public ProductDetailResponseDto productInfo(Integer productId) throws Exception {
+	public ProductDetailResponseDto productInfo(Integer productId, String username) throws Exception {
 
 		// 상품 정보
-		ProductDetailDto productDetailDto = productDslRepository.productInfo(productId);
-		
-		
-		// 상품 이미지 리스트
-//		List<ProductImagesDto> productImages = productDslRepository.productImages(productId);
-		
+		ProductDetailDto productDetailDto = productDslRepository.productInfo(productId);	
 		
 		// 처음 상품 디테일 페이지에서 리뷰, 문의를 각각 5개씩 불러옴
 		PageInfo pageInfo = new PageInfo(1); // 처음 페이지 1로 고정
@@ -83,6 +81,12 @@ public class ProductServiceImpl implements ProductService {
 		// 상품 옵션
 		List<ProductOptionDto> productOptions = productOptionRepository.findByProduct_ProductIdx(productId).stream().map(option -> option.toProductOptionDto()).collect(Collectors.toList());
 		
+		// 관심 유무
+		boolean favorite;
+		
+		Optional<FavoritesProduct> favoriteProduct = favoriteProductRepository.findByProductIdxAndUserUsername(productId, username);
+		favorite = favoriteProduct.isPresent() ? true : false; 
+		
 		Map<String, List<ColorOption>> productOption = new HashMap<String, List<ColorOption>>();
 		for(ProductOptionDto option : productOptions) {
 			// 옵션명
@@ -107,6 +111,7 @@ public class ProductServiceImpl implements ProductService {
 				.reviewCount(reviewCount)
 				.productOption(productOption)
 				.inquiryCount(inquiryCount)
+				.favorite(favorite)
 				.build();
 		
 	}
@@ -121,6 +126,7 @@ public class ProductServiceImpl implements ProductService {
 		return productDslRepository.productReviews(productId, pageRequest);
 	}
 
+	// 추가 문의
 	@Override
 	public List<ProductInquiriesDto> moreInquiry(Integer productId, Integer page) throws Exception {
 		
@@ -128,6 +134,31 @@ public class ProductServiceImpl implements ProductService {
 		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 5); // 5개씩
 		
 		return productDslRepository.productInquiries(productId, pageRequest);
+	}
+
+	// 구매 목록 상품 정보 반환
+	@Override
+	public OrderListResponseDto getOrderList(List<OrderListDto> orderList) {
+
+		// 자재 id는 같음
+		Integer productId = orderList.get(0).getProductId();
+		
+		OrderListResponseDto orderListResponseDto = productDslRepository.orderListResponse(productId);
+		
+		List<OptionListDto> optionList = new ArrayList<OptionListDto>();
+		
+		// 구매목록을 돌아서 개수를 제외한 옵션 정보를 queryDsl을 통해서 가져오고
+		// 개수는 set으로 주입
+		for(OrderListDto orderListDto : orderList) {
+			OptionListDto requestOption = productDslRepository.requestOptions(orderListDto.getOptionId());
+			requestOption.setCount(orderListDto.getCount());
+			
+			optionList.add(requestOption);
+		}
+		
+		orderListResponseDto.setOrderList(optionList);
+		
+		return orderListResponseDto;
 	}
 
 

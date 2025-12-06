@@ -1,17 +1,24 @@
 package com.zipddak.admin.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.admin.dto.OrderListDto;
+import com.zipddak.admin.dto.OrderListResponseDto;
+import com.zipddak.admin.dto.OrderListWrapperDto;
 import com.zipddak.admin.dto.ProductCardDto;
 import com.zipddak.admin.dto.ProductDetailResponseDto;
 import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
+import com.zipddak.admin.service.FavoriteProductService;
 import com.zipddak.admin.service.ProductService;
 import com.zipddak.util.PageInfo;
 
@@ -26,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
 	
 	private final ProductService productService;
+	private final FavoriteProductService favoriteProductService;
 
 	// 자재 리스트 조회
 	@GetMapping("productList")
@@ -34,11 +42,13 @@ public class ProductController {
 			@RequestParam(defaultValue = "1") Integer page,
 			@RequestParam(required = false, defaultValue = "1") Integer sortId,
 			@RequestParam("cate1") Integer cate1,
-			@RequestParam(required = false) Integer cate2) {
+			@RequestParam(required = false) Integer cate2,
+			@RequestParam(required = false) String username) {
 		
 		try {
+			
 				PageInfo pageInfo = new PageInfo(page);
-				List<ProductCardDto> productList = productService.productList(keyword, pageInfo, sortId, cate1, cate2);
+				List<ProductCardDto> productList = productService.productList(keyword, pageInfo, sortId, cate1, cate2, username);
 				
 				return ResponseEntity.ok(productList);
 
@@ -51,10 +61,10 @@ public class ProductController {
 	
 	// 상품 상세
 	@GetMapping("product")
-	public ResponseEntity<ProductDetailResponseDto> productInfo(@RequestParam("productId") Integer productId){
+	public ResponseEntity<ProductDetailResponseDto> productInfo(@RequestParam("productId") Integer productId, @RequestParam("username") String username){
 		
 		try {
-			ProductDetailResponseDto productInfo = productService.productInfo(productId);
+			ProductDetailResponseDto productInfo = productService.productInfo(productId, username);
 			
 			System.out.println(productInfo);
 			
@@ -89,6 +99,48 @@ public class ProductController {
 			return ResponseEntity.badRequest().body(null);
 		}
 	}
+	
+	// 관심 상품 토글
+	@PostMapping("favoriteToggle")
+	public ResponseEntity<Void> favoriteToggle(@RequestBody Map<String, Object> requestMap){
+		String username = (String)requestMap.get("username");
+		Integer productIdx = (Integer)requestMap.get("productIdx");
+		
+		// DB에서 업데이트
+		favoriteProductService.toggleFavorite(productIdx, username);
+		
+		return ResponseEntity.ok().build();
+				
+	}
+	
+	// 구매 목록의 상품 정보
+	@PostMapping("orderListProduct")
+	public ResponseEntity<OrderListResponseDto> orderListProduct(@RequestBody OrderListWrapperDto orderListWrapperDto){
+		
+		try {
+			
+			// 반환할 데이터의 구조
+			// 1. 자재 업체 이름
+			// 2. 배송비
+			// 3. 자재 명
+			// 4. 판매 가격
+			// 5. 리스트 (옵션명, 선택값, 옵션가격 + 판매가격, 개수)
+			
+			// 요청 파라미터에서 꺼내야하는 데이터
+			// 1. 자재 상품 id
+			// 2. 옵션 id
+			// 3. 개수
+			List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
+			OrderListResponseDto orderListResponseDto = productService.getOrderList(orderList);
+			
+			return ResponseEntity.ok(orderListResponseDto);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
 	
 	
 	

@@ -23,6 +23,7 @@ public class ProductDetailResponseDto {
 	Long reviewCount; // 리뷰 수
 	Long inquiryCount; // 문의 수
 	Map<String, List<ColorOption>> productOption; // 상품 옵션
+	boolean favorite; // 관심 유무
 	
 	
 }
