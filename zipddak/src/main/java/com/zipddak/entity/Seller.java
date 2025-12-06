@@ -3,6 +3,7 @@ package com.zipddak.entity;
 import java.sql.Date;
 import javax.persistence.*;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,27 +19,16 @@ import lombok.*;
 @Entity
 public class Seller {
 
-    @Id
-    @Column(nullable = false)
-    private String username;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer sellerIdx;
 
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String phone;
 
     @Column(unique = true)
     private Integer logoFileIdx;
 
     @Column(nullable = false, unique = true)
     private String compBno; 
-
-    @Column(unique = true)
-    private Integer profileFileIdx;
 
     @Column(unique = true)
     private Integer onlinesalesFileIdx;
@@ -48,6 +38,9 @@ public class Seller {
 
     @Column
     private String compHp;
+    
+    @Column
+    private String ceoName;
 
     @Column(nullable = false)
     private String managerName;
@@ -68,24 +61,6 @@ public class Seller {
     private String introduction;
 
     @Column
-    private String settleBank;
-
-    @Column(unique = true)
-    private String settleAccount;
-
-    @Column
-    private String settleHost;
-
-    @Column
-    private String compZonecode;
-
-    @Column
-    private String compAddr1;
-
-    @Column
-    private String compAddr2;
-
-    @Column
     private String pickupZonecode;
 
     @Column
@@ -101,9 +76,7 @@ public class Seller {
     private Long freeChargeAmount;
     
     @Column(nullable = false)
-    private String role;
-
-    @Column(nullable = false)
+    @ColumnDefault("0")
     private Boolean approvalYn;
 
     @CreationTimestamp

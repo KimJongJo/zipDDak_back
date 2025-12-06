@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class OrderListDto {
 	private Integer orderIdx; // 주문 아이디
-	private Date orderDate; // 주문날짜
+	private String orderCode; // 주문 코드
+	private Date orderDate; // 주문 날짜
 	private Boolean canCancel; // 취소 가능여부
 	private Boolean canReturn; // 교환환불 가능여부
 	private List<DeliveryGroupsDto> deliveryGroups; // 주문상품들
