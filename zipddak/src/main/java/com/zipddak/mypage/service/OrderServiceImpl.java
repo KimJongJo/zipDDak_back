@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.mypage.dto.DeliveryGroupsDto;
+import com.zipddak.mypage.dto.OrderDetailDto;
 import com.zipddak.mypage.dto.OrderItemDto;
 import com.zipddak.mypage.dto.OrderItemFlatDto;
 import com.zipddak.mypage.dto.OrderListDto;
@@ -286,5 +287,11 @@ public class OrderServiceImpl implements OrderService {
 
 		return orderDslRepository.selectOrderStatusSummary(username, todayDate, sixMonthsAgoDate);
 
+	}
+
+	// 주문상세 조회
+	@Override
+	public OrderDetailDto getOrderDetail(Integer orderIdx) throws Exception {
+		return orderDslRepository.selectOrderDetail(orderIdx);
 	}
 }

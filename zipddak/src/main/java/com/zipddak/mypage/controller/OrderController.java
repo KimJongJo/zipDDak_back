@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.mypage.dto.OrderDetailDto;
 import com.zipddak.mypage.dto.OrderListDto;
 import com.zipddak.mypage.dto.OrderStatusSummaryDto;
 import com.zipddak.mypage.service.OrderServiceImpl;
@@ -87,7 +88,7 @@ public class OrderController {
 		}
 	}
 
-	// 상품주문상태 써머리
+	// 상품주문상태 요약
 	@GetMapping("/market/orderStatusSummary")
 	public ResponseEntity<Map<String, Object>> orderStatusSummary(@RequestParam("username") String username) {
 		try {
@@ -107,5 +108,21 @@ public class OrderController {
 		if (value == null || value.isEmpty() || value.equals("null"))
 			return null;
 		return Date.valueOf(value);
+	}
+
+	// 주문상세 조회
+	@GetMapping("/market/detail")
+	public ResponseEntity<Map<String, Object>> orderDetail(@RequestParam("orderIdx") Integer orderIdx) {
+		try {
+			OrderDetailDto orderDetail = orderService.getOrderDetail(orderIdx);
+
+			Map<String, Object> res = new HashMap<>();
+			res.put("orderDetail", orderDetail);
+
+			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
 	}
 }
