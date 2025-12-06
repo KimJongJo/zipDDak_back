@@ -28,48 +28,48 @@ import lombok.Setter;
 @Entity
 public class Refund {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer refundIdx;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer refundIdx;
 
-    @Column(nullable = false)
-    private Integer orderIdx;
+	@Column(nullable = false)
+	private Integer orderIdx;
 
-    @Column(nullable = false)
-    private String reasonType;
+	@Column(nullable = false)
+	private String reasonType;
 
-    @Column(columnDefinition = "TEXT")
-    private String reasonDetail;
+	@Column(columnDefinition = "TEXT")
+	private String reasonDetail;
 
-    @Column
-    private Integer image1Idx;
+	@Column
+	private Integer image1Idx;
 
-    @Column
-    private Integer image2Idx;
+	@Column
+	private Integer image2Idx;
 
-    @Column
-    private Integer image3Idx;
+	@Column
+	private Integer image3Idx;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ShippingChargeType shippingChargeType; // BUYER, SELLER
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private RefundShippingChargeType shippingChargeType; // BUYER, SELLER
 
-    @Column(nullable = false)
-    private Integer returnShippingFee;
+	@Column(nullable = false)
+	private Integer returnShippingFee;
 
-    @Column(nullable = false)
-    private Integer refundAmount;
+	@Column(nullable = false)
+	private Integer refundAmount;
 
-    @Column
-    private String pickupPostComp;
+	@Column
+	private String pickupPostComp;
 
-    @Column
-    private String pickupTrackingNo;
+	@Column
+	private String pickupTrackingNo;
 
-    @CreationTimestamp
-    private Date createdAt;
+	@CreationTimestamp
+	private Date createdAt;
 
-    public enum ShippingChargeType {
-        BUYER, SELLER
-    }
+	public enum RefundShippingChargeType {
+		BUYER, SELLER
+	}
 }
