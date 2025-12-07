@@ -23,7 +23,6 @@ public class Seller {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer sellerIdx;
 
-
     @Column(unique = true)
     private Integer logoFileIdx;
 
