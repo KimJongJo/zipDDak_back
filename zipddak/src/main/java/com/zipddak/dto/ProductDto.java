@@ -38,6 +38,4 @@ public class ProductDto {
     private Date createdAt;
     private Date updatedAt;
     
-    //옵션 리스트
-    private List<ProductOptionDto> options;
 }

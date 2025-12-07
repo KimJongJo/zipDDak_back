@@ -110,28 +110,27 @@ public class SellerProductServiceImpl implements SellerProductService {
 		// 상세이미지 detail1~detail2 자동 매핑
 		setFileIdx(productEntity, "Detail", detailIdxArr);
 
-		// db저장
-		productEntity = product_repo.save(productEntity);
-		
 		//옵션 세팅
 		ObjectMapper mapper = new ObjectMapper();
-		if (product_dto.getOptionYn() == true && optionsJson != null) {
-		    List<OptionGroupDto> optionGroups = mapper.readValue(optionsJson, new TypeReference<List<OptionGroupDto>>() {});
-
-		    for (OptionGroupDto optGroup : optionGroups) {
-		        for (OptionValueDto optValue : optGroup.getValues()) {
-
-		            ProductOption pdOption = ProductOption.builder()
-									                    .product(productEntity)
-									                    .name(optGroup.getOptionName())  // 색상, 사이즈 등
-									                    .value(optValue.getValue())    // 빨강, 파랑...
-									                    .price(optValue.getPrice())		//옵션 가격 
-									                    .build();
-		            productOpt_repo.save(pdOption);
-		        }
-		    }
+		if (product_dto.getOptionYn() != null && product_dto.getOptionYn()&& optionsJson != null) {
+			List<OptionGroupDto> optionGroups = mapper.readValue(optionsJson, new TypeReference<List<OptionGroupDto>>() {});
+			
+			for (OptionGroupDto optGroup : optionGroups) {
+				for (OptionValueDto optValue : optGroup.getValues()) {
+					
+					ProductOption pdOption = ProductOption.builder()
+															.product(productEntity)
+															.name(optGroup.getOptionName())  // 색상, 사이즈 등
+															.value(optValue.getValue())    // 빨강, 파랑...
+															.price(optValue.getPrice())		//옵션 가격 
+															.build();
+					productOpt_repo.save(pdOption);
+				}
+			}
 		}
-		
+
+		// db저장
+		productEntity = product_repo.save(productEntity);
 		Boolean saveResult = false;
 		Integer productIdx = 0;
 		String msg = "";
