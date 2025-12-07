@@ -21,6 +21,7 @@ import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.admin.repository.ProductDslRepository;
 import com.zipddak.dto.ProductOptionDto;
+import com.zipddak.dto.UserDto;
 import com.zipddak.entity.FavoritesProduct;
 import com.zipddak.repository.FavoriteProductRepository;
 import com.zipddak.repository.InquiriesRepository;
@@ -159,6 +160,13 @@ public class ProductServiceImpl implements ProductService {
 		orderListResponseDto.setOrderList(optionList);
 		
 		return orderListResponseDto;
+	}
+
+	// 구매하려는 사용자의 정보를 가져와서 전화번호, 이름 뿌려주기
+	@Override
+	public UserDto getUserInfo(String username) {
+
+		return productDslRepository.getUserInfo(username);
 	}
 
 

@@ -20,6 +20,7 @@ import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.admin.service.FavoriteProductService;
 import com.zipddak.admin.service.ProductService;
+import com.zipddak.dto.UserDto;
 import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -132,6 +133,17 @@ public class ProductController {
 			// 3. 개수
 			List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
 			OrderListResponseDto orderListResponseDto = productService.getOrderList(orderList);
+			
+			UserDto userInfo = productService.getUserInfo(orderListWrapperDto.getUsername());
+			
+			// 전화번호에서 010이랑 - 잘라주기
+			String phone = userInfo.getPhone();
+			phone = phone.replaceAll("-", "");
+			phone = phone.substring(3);
+			
+			userInfo.setPhone(phone);
+			
+			orderListResponseDto.setUserInfo(userInfo);
 			
 			return ResponseEntity.ok(orderListResponseDto);
 		}catch(Exception e) {

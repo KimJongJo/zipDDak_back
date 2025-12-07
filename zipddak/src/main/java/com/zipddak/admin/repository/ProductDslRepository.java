@@ -13,8 +13,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zipddak.admin.dto.OptionDto;
 import com.zipddak.admin.dto.OptionListDto;
+import com.zipddak.admin.dto.OrderItemsDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.OrderListResponseDto;
 import com.zipddak.admin.dto.ProductCardDto;
@@ -22,10 +25,14 @@ import com.zipddak.admin.dto.ProductDetailDto;
 import com.zipddak.admin.dto.ProductImagesDto;
 import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
+import com.zipddak.dto.OrderDto;
+import com.zipddak.dto.OrderItemDto;
+import com.zipddak.dto.UserDto;
 import com.zipddak.entity.Inquiries;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QFavoritesProduct;
 import com.zipddak.entity.QInquiries;
+import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
@@ -288,6 +295,7 @@ public class ProductDslRepository {
 		QSeller seller = QSeller.seller;
 		
 		return jpaQueryFactory.select(Projections.bean(OrderListResponseDto.class, 
+					product.productIdx.as("productId"),
 					product.name.as("productName"),
 					product.postCharge,
 					product.salePrice,
@@ -314,6 +322,98 @@ public class ProductDslRepository {
 				.where(productOption.productOptionIdx.eq(optionId))
 				.fetchOne();
 	}
+
+	// 사용자에 대한 정보 이름, 전화번호만 리턴
+	public UserDto getUserInfo(String username) {
+
+		QUser user = QUser.user;
+		
+		return jpaQueryFactory.select(Projections.bean(UserDto.class, 
+					user.name,
+					user.phone
+				))
+				.from(user)
+				.where(user.username.eq(username))
+				.fetchOne();
+	}
+
+	// 자재 이름만 반환
+	public String getProductName(Integer productId) {
+		
+		
+		QProduct product = QProduct.product;
+		
+		return jpaQueryFactory.select(product.name)
+			.from(product)
+			.where(product.productIdx.eq(productId))
+			.fetchOne();
+	}
+
+	// 자재 가격만 반환
+	public long getProductPrice(Integer productId) {
+		QProduct product = QProduct.product;
+		
+		return jpaQueryFactory.select(product.salePrice)
+				.from(product)
+				.where(product.productIdx.eq(productId))
+				.fetchOne();
+	}
+
+	// 주문 정보 받아오기
+	public OrderDto getOrderInfo(String orderCode) {
+		
+		QOrder order = QOrder.order;
+		
+		return jpaQueryFactory.select(Projections.bean(OrderDto.class, 
+					order.orderIdx,
+					order.createdAt,
+					order.phone,
+					order.postAddr1,
+					order.postAddr2,
+					order.postRecipient,
+					order.shippingAmount,
+					order.subtotalAmount,
+					order.totalAmount,
+					order.postZonecode
+				))
+				.from(order)
+				.where(order.orderCode.eq(orderCode))
+				.fetchOne();
+	}
+
+	// 각 주문에 해당하는 주문 상품 불러오기
+	public List<OrderItemsDto> getOrderItems(Integer orderIdx) {
+
+	    QOrderItem orderItem = QOrderItem.orderItem;
+	    QProduct product = QProduct.product;
+	    QProductFile productFile = QProductFile.productFile;
+	    QProductOption productOption = QProductOption.productOption;
+
+	    return jpaQueryFactory.select(Projections.bean(OrderItemsDto.class,
+	            orderItem.orderItemIdx,                     // order_item_idx
+	            orderItem.quantity,                         // quantity
+	            productFile.fileRename.as("fileRename"),
+	            productFile.storagePath.as("storagePath"),
+	            product.name.as("productName"),
+	            orderItem.unitPrice.as("productPrice"),
+	            Projections.bean(OptionDto.class,           // 옵션 정보 매핑
+	                    productOption.name.as("optionName"),
+	                    productOption.value.as("optionValue"),
+	                    productOption.price.as("optionPrice")
+	            ).as("option")
+	    ))
+	    .from(orderItem)
+	    .leftJoin(orderItem.product, product)
+	    .leftJoin(productFile).on(product.thumbnailFileIdx.eq(productFile.productFileIdx))
+	    .leftJoin(productOption).on(orderItem.productOptionIdx.eq(productOption.productOptionIdx)) // 옵션 join
+	    .where(orderItem.orderIdx.eq(orderIdx))
+	    .fetch();
+	}
+
+
+
+
+
 
 
 

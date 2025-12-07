@@ -9,6 +9,7 @@ import com.zipddak.admin.dto.ProductCardDto;
 import com.zipddak.admin.dto.ProductDetailResponseDto;
 import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
+import com.zipddak.dto.UserDto;
 import com.zipddak.util.PageInfo;
 
 public interface ProductService {
@@ -21,4 +22,6 @@ public interface ProductService {
 	List<ProductInquiriesDto> moreInquiry(Integer productId, Integer page) throws Exception;
 
 	OrderListResponseDto getOrderList(List<OrderListDto> orderList);
+
+	UserDto getUserInfo(String username);
 }
