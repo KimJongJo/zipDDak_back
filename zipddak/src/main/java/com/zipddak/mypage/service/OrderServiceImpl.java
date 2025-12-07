@@ -52,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
 		Map<Integer, OrderListDto> orderListDtoMap = new LinkedHashMap<>();
 
 		for (OrderItemFlatDto orderItemFlatDto : orderItemFlatDtoList) {
+			System.out.print(orderItemFlatDto + "\n");
 
 			// 1. 주문상품목록을 주문번호 기준으로 묶기 -> OrderListDto
 			OrderListDto orderListDto = orderListDtoMap.get(orderItemFlatDto.getOrderIdx());
@@ -145,7 +146,6 @@ public class OrderServiceImpl implements OrderService {
 				}
 			}
 		}
-
 		return new ArrayList<>(orderListDtoMap.values());
 	}
 
