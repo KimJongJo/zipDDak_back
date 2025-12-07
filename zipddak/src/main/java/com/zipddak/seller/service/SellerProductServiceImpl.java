@@ -1,7 +1,10 @@
 package com.zipddak.seller.service;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -9,13 +12,14 @@ import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zipddak.dto.CategoryDto;
 import com.zipddak.dto.ProductDto;
-import com.zipddak.dto.ProductFileDto;
 import com.zipddak.entity.Category;
 import com.zipddak.entity.Product;
 import com.zipddak.entity.ProductOption;
@@ -27,6 +31,7 @@ import com.zipddak.seller.dto.OptionGroupDto;
 import com.zipddak.seller.dto.OptionValueDto;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SubCategoryResponseDto;
+import com.zipddak.seller.repository.SellerProductRepository;
 import com.zipddak.util.FileSaveService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +43,9 @@ public class SellerProductServiceImpl implements SellerProductService {
 	private final CategoryRepository category_repo;
 	private final ProductRepository product_repo;
 	private final ProductOptionRepository productOpt_repo;
+	
+	private final SellerProductRepository sellerProduct_repo;
+	
 	private final ModelMapper model_mapper;
 
 	@Autowired
@@ -131,10 +139,10 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 		// db저장
 		productEntity = product_repo.save(productEntity);
+		
 		Boolean saveResult = false;
 		Integer productIdx = 0;
 		String msg = "";
-		
 		if(productEntity != null) {
 			saveResult = true;
 			productIdx = productEntity.getProductIdx();
@@ -148,9 +156,56 @@ public class SellerProductServiceImpl implements SellerProductService {
 	}
 
 	
+	//셀러가 등록한 상품의 카테고리만 조회 
+	@Override
+	public List<CategoryDto> getSellerCategories(String sellerUsername) throws Exception {
+		return sellerProduct_repo.findSellerCategories(sellerUsername);
+	}
+	
+	//특정 셀러의 상품 리스트 
+	@Override
+	public Map<String, Object> searchMyProductList(String sellerUsername, String visible, String category, String keyword, Integer page) throws Exception {
+		PageRequest pr = PageRequest.of(page-1, 10);
+		
+		//(필터)선택한 판매상태 리스트 
+		List<Integer> visibleList = null;
+		if (visible != null && !visible.isEmpty()) {
+			visibleList = Arrays.stream(visible.split(","))
+									.map(Integer::parseInt)
+									.collect(Collectors.toList());
+		}
+		//(필터)선택한 카테고리 리스트 
+		List<Integer> categoryList = null;
+		if (category != null && !category.isEmpty()) {
+		    categoryList = Arrays.stream(category.split(","))
+									.map(Integer::parseInt)
+									.collect(Collectors.toList());
+		}
+		
+		
+		List<ProductDto> myproductsList = sellerProduct_repo.findMyProducts(pr, sellerUsername, visibleList, categoryList, keyword);
+		Long totalMyPdCnt = sellerProduct_repo.allMyPdCount(sellerUsername, visibleList, categoryList, keyword);
+		
+		Integer allPage = (int)(Math.ceil(totalMyPdCnt.doubleValue()/pr.getPageSize()));
+		Integer startPage = (page-1)/10*10+1;
+		Integer endPage = Math.min(startPage+10-1, allPage);
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("curPage", page);
+		resultMap.put("allPage", allPage);
+		resultMap.put("startPage", startPage);	
+		resultMap.put("endPage", endPage);	
+		resultMap.put("myproductsList", myproductsList); 
+		
+		System.out.println("resultMap : " + resultMap);
+		
+		return resultMap;
+	}
 	
 	
-	
+
+
+
 	
 	
 	// 엔터티 파일컬럼에 자동 매핑 메소드
@@ -170,5 +225,12 @@ public class SellerProductServiceImpl implements SellerProductService {
 			throw new RuntimeException("파일 인덱스 매핑 실패: " + e.getMessage());
 		}
 	}
+
+	
+
+	
+
+
+	
 
 }
