@@ -29,7 +29,6 @@ public class SellerProductController {
 	@GetMapping("/categories")
     public List<CategoryResponseDto> getCategories() {
         try {
-        	
 			return sellerPd_svc.getCategoryTree();
 			
 		} catch (Exception e) {
@@ -42,17 +41,15 @@ public class SellerProductController {
 	//상품 등록
 	@PostMapping("/regist")
     public ResponseEntity<?> productRegist(ProductDto product_dto, 
-    							@RequestParam(value="thumbnailFile") MultipartFile thumbnail, 
-								@RequestParam(value="addImageFiles", required=false) MultipartFile[] addImageFiles, 
-								@RequestParam(value="detailImageFiles") MultipartFile[] detailImageFiles ) {
-		System.out.println("pDto : " + product_dto);
-//		System.out.println("thumbnail : " + thumbnail);
-//		System.out.println("addImageFiles: " + addImageFiles);
-//		System.out.println("detailImageFiles: " + detailImageFiles);
+			    							@RequestParam(value="thumbnailFile") MultipartFile thumbnail, 
+											@RequestParam(value="addImageFiles", required=false) MultipartFile[] addImageFiles, 
+											@RequestParam(value="detailImageFiles") MultipartFile[] detailImageFiles,
+											@RequestParam(value = "options", required = false) String optionsJson) {
+//		System.out.println("pDto : " + product_dto);
 		
         try {
         	product_dto.setSellerUsername("test");
-        	SaveResultDto result = sellerPd_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles);
+        	SaveResultDto result = sellerPd_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);
 
             if (!result.isSuccess()) { //상품 등록 실패한 경우 
                 return ResponseEntity.badRequest().body(result);

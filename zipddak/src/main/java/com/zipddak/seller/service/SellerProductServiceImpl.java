@@ -12,13 +12,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.dto.ProductDto;
 import com.zipddak.dto.ProductFileDto;
 import com.zipddak.entity.Category;
 import com.zipddak.entity.Product;
+import com.zipddak.entity.ProductOption;
 import com.zipddak.repository.CategoryRepository;
+import com.zipddak.repository.ProductOptionRepository;
 import com.zipddak.repository.ProductRepository;
 import com.zipddak.seller.dto.CategoryResponseDto;
+import com.zipddak.seller.dto.OptionGroupDto;
+import com.zipddak.seller.dto.OptionValueDto;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SubCategoryResponseDto;
 import com.zipddak.util.FileSaveService;
@@ -31,6 +37,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 	private final CategoryRepository category_repo;
 	private final ProductRepository product_repo;
+	private final ProductOptionRepository productOpt_repo;
 	private final ModelMapper model_mapper;
 
 	@Autowired
@@ -62,14 +69,14 @@ public class SellerProductServiceImpl implements SellerProductService {
 	public SaveResultDto productRegist(ProductDto product_dto,
 								            MultipartFile thumbnail,
 								            MultipartFile[] addImageFiles,
-								            MultipartFile[] detailImageFiles) throws Exception{
+								            MultipartFile[] detailImageFiles,
+								            String optionsJson) throws Exception{
 		// 썸네일 파일 저장
 		Integer thumbnailIdx = fileSave_svc.uploadFile(thumbnail, productFileUploadPath, "product");
 
+		// 추가이미지 첨부를 한 경우
 		// 추가이미지 파일 저장
 		Integer[] imageIdxArr = new Integer[5];
-
-		// 추가이미지 첨부를 한 경우
 		if (addImageFiles != null) {
 			int idx = 0;
 			for (MultipartFile f : addImageFiles) {
@@ -103,9 +110,28 @@ public class SellerProductServiceImpl implements SellerProductService {
 		// 상세이미지 detail1~detail2 자동 매핑
 		setFileIdx(productEntity, "Detail", detailIdxArr);
 
-
 		// db저장
 		productEntity = product_repo.save(productEntity);
+		
+		//옵션 세팅
+		ObjectMapper mapper = new ObjectMapper();
+		if (product_dto.getOptionYn() == true && optionsJson != null) {
+		    List<OptionGroupDto> optionGroups = mapper.readValue(optionsJson, new TypeReference<List<OptionGroupDto>>() {});
+
+		    for (OptionGroupDto optGroup : optionGroups) {
+		        for (OptionValueDto optValue : optGroup.getValues()) {
+
+		            ProductOption pdOption = ProductOption.builder()
+									                    .product(productEntity)
+									                    .name(optGroup.getOptionName())  // 색상, 사이즈 등
+									                    .value(optValue.getValue())    // 빨강, 파랑...
+									                    .price(optValue.getPrice())		//옵션 가격 
+									                    .build();
+		            productOpt_repo.save(pdOption);
+		        }
+		    }
+		}
+		
 		Boolean saveResult = false;
 		Integer productIdx = 0;
 		String msg = "";
@@ -116,12 +142,16 @@ public class SellerProductServiceImpl implements SellerProductService {
 			msg = "상품 등록이 완료되었습니다.";
 			
 		}else {
-			msg = "상품 등록을 실패했습니다.";
+			msg = "상품 등록 실패.";
 		}
 	
 		return  new SaveResultDto(saveResult, productIdx, msg);
 	}
 
+	
+	
+	
+	
 	
 	
 	// 엔터티 파일컬럼에 자동 매핑 메소드
