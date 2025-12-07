@@ -12,8 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import com.zipddak.dto.ProductOptionDto;
 
@@ -60,4 +60,17 @@ public class ProductOption {
 				.productName(product.getName()).name(name).value(value).price(price).createdAt(createdAt)
 				.updatedAt(updatedAt).build();
 	}
+    
+    public ProductOptionDto toProductOptionDto() {
+    	return ProductOptionDto.builder()
+    			.productOptionIdx(productOptionIdx)
+    			.name(name)
+    			.value(value)
+    			.price(price)
+    			.createdAt(createdAt)
+    			.updatedAt(updatedAt)
+    			.productIdx(product.getProductIdx())
+    			.productName(product.getName())
+    			.build();
+    }
 }

@@ -18,6 +18,7 @@ public class SellerDto {
     private Integer onlinesalesFileIdx;
     private String compName;
     private String compHp;
+    private String ceoName;
     private String managerName;
     private String managerTel;
     private String managerEmail;
@@ -35,6 +36,7 @@ public class SellerDto {
     private String pickupAddr2;
     private Long basicPostCharge;
     private Long freeChargeAmount;
+    private String role;
     private Boolean approvalYn;
     private Date createdAt;
     private Date updatedAt;

@@ -8,10 +8,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.admin.dto.ProductCardDto;
+import com.zipddak.admin.dto.ProductDetailResponseDto;
+import com.zipddak.admin.dto.ProductInquiriesDto;
+import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.admin.service.ProductService;
-import com.zipddak.dto.ProductDto;
+import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
+
+
 
 
 @RestController
@@ -20,17 +26,19 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
 	
 	private final ProductService productService;
-	
 
 	// 자재 리스트 조회
 	@GetMapping("productList")
-	public ResponseEntity<List<ProductDto>> productList(
+	public ResponseEntity<List<ProductCardDto>> productList(
+			@RequestParam(required = false) String keyword,
+			@RequestParam(defaultValue = "1") Integer page,
 			@RequestParam(required = false, defaultValue = "1") Integer sortId,
 			@RequestParam("cate1") Integer cate1,
 			@RequestParam(required = false) Integer cate2) {
 		
 		try {
-				List<ProductDto> productList = productService.productList(sortId, cate1, cate2);
+				PageInfo pageInfo = new PageInfo(page);
+				List<ProductCardDto> productList = productService.productList(keyword, pageInfo, sortId, cate1, cate2);
 				
 				return ResponseEntity.ok(productList);
 
@@ -40,5 +48,49 @@ public class ProductController {
 		}
 		
 	}
+	
+	// 상품 상세
+	@GetMapping("product")
+	public ResponseEntity<ProductDetailResponseDto> productInfo(@RequestParam("productId") Integer productId){
+		
+		try {
+			ProductDetailResponseDto productInfo = productService.productInfo(productId);
+			
+			System.out.println(productInfo);
+			
+			return ResponseEntity.ok(productInfo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	// 상품 리뷰 더보기
+	@GetMapping("reviews")
+	public ResponseEntity<List<ProductReviewsDto>> moreReview(@RequestParam("productId") Integer productId, @RequestParam("page") Integer page) {
+		try {
+			List<ProductReviewsDto> reviewList = productService.moreReview(productId, page);
+			return ResponseEntity.ok(reviewList);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+	
+	// 상품 문의 더보기
+	@GetMapping("inquiries")
+	public ResponseEntity<List<ProductInquiriesDto>> moreInquiry(@RequestParam("productId") Integer productId, @RequestParam("page") Integer page) {
+		try {
+			List<ProductInquiriesDto> inquiryList = productService.moreInquiry(productId, page);
+			return ResponseEntity.ok(inquiryList);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+	
+	
+	
 	
 }

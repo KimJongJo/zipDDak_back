@@ -1,5 +1,5 @@
 package com.zipddak.admin.dto;
 
-public class AdminDto {
-
+public class ProductImagesDto {
+	
 }

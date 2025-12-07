@@ -2,9 +2,13 @@ package com.zipddak.entity;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
+import com.zipddak.dto.CategoryDto;
+
 import lombok.*;
+import lombok.Builder.Default;
 
 @Getter
 @Setter
@@ -27,4 +31,28 @@ public class Category {
 
     @Column
     private Integer parentIdx;
+    //매니투원 관계안맺으면 데이터타입 일반으로 (포린키를 할수 없음)
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType type;
+    
+    
+    public enum CategoryType {
+        product, expert, community, tool
+    }
+    
+    
+//    public CategoryDto toDto() {
+//		return CategoryDto.builder()
+//				.categoryIdx(categoryIdx) //DTO의 변수명 (내가 갖고있는 변수명)
+//				.name(name)
+//				.depth(depth)
+//				.parentIdx(parentIdx)
+//				.type(type)
+//				.build();
+//	}
+    
+    
+    
 }
