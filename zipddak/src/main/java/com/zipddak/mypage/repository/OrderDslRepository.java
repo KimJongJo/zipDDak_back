@@ -52,8 +52,10 @@ public class OrderDslRepository {
 		QProductOption productOption2 = new QProductOption("productOption2");
 		QProductFile productFile = QProductFile.productFile;
 		QReviewProduct reviewProduct = QReviewProduct.reviewProduct;
-		QExchange exchange = QExchange.exchange;
-		QRefund refund = QRefund.refund;
+		QExchange exchange = new QExchange("exchange");
+		QExchange exchangeSub = new QExchange("exchangeSub");
+		QRefund refund = new QRefund("refund");
+		QRefund refundSub = new QRefund("refundSub");
 
 		// 택배사
 		Expression<String> postCompExpr = new CaseBuilder().when(orderItem.orderStatus.eq(OrderStatus.교환회수))
@@ -98,9 +100,13 @@ public class OrderDslRepository {
 				.on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx)).leftJoin(productOption2)
 				.on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx)).leftJoin(productFile)
 				.on(productFile.productFileIdx.eq(product.thumbnailFileIdx)).leftJoin(exchange)
-				.on(exchange.orderIdx.eq(orderItem.orderIdx)).leftJoin(refund)
-				.on(refund.orderIdx.eq(orderItem.orderIdx))
-
+				.on(exchange.orderIdx.eq(orderItem.orderIdx)
+						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
+								.from(exchangeSub).where(exchangeSub.orderIdx.eq(orderItem.orderIdx)))))
+				.leftJoin(refund)
+				.on(refund.orderIdx.eq(orderItem.orderIdx)
+						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
+								.where(refundSub.orderIdx.eq(orderItem.orderIdx)))))
 				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 
 	}
@@ -138,8 +144,10 @@ public class OrderDslRepository {
 		QProductOption productOption1 = new QProductOption("productOption1");
 		QProductOption productOption2 = new QProductOption("productOption2");
 		QProductFile productFile = QProductFile.productFile;
-		QExchange exchange = QExchange.exchange;
-		QRefund refund = QRefund.refund;
+		QExchange exchange = new QExchange("exchange");
+		QExchange exchangeSub = new QExchange("exchangeSub");
+		QRefund refund = new QRefund("refund");
+		QRefund refundSub = new QRefund("refundSub");
 
 		// 택배사
 		Expression<String> postCompExpr = new CaseBuilder().when(orderItem.orderStatus.eq(OrderStatus.교환회수))
@@ -184,9 +192,14 @@ public class OrderDslRepository {
 				.on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx)).leftJoin(productOption2)
 				.on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx)).leftJoin(productFile)
 				.on(productFile.productFileIdx.eq(product.thumbnailFileIdx)).leftJoin(exchange)
-				.on(exchange.orderIdx.eq(orderItem.orderIdx)).leftJoin(refund)
-				.on(refund.orderIdx.eq(orderItem.orderIdx)).where(builder).offset(pageRequest.getOffset())
-				.limit(pageRequest.getPageSize()).fetch();
+				.on(exchange.orderIdx.eq(orderItem.orderIdx)
+						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
+								.from(exchangeSub).where(exchangeSub.orderIdx.eq(orderItem.orderIdx)))))
+				.leftJoin(refund)
+				.on(refund.orderIdx.eq(orderItem.orderIdx)
+						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
+								.where(refundSub.orderIdx.eq(orderItem.orderIdx)))))
+				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 
 	}
 
@@ -248,8 +261,10 @@ public class OrderDslRepository {
 		QOrder order = QOrder.order;
 		QUser user = QUser.user;
 		QCancel cancel = QCancel.cancel;
-		QExchange exchange = QExchange.exchange;
-		QRefund refund = QRefund.refund;
+		QExchange exchange = new QExchange("exchange");
+		QExchange exchangeSub = new QExchange("exchangeSub");
+		QRefund refund = new QRefund("refund");
+		QRefund refundSub = new QRefund("refundSub");
 		QPayment payment = QPayment.payment;
 
 		return jpaQueryFactory.select(Projections.fields(OrderDetailDto.class, order.orderIdx.as("orderIdx"),
@@ -296,9 +311,16 @@ public class OrderDslRepository {
 
 						refund.createdAt.as("refundDate")).as("RefundInfo")))
 				.from(order).leftJoin(user).on(user.username.eq(order.user.username)).leftJoin(cancel)
-				.on(cancel.paymentIdx.eq(order.paymentIdx)).leftJoin(exchange).on(exchange.orderIdx.eq(order.orderIdx))
-				.leftJoin(refund).on(refund.orderIdx.eq(order.orderIdx)).leftJoin(payment)
-				.on(payment.paymentIdx.eq(order.paymentIdx)).where(order.orderIdx.eq(orderIdx)).fetchOne();
+				.on(cancel.paymentIdx.eq(order.paymentIdx)).leftJoin(exchange)
+				.on(exchange.orderIdx.eq(order.orderIdx)
+						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
+								.from(exchangeSub).where(exchangeSub.orderIdx.eq(order.orderIdx)))))
+				.leftJoin(refund)
+				.on(refund.orderIdx.eq(order.orderIdx)
+						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
+								.where(refundSub.orderIdx.eq(order.orderIdx)))))
+				.leftJoin(payment).on(payment.paymentIdx.eq(order.paymentIdx)).where(order.orderIdx.eq(orderIdx))
+				.fetchOne();
 
 	}
 }
