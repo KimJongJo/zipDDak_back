@@ -8,7 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class SellerDto {
-    private String username;
+	private Integer sellerIdx;
+	private String sellerUsername; 
     private String password;
     private String name;
     private String phone;

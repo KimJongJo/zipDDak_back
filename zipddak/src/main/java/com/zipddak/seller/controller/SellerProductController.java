@@ -1,6 +1,5 @@
 package com.zipddak.seller.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import com.zipddak.dto.ProductDto;
 import com.zipddak.seller.dto.CategoryResponseDto;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.service.SellerProductService;
-import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,13 +25,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SellerProductController {
 	
-	private final SellerProductService sellerPd_svc;
+	private final SellerProductService product_svc;
 	
 	//카테고리 리스트 조회
 	@GetMapping("/categories/all")
     public List<CategoryResponseDto> getCategories() {
         try {
-			return sellerPd_svc.getCategoryTree();
+			return product_svc.getCategoryTree();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -54,7 +52,7 @@ public class SellerProductController {
 		
         try {
         	product_dto.setSellerUsername("test");
-        	SaveResultDto result = sellerPd_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);
+        	SaveResultDto result = product_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);
 
             if (!result.isSuccess()) { //상품 등록 실패한 경우 
                 return ResponseEntity.badRequest().body(result);
@@ -74,7 +72,7 @@ public class SellerProductController {
 	@GetMapping("/categories")
 	public ResponseEntity<?> getSellerCategories(@RequestParam("sellerId") String sellerUsername) {
 		try {
-			List<CategoryDto> sellerCategories = sellerPd_svc.getSellerCategories(sellerUsername);
+			List<CategoryDto> sellerCategories = product_svc.getSellerCategories(sellerUsername);
 			return ResponseEntity.ok(sellerCategories);
 			
 		} catch (Exception e) {
@@ -93,7 +91,7 @@ public class SellerProductController {
 		System.out.println("sellerUsername : " + sellerUsername);
 		
 		try {
-			Map<String, Object> sellerProductList = sellerPd_svc.searchMyProductList(sellerUsername, visible, category, keyword, page);
+			Map<String, Object> sellerProductList = product_svc.searchMyProductList(sellerUsername, visible, category, keyword, page);
 			return ResponseEntity.ok(sellerProductList);
 			
 		} catch (Exception e) {

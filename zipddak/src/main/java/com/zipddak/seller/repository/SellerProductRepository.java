@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.CategoryDto;
 import com.zipddak.dto.ProductDto;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QProduct;
+import com.zipddak.seller.dto.SearchConditionDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +28,8 @@ public class SellerProductRepository {
         QCategory category = QCategory.category;
 
         return jpaQueryFactory.select(Projections.fields(CategoryDto.class,
-										                        category.categoryIdx,
-										                        category.name))
+							                        category.categoryIdx,
+							                        category.name))
 				                .distinct()
 				                .from(product)
 				                .join(category).on(product.categoryIdx.eq(category.categoryIdx))
@@ -39,82 +39,53 @@ public class SellerProductRepository {
     }
 
 	//특정 셀러가 등록한 상품 리스트 
-	public List<ProductDto> findMyProducts(PageRequest pageRequest, String sellerUsername, List<Integer> visibleList, List<Integer> categoryList, String keyword) {
-		QProduct product = QProduct.product;
-		
-		BooleanBuilder builder = new BooleanBuilder();
-		
-		// 셀러 아이디
-	    builder.and(product.sellerUsername.eq(sellerUsername));
-	    
-	    // 판매 상태 (Y/N/품절 등)
-//	    if (visibleList != null && !visibleList.isEmpty()) {
-//	        builder.and(product.visibleYn.in(visibleList));
-//	    }
-	    
+	public List<ProductDto> searchMyProducts(PageRequest pageRequest, SearchConditionDto scDto) {
 
-	    // 카테고리
-	    if (categoryList != null && !categoryList.isEmpty()) {
-	        builder.and(product.categoryIdx.in(categoryList));
-	    }
+        QProduct product = QProduct.product;
 
-	    // 키워드
-	    if (keyword != null && !keyword.isEmpty()) {
-	        builder.and(product.name.contains(keyword));
-	    }
-		
-		List<ProductDto> ProductDto = null;
-		ProductDto = jpaQueryFactory.select(Projections.fields(ProductDto.class,
-										                product.productIdx,
-										                product.sellerUsername,
-										                product.name,
-										                product.thumbnailFileIdx,
-										                product.categoryIdx,
-										                product.subCategoryIdx,
-										                product.price,
-										                product.salePrice,
-										                product.visibleYn,
-										                product.createdAt
-										                ))
-								        .from(product)
-								        .where(builder)
-								        .orderBy(product.productIdx.desc())
-								        .offset(pageRequest.getOffset())
-								        .limit(pageRequest.getPageSize())
-								        .fetch();
-		return ProductDto;
-	}
-	
-	//특정 셀러가 등록한 상품 수
-	public Long allMyPdCount(String sellerUsername, List<Integer> visibleList, List<Integer> categoryList, String keyword) {
-		QProduct product = QProduct.product;
-		
-		BooleanBuilder builder = new BooleanBuilder();
-	    builder.and(product.sellerUsername.eq(sellerUsername));
-	    
-//	    if (visibleList != null && !visibleList.isEmpty()) {
-//	        builder.and(product.visibleYn.in(visibleList));
-//	    }
+        List<ProductDto> result = jpaQueryFactory.select(Projections.fields(ProductDto.class,
+									                        product.productIdx,
+									                        product.sellerUsername,
+									                        product.name,
+									                        product.thumbnailFileIdx,
+									                        product.categoryIdx,
+									                        product.subCategoryIdx,
+									                        product.price,
+									                        product.salePrice,
+									                        product.visibleYn,
+									                        product.createdAt
+									                ))
+									                .from(product)
+									                .where(
+									                        QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
+//									                        QPredicate.inInt(product.visibleYn, scDto.getVisibleList()),
+									                        QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),
+									                        QPredicate.contains(product.name, scDto.getKeyword()))
+									                .orderBy(product.productIdx.desc())
+									                .offset(pageRequest.getOffset())
+									                .limit(pageRequest.getPageSize())
+									                .fetch();
 
-	    if (categoryList != null && !categoryList.isEmpty()) {
-	        builder.and(product.categoryIdx.in(categoryList));
-	    }
+        return result;
+    }
 
-	    if (keyword != null && !keyword.isEmpty()) {
-	        builder.and(product.name.contains(keyword));
-	    }
-		
-		Long myProductCnt = null;
-		myProductCnt = jpaQueryFactory.select(product.count())
-							            .from(product)
-							            .where(builder)
-							            .fetchOne();
-		
-		return myProductCnt;
-	}
+	//특정 셀러가 등록한 상품 수 
+    public Long countMyProducts(SearchConditionDto scDto) {
+
+        QProduct product = QProduct.product;
+
+        return jpaQueryFactory.select(product.count())
+				                .from(product)
+				                .where(
+				                        QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
+//				                        QPredicate.inInt(product.visibleYn, scDto.getVisibleList()),
+				                        QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),
+				                        QPredicate.contains(product.name, scDto.getKeyword()))
+				                .fetchOne();
+    }
+}	
 	
 	
 	
 	
 	
-}

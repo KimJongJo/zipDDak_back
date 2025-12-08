@@ -30,6 +30,7 @@ import com.zipddak.seller.dto.CategoryResponseDto;
 import com.zipddak.seller.dto.OptionGroupDto;
 import com.zipddak.seller.dto.OptionValueDto;
 import com.zipddak.seller.dto.SaveResultDto;
+import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.dto.SubCategoryResponseDto;
 import com.zipddak.seller.repository.SellerProductRepository;
 import com.zipddak.util.FileSaveService;
@@ -43,9 +44,9 @@ public class SellerProductServiceImpl implements SellerProductService {
 	private final CategoryRepository category_repo;
 	private final ProductRepository product_repo;
 	private final ProductOptionRepository productOpt_repo;
-	
+
 	private final SellerProductRepository sellerProduct_repo;
-	
+
 	private final ModelMapper model_mapper;
 
 	@Autowired
@@ -55,7 +56,6 @@ public class SellerProductServiceImpl implements SellerProductService {
 	@Value("${productFile.path}")
 	private String productFileUploadPath;
 
-	
 	// 카테고리 리스트 조회
 	@Override
 	public List<CategoryResponseDto> getCategoryTree() {
@@ -74,11 +74,8 @@ public class SellerProductServiceImpl implements SellerProductService {
 	// 상품 등록
 	@Override
 	@Transactional
-	public SaveResultDto productRegist(ProductDto product_dto,
-								            MultipartFile thumbnail,
-								            MultipartFile[] addImageFiles,
-								            MultipartFile[] detailImageFiles,
-								            String optionsJson) throws Exception{
+	public SaveResultDto productRegist(ProductDto product_dto, MultipartFile thumbnail, MultipartFile[] addImageFiles,
+			MultipartFile[] detailImageFiles, String optionsJson) throws Exception {
 		// 썸네일 파일 저장
 		Integer thumbnailIdx = fileSave_svc.uploadFile(thumbnail, productFileUploadPath, "product");
 
@@ -118,20 +115,21 @@ public class SellerProductServiceImpl implements SellerProductService {
 		// 상세이미지 detail1~detail2 자동 매핑
 		setFileIdx(productEntity, "Detail", detailIdxArr);
 
-		//옵션 세팅
+		// 옵션 세팅
 		ObjectMapper mapper = new ObjectMapper();
-		if (product_dto.getOptionYn() != null && product_dto.getOptionYn()&& optionsJson != null) {
-			List<OptionGroupDto> optionGroups = mapper.readValue(optionsJson, new TypeReference<List<OptionGroupDto>>() {});
-			
+		if (product_dto.getOptionYn() != null && product_dto.getOptionYn() && optionsJson != null) {
+			List<OptionGroupDto> optionGroups = mapper.readValue(optionsJson,
+					new TypeReference<List<OptionGroupDto>>() {
+					});
+
 			for (OptionGroupDto optGroup : optionGroups) {
 				for (OptionValueDto optValue : optGroup.getValues()) {
-					
-					ProductOption pdOption = ProductOption.builder()
-															.product(productEntity)
-															.name(optGroup.getOptionName())  // 색상, 사이즈 등
-															.value(optValue.getValue())    // 빨강, 파랑...
-															.price(optValue.getPrice())		//옵션 가격 
-															.build();
+
+					ProductOption pdOption = ProductOption.builder().product(productEntity)
+							.name(optGroup.getOptionName()) // 색상, 사이즈 등
+							.value(optValue.getValue()) // 빨강, 파랑...
+							.price(optValue.getPrice()) // 옵션 가격
+							.build();
 					productOpt_repo.save(pdOption);
 				}
 			}
@@ -139,75 +137,76 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 		// db저장
 		productEntity = product_repo.save(productEntity);
-		
+
 		Boolean saveResult = false;
 		Integer productIdx = 0;
 		String msg = "";
-		if(productEntity != null) {
+		if (productEntity != null) {
 			saveResult = true;
 			productIdx = productEntity.getProductIdx();
 			msg = "상품 등록이 완료되었습니다.";
-			
-		}else {
+
+		} else {
 			msg = "상품 등록 실패.";
 		}
-	
-		return  new SaveResultDto(saveResult, productIdx, msg);
+
+		return new SaveResultDto(saveResult, productIdx, msg);
 	}
 
-	
-	//셀러가 등록한 상품의 카테고리만 조회 
+	// 셀러가 등록한 상품의 카테고리만 조회
 	@Override
 	public List<CategoryDto> getSellerCategories(String sellerUsername) throws Exception {
 		return sellerProduct_repo.findSellerCategories(sellerUsername);
 	}
+
+	// 특정 셀러의 상품 리스트
+	public Map<String, Object> searchMyProductList(String sellerUsername,
+										            String visible,
+										            String category,
+										            String keyword,
+										            Integer page) {
+
+        PageRequest pr = PageRequest.of(page - 1, 10);
+
+        List<Integer> visibleList = visible != null && !visible.isEmpty()
+                ? Arrays.stream(visible.split(",")).map(Integer::parseInt).collect(Collectors.toList())
+                : null;
+
+        List<Integer> categoryList = category != null && !category.isEmpty()
+                ? Arrays.stream(category.split(",")).map(Integer::parseInt).collect(Collectors.toList())
+                : null;
+
+        SearchConditionDto scDto = SearchConditionDto.builder()
+                .sellerUsername(sellerUsername)
+                .visibleList(visibleList)
+                .categoryList(categoryList)
+                .keyword(keyword)
+                .build();
+
+        List<ProductDto> list = sellerProduct_repo.searchMyProducts(pr, scDto);
+        Long totalCount = sellerProduct_repo.countMyProducts(scDto);
+
+        int allPage = (int) Math.ceil(totalCount / 10.0);
+        int startPage = (page - 1) / 10 * 10 + 1;
+        int endPage = Math.min(startPage + 9, allPage);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("curPage", page);
+        result.put("allPage", allPage);
+        result.put("startPage", startPage);
+        result.put("endPage", endPage);
+        result.put("myproductsList", list);
+
+        return result;
+    }
 	
-	//특정 셀러의 상품 리스트 
-	@Override
-	public Map<String, Object> searchMyProductList(String sellerUsername, String visible, String category, String keyword, Integer page) throws Exception {
-		PageRequest pr = PageRequest.of(page-1, 10);
-		
-		//(필터)선택한 판매상태 리스트 
-		List<Integer> visibleList = null;
-		if (visible != null && !visible.isEmpty()) {
-			visibleList = Arrays.stream(visible.split(","))
-									.map(Integer::parseInt)
-									.collect(Collectors.toList());
-		}
-		//(필터)선택한 카테고리 리스트 
-		List<Integer> categoryList = null;
-		if (category != null && !category.isEmpty()) {
-		    categoryList = Arrays.stream(category.split(","))
-									.map(Integer::parseInt)
-									.collect(Collectors.toList());
-		}
-		
-		
-		List<ProductDto> myproductsList = sellerProduct_repo.findMyProducts(pr, sellerUsername, visibleList, categoryList, keyword);
-		Long totalMyPdCnt = sellerProduct_repo.allMyPdCount(sellerUsername, visibleList, categoryList, keyword);
-		
-		Integer allPage = (int)(Math.ceil(totalMyPdCnt.doubleValue()/pr.getPageSize()));
-		Integer startPage = (page-1)/10*10+1;
-		Integer endPage = Math.min(startPage+10-1, allPage);
-		
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("curPage", page);
-		resultMap.put("allPage", allPage);
-		resultMap.put("startPage", startPage);	
-		resultMap.put("endPage", endPage);	
-		resultMap.put("myproductsList", myproductsList); 
-		
-		System.out.println("resultMap : " + resultMap);
-		
-		return resultMap;
-	}
+	
+	
+	
+	
 	
 	
 
-
-
-	
-	
 	// 엔터티 파일컬럼에 자동 매핑 메소드
 	private void setFileIdx(Object entity, String prefix, Integer[] fileIdxArr) {
 		try {
@@ -225,12 +224,5 @@ public class SellerProductServiceImpl implements SellerProductService {
 			throw new RuntimeException("파일 인덱스 매핑 실패: " + e.getMessage());
 		}
 	}
-
-	
-
-	
-
-
-	
 
 }
