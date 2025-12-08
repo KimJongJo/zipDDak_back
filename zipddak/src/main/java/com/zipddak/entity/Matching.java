@@ -28,39 +28,42 @@ import lombok.Setter;
 @Entity
 public class Matching {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer matchingIdx;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer matchingIdx;
 
-    @Column(nullable = false)
-    private String matchingCode;
+	@Column(nullable = false)
+	private String matchingCode;
 
-    @Column(nullable = false)
-    private Integer requestIdx;
+	@Column(nullable = false)
+	private String userUsername;
 
-    @Column(nullable = false)
-    private Integer estimateIdx;
+	@Column(nullable = false)
+	private Integer expertIdx;
 
-    @Column(nullable = false)
-    private Integer paymentIdx;
+	@Column(nullable = false)
+	private Integer requestIdx;
 
-    @Column(nullable = false)
-    private Date workStartDate;
+	@Column(nullable = false)
+	private Integer estimateIdx;
 
-    @Column(nullable = false)
-    private Date workEndDate;
+	@Column(nullable = false)
+	private Integer paymentIdx;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MatchingStatus status;
+	@Column(nullable = false)
+	private Date workStartDate;
 
-    @CreationTimestamp
-    private Date createdAt;
+	@Column(nullable = false)
+	private Date workEndDate;
 
-    public enum MatchingStatus {
-        PAYMENT_COMPLETED,
-        IN_PROGRESS,
-        COMPLETED,
-        CANCELLED
-    }
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private MatchingStatus status;
+
+	@CreationTimestamp
+	private Date createdAt;
+
+	public enum MatchingStatus {
+		PAYMENT_COMPLETED, IN_PROGRESS, COMPLETED, CANCELLED
+	}
 }
