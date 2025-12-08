@@ -10,15 +10,14 @@ import java.util.Map;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.mypage.dto.DeliveryGroupsDto;
+import com.zipddak.mypage.dto.OrderDetailDto;
 import com.zipddak.mypage.dto.OrderItemDto;
 import com.zipddak.mypage.dto.OrderItemFlatDto;
 import com.zipddak.mypage.dto.OrderListDto;
 import com.zipddak.mypage.dto.OrderStatusSummaryDto;
 import com.zipddak.mypage.repository.OrderDslRepository;
-import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 public class OrderServiceImpl implements OrderService {
 
 	private final OrderDslRepository orderDslRepository;
-	private final OrderItemRepository orderItemRepository;
 
 	// 주문배송목록 조회
 	@Override
@@ -54,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
 		Map<Integer, OrderListDto> orderListDtoMap = new LinkedHashMap<>();
 
 		for (OrderItemFlatDto orderItemFlatDto : orderItemFlatDtoList) {
+			System.out.print(orderItemFlatDto + "\n");
 
 			// 1. 주문상품목록을 주문번호 기준으로 묶기 -> OrderListDto
 			OrderListDto orderListDto = orderListDtoMap.get(orderItemFlatDto.getOrderIdx());
@@ -147,7 +146,6 @@ public class OrderServiceImpl implements OrderService {
 				}
 			}
 		}
-
 		return new ArrayList<>(orderListDtoMap.values());
 	}
 
@@ -260,20 +258,6 @@ public class OrderServiceImpl implements OrderService {
 		return new ArrayList<>(orderListDtoMap.values());
 	}
 
-	// 주문상품 취소
-	@Override
-	public void cancelOrderItem(List<Integer> orderItemIdxs) throws Exception {
-		for (Integer orderItemIdx : orderItemIdxs) {
-			OrderItem orderItem = orderItemRepository.findById(orderItemIdx)
-					.orElseThrow(() -> new RuntimeException("잘못된 주문상품 아이디"));
-
-			if (orderItem.getOrderStatus() == OrderStatus.상품준비중)
-				orderItem.setOrderStatus(OrderStatus.취소완료);
-
-			orderItemRepository.save(orderItem);
-		}
-	}
-
 	// 상품주문상태 요약
 	@Override
 	public OrderStatusSummaryDto getOrderStatusSummary(String username) throws Exception {
@@ -286,5 +270,11 @@ public class OrderServiceImpl implements OrderService {
 
 		return orderDslRepository.selectOrderStatusSummary(username, todayDate, sixMonthsAgoDate);
 
+	}
+
+	// 주문상세 조회
+	@Override
+	public OrderDetailDto getOrderDetail(Integer orderIdx) throws Exception {
+		return orderDslRepository.selectOrderDetail(orderIdx);
 	}
 }

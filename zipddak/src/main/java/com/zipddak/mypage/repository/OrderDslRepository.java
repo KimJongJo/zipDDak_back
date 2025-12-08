@@ -16,15 +16,19 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.entity.OrderItem.OrderStatus;
+import com.zipddak.entity.QCancel;
 import com.zipddak.entity.QExchange;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
+import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QProductOption;
 import com.zipddak.entity.QRefund;
 import com.zipddak.entity.QReviewProduct;
 import com.zipddak.entity.QSeller;
+import com.zipddak.entity.QUser;
+import com.zipddak.mypage.dto.OrderDetailDto;
 import com.zipddak.mypage.dto.OrderItemFlatDto;
 import com.zipddak.mypage.dto.OrderStatusSummaryDto;
 
@@ -48,8 +52,10 @@ public class OrderDslRepository {
 		QProductOption productOption2 = new QProductOption("productOption2");
 		QProductFile productFile = QProductFile.productFile;
 		QReviewProduct reviewProduct = QReviewProduct.reviewProduct;
-		QExchange exchange = QExchange.exchange;
-		QRefund refund = QRefund.refund;
+		QExchange exchange = new QExchange("exchange");
+		QExchange exchangeSub = new QExchange("exchangeSub");
+		QRefund refund = new QRefund("refund");
+		QRefund refundSub = new QRefund("refundSub");
 
 		// 택배사
 		Expression<String> postCompExpr = new CaseBuilder().when(orderItem.orderStatus.eq(OrderStatus.교환회수))
@@ -94,9 +100,13 @@ public class OrderDslRepository {
 				.on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx)).leftJoin(productOption2)
 				.on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx)).leftJoin(productFile)
 				.on(productFile.productFileIdx.eq(product.thumbnailFileIdx)).leftJoin(exchange)
-				.on(exchange.orderIdx.eq(orderItem.orderIdx)).leftJoin(refund)
-				.on(refund.orderIdx.eq(orderItem.orderIdx))
-
+				.on(exchange.orderIdx.eq(orderItem.orderIdx)
+						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
+								.from(exchangeSub).where(exchangeSub.orderIdx.eq(orderItem.orderIdx)))))
+				.leftJoin(refund)
+				.on(refund.orderIdx.eq(orderItem.orderIdx)
+						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
+								.where(refundSub.orderIdx.eq(orderItem.orderIdx)))))
 				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 
 	}
@@ -134,8 +144,10 @@ public class OrderDslRepository {
 		QProductOption productOption1 = new QProductOption("productOption1");
 		QProductOption productOption2 = new QProductOption("productOption2");
 		QProductFile productFile = QProductFile.productFile;
-		QExchange exchange = QExchange.exchange;
-		QRefund refund = QRefund.refund;
+		QExchange exchange = new QExchange("exchange");
+		QExchange exchangeSub = new QExchange("exchangeSub");
+		QRefund refund = new QRefund("refund");
+		QRefund refundSub = new QRefund("refundSub");
 
 		// 택배사
 		Expression<String> postCompExpr = new CaseBuilder().when(orderItem.orderStatus.eq(OrderStatus.교환회수))
@@ -180,9 +192,14 @@ public class OrderDslRepository {
 				.on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx)).leftJoin(productOption2)
 				.on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx)).leftJoin(productFile)
 				.on(productFile.productFileIdx.eq(product.thumbnailFileIdx)).leftJoin(exchange)
-				.on(exchange.orderIdx.eq(orderItem.orderIdx)).leftJoin(refund)
-				.on(refund.orderIdx.eq(orderItem.orderIdx)).where(builder).offset(pageRequest.getOffset())
-				.limit(pageRequest.getPageSize()).fetch();
+				.on(exchange.orderIdx.eq(orderItem.orderIdx)
+						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
+								.from(exchangeSub).where(exchangeSub.orderIdx.eq(orderItem.orderIdx)))))
+				.leftJoin(refund)
+				.on(refund.orderIdx.eq(orderItem.orderIdx)
+						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
+								.where(refundSub.orderIdx.eq(orderItem.orderIdx)))))
+				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 
 	}
 
@@ -237,5 +254,73 @@ public class OrderDslRepository {
 						orderItem.orderStatus.when(OrderStatus.배송중).then(1).otherwise(0).sum(),
 						orderItem.orderStatus.when(OrderStatus.배송완료).then(1).otherwise(0).sum(), returnsStatus.sum()))
 				.from(orderItem).leftJoin(order).on(order.orderIdx.eq(orderItem.orderIdx)).where(builder).fetchOne();
+	}
+
+	// 주문상세 조회
+	public OrderDetailDto selectOrderDetail(Integer orderIdx) throws Exception {
+		QOrder order = QOrder.order;
+		QUser user = QUser.user;
+		QCancel cancel = QCancel.cancel;
+		QExchange exchange = new QExchange("exchange");
+		QExchange exchangeSub = new QExchange("exchangeSub");
+		QRefund refund = new QRefund("refund");
+		QRefund refundSub = new QRefund("refundSub");
+		QPayment payment = QPayment.payment;
+
+		return jpaQueryFactory.select(Projections.fields(OrderDetailDto.class, order.orderIdx.as("orderIdx"),
+				order.orderCode.as("orderCode"), order.createdAt.as("orderDate"),
+
+				order.subtotalAmount.as("totalProductPrice"), order.shippingAmount.as("totalDeliveryFee"),
+				payment.totalAmount.as("totalPaymentPrice"), payment.method.as("paymentMethod"),
+
+				user.name.as("ordererName"), user.phone.as("ordererPhone"),
+
+				order.postRecipient.as("receiverName"), order.phone.as("receiverPhone"),
+				order.postZonecode.as("postCode"), order.postAddr1.as("address1"), order.postAddr2.as("address2"),
+				order.postNote.as("deliveryMessage"),
+
+				Projections
+						.fields(OrderDetailDto.CancelInfo.class, cancel.cancelIdx.as("cancelIdx"),
+								cancel.cancelAmount.as("cancelAmount"), cancel.canceledAt.as("cancelDate"))
+						.as("CancelInfo"),
+
+				Projections.fields(OrderDetailDto.ExchangeInfo.class, exchange.exchangeIdx.as("exchangelIdx"),
+						exchange.shippingChargeType.as("shippingChargeType"),
+						exchange.roundShippingFee.as("roundShippingFee"),
+
+						exchange.reasonType.as("reasonType"), exchange.reasonDetail.as("reasonDetail"),
+						exchange.image1Idx.as("image1Idx"), exchange.image2Idx.as("image2Idx"),
+						exchange.image3Idx.as("image3Idx"),
+
+						exchange.reshipName.as("reshipName"), exchange.reshipPhone.as("reshipPhone"),
+						exchange.reshipZipcode.as("reshipZipcode"), exchange.reshipAddr1.as("reshipAddr1"),
+						exchange.reshipAddr2.as("reshipAddr2"), exchange.reshipPostMemo.as("reshipPostMemo"),
+
+						exchange.pickupPostComp.as("pickupPostComp"), exchange.pickupTrackingNo.as("pickupTrackingNo"),
+						exchange.reshipPostComp.as("reshipPostComp"), exchange.reshipTrackingNo.as("reshipTrackingNo"),
+
+						exchange.createdAt.as("exchangeDate")).as("ExchangeInfo"),
+
+				Projections.fields(OrderDetailDto.RefundInfo.class, refund.refundIdx.as("refundIdx"),
+						refund.shippingChargeType.as("shippingChargeType"),
+						refund.returnShippingFee.as("returnShippingFee"), refund.refundAmount.as("refundAmount"),
+
+						refund.reasonType.as("reasonType"), refund.reasonDetail.as("reasonDetail"),
+						refund.image1Idx.as("image1Idx"), refund.image2Idx.as("image2Idx"),
+						refund.image3Idx.as("image3Idx"),
+
+						refund.createdAt.as("refundDate")).as("RefundInfo")))
+				.from(order).leftJoin(user).on(user.username.eq(order.user.username)).leftJoin(cancel)
+				.on(cancel.paymentIdx.eq(order.paymentIdx)).leftJoin(exchange)
+				.on(exchange.orderIdx.eq(order.orderIdx)
+						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
+								.from(exchangeSub).where(exchangeSub.orderIdx.eq(order.orderIdx)))))
+				.leftJoin(refund)
+				.on(refund.orderIdx.eq(order.orderIdx)
+						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
+								.where(refundSub.orderIdx.eq(order.orderIdx)))))
+				.leftJoin(payment).on(payment.paymentIdx.eq(order.paymentIdx)).where(order.orderIdx.eq(orderIdx))
+				.fetchOne();
+
 	}
 }

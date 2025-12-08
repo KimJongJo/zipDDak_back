@@ -18,8 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.zipddak.entity.OrderItem.OrderStatus;
-import com.zipddak.mypage.dto.OrderListDto;
+import com.zipddak.dto.OrderDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,7 +88,12 @@ public class Order {
 		결제완료, 결제대기
 	}
 
-	public OrderListDto toOrderListDto() {
-		return OrderListDto.builder().orderIdx(orderIdx).orderDate(createdAt).build();
+	public OrderDto toDto() {
+		return OrderDto.builder().orderIdx(orderIdx).orderCode(orderCode).subtotalAmount(subtotalAmount)
+				.shippingAmount(shippingAmount).totalAmount(totalAmount).paymentIdx(paymentIdx)
+				.postZonecode(postZonecode).postAddr1(postAddr1).postAddr2(postAddr2).phone(phone)
+				.postRecipient(postRecipient).postNote(postNote).createdAt(createdAt).username(user.getUsername())
+				.name(user.getName()).build();
 	}
+
 }
