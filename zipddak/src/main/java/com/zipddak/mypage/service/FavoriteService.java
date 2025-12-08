@@ -15,7 +15,15 @@ public interface FavoriteService {
 
 	List<FavoriteToolDto> getFavoriteToolList(String username, PageInfo pageInfo) throws Exception;
 
+	Boolean toggleToolLike(String username, Integer toolIdx) throws Exception;
+
 	List<FavoriteExpertDto> getFavoriteExpertList(String username, PageInfo pageInfo) throws Exception;
 
+	Boolean toggleExpertLike(String username, Integer expertIdx) throws Exception;
+
 	List<FavoriteCommunityDto> getFavoriteCommunityList(String username, PageInfo pageInfo) throws Exception;
+
+	Boolean toggleCommunityLike(String username, Integer communityIdx) throws Exception;
+
+	List<FavoriteCommunityDto> getMyCommunityList(String username, PageInfo pageInfo) throws Exception;
 }
