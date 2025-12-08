@@ -4,6 +4,6 @@ import com.zipddak.admin.dto.RequestFormDto;
 
 public interface RequestService {
 
-	void writeRequest(RequestFormDto requestForm);
+	void writeRequest(RequestFormDto requestForm) throws Exception;
 
 }

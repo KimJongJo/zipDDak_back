@@ -1,5 +1,7 @@
 package com.zipddak.admin.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +31,7 @@ public class RequestServiceImpl implements RequestService {
 	private String expertFilePath;
 	
 	@Override
-	public void writeRequest(RequestFormDto requestForm) {
+	public void writeRequest(RequestFormDto requestForm) throws Exception{
 	
 		List<Integer> fileIdxList = new ArrayList<Integer>();
 		
@@ -49,6 +51,20 @@ public class RequestServiceImpl implements RequestService {
 											.fileRename(fileRename)
 											.storagePath(expertFilePath)
 											.build();
+				
+				try {
+					File saveFile = new File(expertFilePath + File.separator + fileRename);
+					
+					// 폴더가 없으면 생성
+					if(!saveFile.getParentFile().exists()) {
+						saveFile.getParentFile().mkdirs();
+					}
+					
+					file.transferTo(saveFile); // 실제 파일 저장
+				}catch(IOException e) {
+					e.printStackTrace();
+				}
+				
 				
 				ExpertFile savedExpertFile = expertFileRepository.save(expertFile);
 				
