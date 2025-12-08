@@ -18,18 +18,14 @@ import lombok.*;
 @Entity
 public class Seller {
 
-    @Id
-    @Column(nullable = false)
-    private String username;
 
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String phone;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer sellerIdx;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="username")
+    private User user;
 
     @Column(unique = true)
     private Integer logoFileIdx;

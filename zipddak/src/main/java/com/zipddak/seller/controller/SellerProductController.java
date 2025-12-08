@@ -19,17 +19,17 @@ public class SellerProductController {
 	private final SellerProductService sellerPd_svc;
 	
 	//카테고리 리스트 조회
-	@GetMapping("/categories")
-    public List<CategoryResponseDto> getCategories() {
-        try {
-        	
-			return sellerPd_svc.getCategoryTree();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
+//	@GetMapping("/categories")
+//    public List<CategoryResponseDto> getCategories() {
+//        try {
+//        	
+//			return sellerPd_svc.getCategoryTree();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//    }
 	
 	
 

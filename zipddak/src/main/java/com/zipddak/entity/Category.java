@@ -43,15 +43,6 @@ public class Category {
     }
     
     
-//    public CategoryDto toDto() {
-//		return CategoryDto.builder()
-//				.categoryIdx(categoryIdx) //DTO의 변수명 (내가 갖고있는 변수명)
-//				.name(name)
-//				.depth(depth)
-//				.parentIdx(parentIdx)
-//				.type(type)
-//				.build();
-//	}
     
     
     

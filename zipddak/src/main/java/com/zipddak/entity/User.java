@@ -66,6 +66,12 @@ public class User {
 
     @Column
     private Boolean expert; // 전문가 전환 여부
+    
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Expert expertInfo;
+    
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Seller sellertInfo;
 
     @CreationTimestamp
     private Date createdate;

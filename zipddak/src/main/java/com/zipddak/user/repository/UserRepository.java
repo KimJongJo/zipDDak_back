@@ -6,4 +6,5 @@ import com.zipddak.entity.User;
 
 public interface UserRepository extends JpaRepository<User, String>{
 
+	
 }
