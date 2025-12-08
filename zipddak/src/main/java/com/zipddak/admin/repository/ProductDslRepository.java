@@ -127,20 +127,33 @@ public class ProductDslRepository {
 		}
 
 		JPQLQuery<ProductCardDto> query = jpaQueryFactory
-				.select(Projections.bean(ProductCardDto.class, product.productIdx, product.name, product.discount,
-						product.salePrice, product.sellerUsername, productFile.fileRename, productFile.storagePath,
-						Expressions.numberTemplate(Double.class, "ROUND({0}, 1)", review.score.avg().coalesce(0.0))
-								.as("avgRating"),
-						// count는 항상 Long 타입으로 반환
-						review.count().as("reviewCount"), seller.brandName, isFavoriteExpr
-
-				)).from(product).leftJoin(review).on(review.productIdx.eq(product.productIdx)).leftJoin(productFile)
-				.on(productFile.productFileIdx.eq(product.thumbnailFileIdx)).leftJoin(seller)
-				.on(seller.user.username.eq(product.sellerUsername)).leftJoin(category)
-				.on(category.categoryIdx.eq(product.subCategoryIdx)).leftJoin(orderItem)
-				.on(orderItem.product.productIdx.eq(product.productIdx));
-
-		if (username != null && !username.isBlank()) {
+		        .select(Projections.bean(ProductCardDto.class,
+		                product.productIdx,
+		                product.name,
+		                product.discount,
+		                product.salePrice,
+		                product.sellerUsername,
+		                productFile.fileRename,
+		                productFile.storagePath,
+		                Expressions.numberTemplate(
+		                        Double.class,
+		                        "ROUND({0}, 1)",
+		                        review.score.avg().coalesce(0.0)
+		                ).as("avgRating"),
+		                // count는 항상 Long 타입으로 반환
+		                review.count().as("reviewCount"),
+		                seller.brandName,
+		                isFavoriteExpr
+		                
+		        ))
+		        .from(product)
+		        .leftJoin(review).on(review.productIdx.eq(product.productIdx))
+		        .leftJoin(productFile).on(productFile.productFileIdx.eq(product.thumbnailFileIdx))
+		        .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
+		        .leftJoin(category).on(category.categoryIdx.eq(product.subCategoryIdx))
+		        .leftJoin(orderItem).on(orderItem.product.productIdx.eq(product.productIdx));
+		
+		if(username != null && !username.isBlank()) {
 			query.leftJoin(favorite)
 					.on(favorite.productIdx.eq(product.productIdx).and(favorite.userUsername.eq(username)));
 		}
@@ -161,16 +174,30 @@ public class ProductDslRepository {
 		QCategory category2 = new QCategory("category2");
 
 		QSeller seller = QSeller.seller;
-
-		return jpaQueryFactory
-				.select(Projections.bean(ProductDetailDto.class, category1.name.as("category"),
-						category2.name.as("subCategory"), product.productIdx, product.name, product.discount,
-						product.price, product.salePrice, product.postCharge, product.optionYn, product.postType,
-						product.postYn, product.pickupYn, product.zonecode, product.pickupAddr1, product.pickupAddr2,
-						seller.brandName))
-				.from(product).leftJoin(category1).on(category1.categoryIdx.eq(product.categoryIdx)).leftJoin(category2)
-				.on(category2.categoryIdx.eq(product.subCategoryIdx)).leftJoin(seller)
-				.on(seller.user.username.eq(product.sellerUsername)).where(product.productIdx.eq(productId))
+		
+		return jpaQueryFactory.select(Projections.bean(ProductDetailDto.class, 
+					category1.name.as("category"),
+					category2.name.as("subCategory"),
+					product.productIdx,
+					product.name,
+					product.discount,
+					product.price,
+					product.salePrice,
+					product.postCharge,
+					product.optionYn,
+					product.postType,
+					product.postYn,
+					product.pickupYn,
+					product.zonecode,
+					product.pickupAddr1,
+					product.pickupAddr2,
+					seller.brandName
+				))
+				.from(product)
+				.leftJoin(category1).on(category1.categoryIdx.eq(product.categoryIdx))
+				.leftJoin(category2).on(category2.categoryIdx.eq(product.subCategoryIdx))
+				.leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
+				.where(product.productIdx.eq(productId))
 				.fetchFirst();
 	}
 
@@ -185,14 +212,20 @@ public class ProductDslRepository {
 		QProduct product = QProduct.product;
 		// 판매업체
 		QSeller seller = QSeller.seller;
-
-		return jpaQueryFactory
-				.select(Projections.bean(ProductInquiriesDto.class, inquiries.inquiryIdx,
-						user.nickname.as("writerNickname"), inquiries.content, inquiries.answer, inquiries.writeAt,
-						inquiries.answerAt, seller.brandName))
-				.from(inquiries).leftJoin(user).on(inquiries.writerUsername.eq(user.username)).leftJoin(product)
-				.on(inquiries.productIdx.eq(product.productIdx)).leftJoin(seller)
-				.on(product.sellerUsername.eq(seller.user.username))
+		
+		return jpaQueryFactory.select(Projections.bean(ProductInquiriesDto.class,
+				inquiries.inquiryIdx,
+				user.nickname.as("writerNickname"),
+				inquiries.content,
+				inquiries.answer,
+				inquiries.writeAt,
+				inquiries.answerAt,
+				seller.brandName
+				))
+				.from(inquiries)
+				.leftJoin(user).on(inquiries.writerUsername.eq(user.username))
+				.leftJoin(product).on(inquiries.productIdx.eq(product.productIdx))
+				.leftJoin(seller).on(product.sellerUsername.eq(seller.user.username))
 				.where(product.productIdx.eq(productId).and(inquiries.answer.isNotNull()))
 				.orderBy(inquiries.answerAt.desc()).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize())
 				.fetch();
@@ -224,12 +257,18 @@ public class ProductDslRepository {
 
 		QProduct product = QProduct.product;
 		QSeller seller = QSeller.seller;
-
-		return jpaQueryFactory
-				.select(Projections.bean(OrderListResponseDto.class, product.productIdx.as("productId"),
-						product.name.as("productName"), product.postCharge, product.salePrice, seller.brandName))
-				.from(product).leftJoin(seller).on(product.sellerUsername.eq(seller.user.username))
-				.where(product.productIdx.eq(productId)).fetchFirst();
+		
+		return jpaQueryFactory.select(Projections.bean(OrderListResponseDto.class, 
+					product.productIdx.as("productId"),
+					product.name.as("productName"),
+					product.postCharge,
+					product.salePrice,
+					seller.brandName
+				))
+				.from(product)
+				.leftJoin(seller).on(product.sellerUsername.eq(seller.user.username))
+				.where(product.productIdx.eq(productId))
+				.fetchFirst();
 	}
 
 	// 옵션에 대한 정보를 반환해야함
