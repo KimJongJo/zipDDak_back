@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.entity.FavoritesProduct;
-import com.zipddak.repository.FavoriteProductRepository;
+import com.zipddak.repository.FavoritesProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FavoriteProductServiceImpl implements FavoriteProductService {
 
-	private final FavoriteProductRepository favoriteProductRepository;
+	private final FavoritesProductRepository favoriteProductRepository;
 	
 	@Override
 	public void toggleFavorite(Integer productIdx, String username) {

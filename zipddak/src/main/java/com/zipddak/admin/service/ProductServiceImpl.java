@@ -23,7 +23,7 @@ import com.zipddak.admin.repository.ProductDslRepository;
 import com.zipddak.dto.ProductOptionDto;
 import com.zipddak.dto.UserDto;
 import com.zipddak.entity.FavoritesProduct;
-import com.zipddak.repository.FavoriteProductRepository;
+import com.zipddak.repository.FavoritesProductRepository;
 import com.zipddak.repository.InquiriesRepository;
 import com.zipddak.repository.ProductOptionRepository;
 import com.zipddak.repository.ReviewProductRepository;
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ReviewProductRepository reviewProductRepository;
 	private final ProductOptionRepository productOptionRepository;
 	private final InquiriesRepository inquiriesRepository;
-	private final FavoriteProductRepository favoriteProductRepository;
+	private final FavoritesProductRepository favoriteProductRepository;
 
 	@Override
 	public List<ProductCardDto> productList(String keyword, PageInfo pageInfo, Integer sortId, Integer cate1, Integer cate2, String username) throws Exception {
