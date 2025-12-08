@@ -17,9 +17,11 @@ public class ReviewProductDto {
 	private String content;
 	private Date createdate;
 	private String writer;
-	private Integer productIdx;
 	private Integer orderItemIdx;
 	private Integer img1;
 	private Integer img2;
 	private Integer img3;
+	
+	private Integer productIdx;
+	private String productName;
 }

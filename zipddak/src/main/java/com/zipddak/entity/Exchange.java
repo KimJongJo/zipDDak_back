@@ -28,69 +28,69 @@ import lombok.Setter;
 @Entity
 public class Exchange {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer exchangeIdx;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer exchangeIdx;
 
-    @Column(nullable = false)
-    private Integer orderIdx;
+	@Column(nullable = false)
+	private Integer orderIdx;
 
-    @Column(nullable = false)
-    private String reasonType;
+	@Column(nullable = false)
+	private String reasonType;
 
-    @Column(columnDefinition = "TEXT")
-    private String reasonDetail;
+	@Column(columnDefinition = "TEXT")
+	private String reasonDetail;
 
-    @Column
-    private Integer image1Idx;
+	@Column
+	private Integer image1Idx;
 
-    @Column
-    private Integer image2Idx;
+	@Column
+	private Integer image2Idx;
 
-    @Column
-    private Integer image3Idx;
+	@Column
+	private Integer image3Idx;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ShippingChargeType shippingChargeType; // BUYER, SELLER
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ShippingChargeType shippingChargeType; // BUYER, SELLER
 
-    @Column(nullable = false)
-    private Integer roundShippingFee;
+	@Column(nullable = false)
+	private Integer roundShippingFee;
 
-    @Column(nullable = false)
-    private String reshipName;
+	@Column(nullable = false)
+	private String reshipName;
 
-    @Column(nullable = false)
-    private String reshipPhone;
+	@Column(nullable = false)
+	private String reshipPhone;
 
-    @Column(nullable = false)
-    private String reshipZipcode;
+	@Column(nullable = false)
+	private String reshipZipcode;
 
-    @Column(nullable = false)
-    private String reshipAddr1;
+	@Column(nullable = false)
+	private String reshipAddr1;
 
-    @Column
-    private String reshipAddr2;
+	@Column
+	private String reshipAddr2;
 
-    @Column
-    private String reshipPostMemo;
+	@Column
+	private String reshipPostMemo;
 
-    @Column
-    private String pickupPostComp;
+	@Column
+	private String pickupPostComp;
 
-    @Column
-    private String pickupTrackingNo;
+	@Column
+	private String pickupTrackingNo;
 
-    @Column
-    private String reshipPostComp;
+	@Column
+	private String reshipPostComp;
 
-    @Column
-    private String reshipTrackingNo;
+	@Column
+	private String reshipTrackingNo;
 
-    @CreationTimestamp
-    private Date createdAt;
+	@CreationTimestamp
+	private Date createdAt;
 
-    public enum ShippingChargeType {
-        BUYER, SELLER
-    }
+	public enum ShippingChargeType {
+		BUYER, SELLER
+	}
 }

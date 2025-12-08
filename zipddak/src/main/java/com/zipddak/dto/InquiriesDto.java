@@ -21,7 +21,8 @@ public class InquiriesDto {
     private Integer image2Idx;
     private Integer image3Idx;
     private Integer orderIdx;
-    private Integer productIdx;
     private Date writeAt;
     private Date answerAt;
+    private Integer productIdx;
+    
 }
