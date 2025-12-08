@@ -25,13 +25,13 @@ public class SellerProductServiceImpl implements SellerProductService {
 	public List<CategoryResponseDto> getCategoryTree() throws Exception {
 
 	    // 대카테고리 : depth = 1 + type = "product" 
-	    List<Category> pdCateList = category_repo.findByDepthAndCategoryType_Type(1, "product");
+	    List<Category> pdCateList = category_repo.findByDepthAndType(1, "product");
 
 	    List<CategoryResponseDto> result = new ArrayList<>();
 	    for (Category ct : pdCateList) {
 
 	        // 소카테고리 : depth = 2 + type = "product" 
-	        List<Category> children = category_repo.findByParentIdxAndCategoryType_Type(ct.getCategoryIdx(), "product");
+	        List<Category> children = category_repo.findByParentIdxAndType(ct.getCategoryIdx(), "product");
 
 	        CategoryResponseDto CateResDto = new CategoryResponseDto();
 	        CateResDto.setCategoryIdx(ct.getCategoryIdx());

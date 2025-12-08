@@ -4,6 +4,8 @@ import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +16,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.zipddak.dto.OrderDto;
 
@@ -53,7 +56,7 @@ public class Order {
 	@Column(nullable = false)
 	private Long totalAmount;
 
-	@Column(nullable = false)
+	@Column
 	private Integer paymentIdx;
 
 	@Column
@@ -76,6 +79,14 @@ public class Order {
 
 	@CreationTimestamp
 	private Date createdAt;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private PaymentStatus paymentStatus;
+	
+	public enum PaymentStatus {
+		결제완료, 결제대기
+	}
 
 	public OrderDto toDto() {
 		return OrderDto.builder().orderIdx(orderIdx).orderCode(orderCode).subtotalAmount(subtotalAmount)

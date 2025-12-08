@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductDetailDto {
 	
-
+	private Integer productIdx; // 상품 번호
 	private String name; // 상품 이름
 	private Integer discount; // 할인율
 	private Long price; // 가격
