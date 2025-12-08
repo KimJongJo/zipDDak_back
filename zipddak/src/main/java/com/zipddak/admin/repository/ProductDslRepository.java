@@ -159,7 +159,7 @@ public class ProductDslRepository {
 		        .from(product)
 		        .leftJoin(review).on(review.productIdx.eq(product.productIdx))
 		        .leftJoin(productFile).on(productFile.productFileIdx.eq(product.thumbnailFileIdx))
-		        .leftJoin(seller).on(seller.username.eq(product.sellerUsername))
+		        .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
 		        .leftJoin(category).on(category.categoryIdx.eq(product.subCategoryIdx))
 		        .leftJoin(orderItem).on(orderItem.product.productIdx.eq(product.productIdx));
 		
@@ -218,7 +218,7 @@ public class ProductDslRepository {
 				.from(product)
 				.leftJoin(category1).on(category1.categoryIdx.eq(product.categoryIdx))
 				.leftJoin(category2).on(category2.categoryIdx.eq(product.subCategoryIdx))
-				.leftJoin(seller).on(seller.username.eq(product.sellerUsername))
+				.leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
 				.where(product.productIdx.eq(productId))
 				.fetchFirst();
 	}
@@ -248,7 +248,7 @@ public class ProductDslRepository {
 				.from(inquiries)
 				.leftJoin(user).on(inquiries.writerUsername.eq(user.username))
 				.leftJoin(product).on(inquiries.productIdx.eq(product.productIdx))
-				.leftJoin(seller).on(product.sellerUsername.eq(seller.username))
+				.leftJoin(seller).on(product.sellerUsername.eq(seller.user.username))
 				.where(product.productIdx.eq(productId).and(inquiries.answer.isNotNull()))
 				.orderBy(inquiries.answerAt.desc())
 				.offset(pageRequest.getOffset())
@@ -302,7 +302,7 @@ public class ProductDslRepository {
 					seller.brandName
 				))
 				.from(product)
-				.leftJoin(seller).on(product.sellerUsername.eq(seller.username))
+				.leftJoin(seller).on(product.sellerUsername.eq(seller.user.username))
 				.where(product.productIdx.eq(productId))
 				.fetchFirst();
 	}
