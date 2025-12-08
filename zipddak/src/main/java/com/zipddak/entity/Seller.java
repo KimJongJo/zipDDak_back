@@ -22,7 +22,10 @@ public class Seller {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer sellerIdx;
-
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="username")
+    private User user;
 
     @Column(unique = true)
     private Integer logoFileIdx;
