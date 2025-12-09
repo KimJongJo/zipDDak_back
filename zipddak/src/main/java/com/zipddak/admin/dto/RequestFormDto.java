@@ -22,7 +22,8 @@ public class RequestFormDto {
 	private String cate3;
 	private Integer budget;
 	private Date preferredDate;
-	private String location;
+	private String addr1;
+	private String addr2;
 	private String constructionSize;
 	private String additionalRequest;
 	private String purpose;

@@ -1,12 +1,16 @@
 package com.zipddak.admin.repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -14,6 +18,8 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zipddak.admin.dto.CartBrandDto;
+import com.zipddak.admin.dto.CartProductDetailDto;
 import com.zipddak.admin.dto.OptionDto;
 import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderItemsDto;
@@ -25,6 +31,10 @@ import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.UserDto;
+import com.zipddak.entity.Cart;
+import com.zipddak.entity.Product;
+import com.zipddak.entity.ProductFile;
+import com.zipddak.entity.ProductOption;
 import com.zipddak.entity.QCart;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QFavoritesProduct;
@@ -38,6 +48,7 @@ import com.zipddak.entity.QReviewFile;
 import com.zipddak.entity.QReviewProduct;
 import com.zipddak.entity.QSeller;
 import com.zipddak.entity.QUser;
+import com.zipddak.entity.Seller;
 
 @Repository
 public class ProductDslRepository {
@@ -340,6 +351,78 @@ public class ProductDslRepository {
 				.on(product.thumbnailFileIdx.eq(productFile.productFileIdx)).leftJoin(productOption)
 				.on(orderItem.productOptionIdx.eq(productOption.productOptionIdx)) // 옵션 join
 				.where(orderItem.orderIdx.eq(orderIdx)).fetch();
+	}
+
+	// 카트 리스트 보여주기
+	public List<CartBrandDto> cartList(String username) {
+
+		QCart cart = QCart.cart;
+		QProduct product = QProduct.product;
+		QProductOption productOption = QProductOption.productOption;
+		QSeller seller = QSeller.seller;
+		QProductFile productFile = QProductFile.productFile;
+		
+		// 특정 사용자에 대한 모든 장바구니 리스트 불러오기
+		// Tuple -> 한번의 쿼리로 여러 엔티티 가져올수 있음
+		List<Tuple> firstList = jpaQueryFactory
+			    .select(cart, product, productFile, productOption, seller)
+			    .from(cart)
+			    .leftJoin(cart.product, product) // cart와 product 조인
+			    .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
+			    .leftJoin(productFile).on(product.thumbnailFileIdx.eq(productFile.productFileIdx)) // 조인 조건
+			    .leftJoin(productOption).on(cart.optionIdx.eq(productOption.productOptionIdx))       // 조인 조건
+			    .where(cart.userUsername.eq(username))
+			    .fetch();
+		
+		// 브랜드 별로 담기
+		Map<Integer, List<CartProductDetailDto>> mapList = firstList.stream().map(tuple -> {
+	        Cart c = tuple.get(cart);
+	        Product p = tuple.get(product);
+	        ProductOption o = tuple.get(productOption);
+	        ProductFile f = tuple.get(productFile);
+	        Seller s = tuple.get(seller);
+	        return new CartProductDetailDto(
+	        		o.getProductOptionIdx(),
+	        		p.getProductIdx(),
+	        		c.getCartIdx(),
+	        		f.getFileRename(),
+	        		f.getStoragePath(),
+	        		p.getName(),
+	        		o.getName(),
+	        		o.getValue(),
+	        		c.getQuantity(),
+	        		p.getSalePrice(),
+	        		o.getPrice(),
+	        		p.getPostType(),
+	        		p.getPostCharge(),
+	        		s.getSellerIdx()
+	        		
+	        );
+		}).collect(Collectors.groupingBy(CartProductDetailDto::getSellerIdx));
+		
+		
+		List<CartBrandDto> cartOfBrand = new ArrayList<CartBrandDto>();
+		
+		for(Integer key : mapList.keySet()) {
+			
+			// 상품에 대한 정보를 먼저 넣고
+			CartBrandDto cartDto = jpaQueryFactory.select(Projections.bean(CartBrandDto.class, 
+							seller.sellerIdx.as("brandId"),
+							seller.brandName,
+							seller.freeChargeAmount,
+							seller.basicPostCharge
+					))
+					.from(seller)
+					.where(seller.sellerIdx.eq(key))
+					.fetchOne();
+			
+			// map에 있는 productList를 key의 값으로 가져옴
+			cartDto.setProductList(mapList.get(key));
+
+			cartOfBrand.add(cartDto);
+		}
+		
+		return cartOfBrand;
 	}
 
 

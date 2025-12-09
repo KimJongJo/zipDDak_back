@@ -50,15 +50,15 @@ public class SignUpServiceImpl implements SignUpService {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@Value("${file.upload.expert}")
+	@Value("${expertFile.path}")
 	private String expertUpload;
 	@Autowired
 	private ExpertFileRepository expertFileRepository;
 	
-	@Value("${file.upload.profile}")
+	@Value("${profileFile.path}")
 	private String profileUpload;
 	
-	@Value("${file.upload.seller}")
+	@Value("${sellerFile.path}")
 	private String sellerUpload;
 	@Autowired
 	private SellerFileRepository sellerFileRepository;

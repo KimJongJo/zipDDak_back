@@ -27,7 +27,7 @@ public class RequestServiceImpl implements RequestService {
 	private final ExpertFileRepository expertFileRepository;
 	private final CategoryRepository categoryRepository;
 
-	@Value("${file.upload.expert}")
+	@Value("${expertFile.path}")
 	private String expertFilePath;
 	
 	@Override
@@ -78,7 +78,6 @@ public class RequestServiceImpl implements RequestService {
 		// 2. 요청서 생성후 저장
 		
 		// 가져온 데이터에서 카테고리 1, 2, 3 에 맞는 idx를 가져와야함
-		System.out.println("카테 : " + requestForm.getCate1());
 		Integer cate1 = categoryRepository.findByName(requestForm.getCate1()).getCategoryIdx();
 		
 		// 시공 견적은 cate2 / 3없음
@@ -97,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
 							.largeServiceIdx(cate1)
 							.budget(requestForm.getBudget())
 							.preferredDate(requestForm.getPreferredDate())
-							.location(requestForm.getLocation())
+							.location(requestForm.getAddr1() + " " + requestForm.getAddr2())
 							.constructionSize(requestForm.getConstructionSize())
 							.additionalRequest(requestForm.getAdditionalRequest())
 							.purpose(requestForm.getPurpose())
