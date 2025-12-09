@@ -3,7 +3,6 @@ package com.zipddak.entity;
 import java.sql.Date;
 import javax.persistence.*;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,6 +17,7 @@ import lombok.*;
 @DynamicInsert
 @Entity
 public class Seller {
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,9 @@ public class Seller {
     private Integer compFileIdx;
 
     @Column(unique = true)
+    private Integer profileFileIdx;
+
+    @Column(unique = true)
     private Integer onlinesalesFileIdx;
 
     @Column(nullable = false)
@@ -44,9 +47,6 @@ public class Seller {
 
     @Column
     private String compHp;
-    
-    @Column
-    private String ceoName;
 
     @Column(nullable = false)
     private String managerName;
@@ -67,6 +67,24 @@ public class Seller {
     private String introduction;
 
     @Column
+    private String settleBank;
+
+    @Column(unique = true)
+    private String settleAccount;
+
+    @Column
+    private String settleHost;
+
+    @Column
+    private String compZonecode;
+
+    @Column
+    private String compAddr1;
+
+    @Column
+    private String compAddr2;
+
+    @Column
     private String pickupZonecode;
 
     @Column
@@ -80,9 +98,8 @@ public class Seller {
 
     @Column
     private Long freeChargeAmount;
-    
+
     @Column(nullable = false)
-    @ColumnDefault("0")
     private Boolean approvalYn;
 
     @CreationTimestamp

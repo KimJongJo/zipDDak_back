@@ -1,14 +1,23 @@
 package com.zipddak.entity;
 
 import java.sql.Date;
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
-import com.zipddak.entity.OrderItem.OrderStatus;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -19,75 +28,64 @@ import lombok.*;
 @Entity
 public class Inquiries {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer inquiryIdx;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer inquiryIdx;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private InquiryType type;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private InquiryType type;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
+	@Column(columnDefinition = "TEXT", nullable = false)
+	private String content;
 
-    @Column(nullable = false)
-    private String writerUsername;
+	@Column(nullable = false)
+	private String writerUsername;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private WriterType writerType;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private WriterType writerType;
 
-    @Column
-    private String answererUsername;
+	@Column
+	private String answererUsername;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AnswererType answererType;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private AnswererType answererType;
 
-    @Column(columnDefinition = "TEXT")
-    private String answer;
+	@Column(columnDefinition = "TEXT")
+	private String answer;
 
-    @Column
-    private Integer image1Idx;
+	@Column
+	private Integer image1Idx;
 
-    @Column
-    private Integer image2Idx;
+	@Column
+	private Integer image2Idx;
 
-    @Column
-    private Integer image3Idx;
+	@Column
+	private Integer image3Idx;
 
-    @Column
-    private Integer orderIdx;
+	@Column
+	private Integer orderItemIdx;
 
-    @Column
-    private Integer productIdx;
+	@Column
+	private Integer productIdx;
 
-    @CreationTimestamp
-    private Date writeAt;
+	@CreationTimestamp
+	private Date writeAt;
 
-    @CreationTimestamp
-    private Date answerAt;
+	private Date answerAt;
 
-    public enum InquiryType {
-        PAYMENT,
-        SHIPPING,
-        ORDER_ISSUE,
-        RENTAL,
-        EXPERT_MATCHING,
-        USER_MATCHING,
-        ACCOUNT,
-        SETTLEMENT,
-        SUGGESTION,
-        MEMBERSHIP,
-        SYSTEM,
-        ETC
-    }
+	public enum InquiryType {
+		PAYMENT, SHIPPING, ORDER_ISSUE, RENTAL, EXPERT_MATCHING, USER_MATCHING, ACCOUNT, SETTLEMENT, SUGGESTION,
+		MEMBERSHIP, SYSTEM, PRODUCT, ETC
+	}
 
-    public enum WriterType {
-        USER, EXPERT, SELLER
-    }
+	public enum WriterType {
+		USER, EXPERT, SELLER
+	}
 
-    public enum AnswererType {
-        EXPERT, SELLER, ADMIN
-    }
+	public enum AnswererType {
+		SELLER, ADMIN
+	}
 }

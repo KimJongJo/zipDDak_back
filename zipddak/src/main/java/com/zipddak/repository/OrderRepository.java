@@ -8,4 +8,6 @@ import com.zipddak.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 	List<Order> findByUserUsername(String username);
+
+	Order findByOrderCode(String orderId);
 }
