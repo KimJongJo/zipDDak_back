@@ -47,6 +47,9 @@ public class Seller {
 
     @Column
     private String compHp;
+    
+    @Column
+    private String ceoName;
 
     @Column(nullable = false)
     private String managerName;
