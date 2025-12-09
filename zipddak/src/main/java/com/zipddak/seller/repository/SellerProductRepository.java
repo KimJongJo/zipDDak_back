@@ -56,11 +56,10 @@ public class SellerProductRepository {
 									                        product.createdAt
 									                ))
 									                .from(product)
-									                .where(
-									                        QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
-//									                        QPredicate.inInt(product.visibleYn, scDto.getVisibleList()),
-									                        QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),
-									                        QPredicate.contains(product.name, scDto.getKeyword()))
+									                .where(QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
+									                		QPredicate.inBoolean(product.visibleYn, scDto.getVisibleList()),
+									                	    QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),
+									                	    QPredicate.contains(product.name, scDto.getKeyword()))
 									                .orderBy(product.productIdx.desc())
 									                .offset(pageRequest.getOffset())
 									                .limit(pageRequest.getPageSize())

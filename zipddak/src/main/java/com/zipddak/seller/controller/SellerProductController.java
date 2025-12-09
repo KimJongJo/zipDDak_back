@@ -84,14 +84,17 @@ public class SellerProductController {
 	//상품 리스트
 	@GetMapping("/myProductList")
 	public ResponseEntity<?> getProductList(@RequestParam("sellerId") String sellerUsername,
-											@RequestParam(value="visible", required = false) String visible,
+											@RequestParam(value="status", required = false) String status,
 								            @RequestParam(value="category", required = false) String category,
 								            @RequestParam(value="keyword", required = false) String keyword,
 								            @RequestParam(value="page", required=false, defaultValue="1") Integer page) {
 		System.out.println("sellerUsername : " + sellerUsername);
+		System.out.println("status : " + status);
+		System.out.println("category : " + category);
+		System.out.println("keyword : " + keyword);
 		
 		try {
-			Map<String, Object> sellerProductList = product_svc.searchMyProductList(sellerUsername, visible, category, keyword, page);
+			Map<String, Object> sellerProductList = product_svc.searchMyProductList(sellerUsername, status, category, keyword, page);
 			return ResponseEntity.ok(sellerProductList);
 			
 		} catch (Exception e) {

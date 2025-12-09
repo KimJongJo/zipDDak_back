@@ -16,7 +16,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.zipddak.dto.OrderDto;
 
