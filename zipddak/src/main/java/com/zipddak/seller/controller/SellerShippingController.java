@@ -1,10 +1,7 @@
 package com.zipddak.seller.controller;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,29 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zipddak.dto.OrderDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.service.SellerOrderService;
+import com.zipddak.seller.service.SellerShippingService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/seller/order")
+@RequestMapping("/seller/shipping")
 @RequiredArgsConstructor
-public class SellerOrderController {
-
-	private final SellerOrderService order_svc;
-
-	// 주문 리스트
-	@GetMapping("/myOrderList")
-	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername, 
+public class SellerShippingController {
+	
+	private final SellerShippingService shipping_svc;
+	
+	
+	//배송 진행 리스트
+	@GetMapping("/myShippingList")
+	public ResponseEntity<?> shippingList(@RequestParam("sellerId") String sellerUsername, 
 										@RequestParam(value="page", required=false, defaultValue="1") Integer page,
 										SearchConditionDto scDto) {
 		
 
 		try {
-			Map<String, Object> myOrder = order_svc.getMyOrderList(sellerUsername, page, scDto);
-			return ResponseEntity.ok(myOrder);
+			Map<String, Object> myShipping = shipping_svc.getMyShippingList(sellerUsername, page, scDto);
+			return ResponseEntity.ok(myShipping);
 
 		} catch (Exception e) {
 			e.printStackTrace();
