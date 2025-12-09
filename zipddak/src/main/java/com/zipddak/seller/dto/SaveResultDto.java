@@ -1,7 +1,5 @@
 package com.zipddak.seller.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,12 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponseDto {
+public class SaveResultDto {
 	
-
-
-	private Integer categoryIdx;
-	private String name;
-	private List<SubCategoryResponseDto> subCategories;
+	private boolean success; //성공여부
+	private Integer productIdx;	//product 등록시 productIdx
+	private String message;	//메세지 
 
 }

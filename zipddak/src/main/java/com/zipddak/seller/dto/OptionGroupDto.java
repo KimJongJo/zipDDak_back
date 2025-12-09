@@ -7,14 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor 
 @AllArgsConstructor
-@NoArgsConstructor
-public class CategoryResponseDto {
+public class OptionGroupDto {
 	
-
-
-	private Integer categoryIdx;
-	private String name;
-	private List<SubCategoryResponseDto> subCategories;
+	 private String optionName;
+	 private List<OptionValueDto> values;
 
 }

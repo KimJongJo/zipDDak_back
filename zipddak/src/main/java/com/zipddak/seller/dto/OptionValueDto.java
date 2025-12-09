@@ -5,12 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor 
 @AllArgsConstructor
-@NoArgsConstructor
-public class SubCategoryResponseDto {
+public class OptionValueDto {
 	
-	 private Integer categoryIdx;
-	 private String name;
-	
-
+	private String value;
+    private Long price;
 }
