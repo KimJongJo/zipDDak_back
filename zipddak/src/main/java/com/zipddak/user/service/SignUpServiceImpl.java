@@ -26,11 +26,11 @@ import com.zipddak.entity.User;
 import com.zipddak.repository.CategoryRepository;
 import com.zipddak.repository.ExpertFileRepository;
 import com.zipddak.repository.SellerFileRepository;
+import com.zipddak.repository.ExpertRepository;
+import com.zipddak.repository.SellerRepository;
+import com.zipddak.repository.UserRepository;
 import com.zipddak.user.dto.ExpertInsertDto;
 import com.zipddak.user.dto.SellerInsertDto;
-import com.zipddak.user.repository.SignExpertRepository;
-import com.zipddak.user.repository.SignSellerRepository;
-import com.zipddak.user.repository.UserRepository;
 
 @Service
 public class SignUpServiceImpl implements SignUpService {
@@ -39,13 +39,13 @@ public class SignUpServiceImpl implements SignUpService {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private SignExpertRepository signExpertRepository;
+	private ExpertRepository signExpertRepository;
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
 	@Autowired
-	private SignSellerRepository signSellerRepository;
+	private SellerRepository signSellerRepository;
 	
 	@Autowired
 	private ModelMapper modelMapper;
