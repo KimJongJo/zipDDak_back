@@ -22,9 +22,6 @@ public interface SignUpService {
 	
 	//전문가 카테고리 불러오기
 	Map<Integer, List<CategoryDto>> showExpertCategory (List<Integer> parentIdxList) throws Exception;
-	
-	//로그인
-	UserDto login (String username, String password) throws Exception;
 
 	//휴대폰 인증
 	
