@@ -33,7 +33,7 @@ public class Expert {
     private Integer expertIdx;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="user_username")
+	@JoinColumn(name="username")
     private User user;
 
     @Column(nullable = false)
@@ -91,7 +91,7 @@ public class Expert {
     private Integer certImage3Id;
     
     @Column
-    private String business_license;	//사업자 등록번호 추가
+    private String businessLicense;	//사업자 등록번호 추가
 
     @Column
     private Integer businessLicensePdfId;
