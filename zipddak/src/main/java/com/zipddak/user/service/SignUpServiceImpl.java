@@ -50,15 +50,15 @@ public class SignUpServiceImpl implements SignUpService {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@Value("${file.upload.expert}")
+	@Value("${expertFile.path}")
 	private String expertUpload;
 	@Autowired
 	private ExpertFileRepository expertFileRepository;
 	
-	@Value("${file.upload.profile}")
+	@Value("${profileFile.path}")
 	private String profileUpload;
 	
-	@Value("${file.upload.seller}")
+	@Value("${productFile.path}")
 	private String sellerUpload;
 	@Autowired
 	private SellerFileRepository sellerFileRepository;
@@ -199,12 +199,6 @@ public class SignUpServiceImpl implements SignUpService {
 	    	e.printStackTrace();
 	    }
 		
-	}
-	
-	@Override
-	public UserDto login(String username, String password) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 

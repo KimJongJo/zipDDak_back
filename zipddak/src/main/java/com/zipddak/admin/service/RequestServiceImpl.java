@@ -27,7 +27,7 @@ public class RequestServiceImpl implements RequestService {
 	private final ExpertFileRepository expertFileRepository;
 	private final CategoryRepository categoryRepository;
 
-	@Value("${file.upload.expert}")
+	@Value("${expertFile.path}")
 	private String expertFilePath;
 	
 	@Override
