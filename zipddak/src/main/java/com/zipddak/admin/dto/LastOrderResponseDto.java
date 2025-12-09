@@ -2,6 +2,8 @@ package com.zipddak.admin.dto;
 
 import java.util.List;
 
+import com.zipddak.dto.UserDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class productPaymentStep1Dto {
+public class LastOrderResponseDto {
 
-	private String username;
-	private List<BrandDto> brandList;
-	private RecvUserDto recvUser;
+	private UserDto userInfo;
+	private List<BrandDto> brandDto;
 	
 }
