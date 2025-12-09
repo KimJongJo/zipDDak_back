@@ -15,9 +15,10 @@ public class FavoriteExpertDto {
 	private String profileImage; // 프로필 이미지 경로
 	private String mainService; // 대표 서비스 카테고리명
 
+	private String activityArea; // 활동지역
 	private Integer careerCount; // 경력 기간
-	private Integer matchingCount; // 고용 횟수
+	private Long matchingCount; // 고용 횟수
 
-	private Double avgScore; // 평균 평점
-	private Integer reviewCount; // 후기 개수
+	private Integer avgScore; // 평균 평점
+	private Long reviewCount; // 후기 개수
 }

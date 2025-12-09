@@ -18,5 +18,5 @@ public class FavoriteCommunityDto {
 	private String writerNickname; // 글쓴이 닉네임
 	private Integer views; // 조회수
 
-	private Integer replyCount; // 댓글 수
+	private Long replyCount; // 댓글 수
 }

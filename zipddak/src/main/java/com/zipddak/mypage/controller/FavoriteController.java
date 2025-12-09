@@ -76,6 +76,18 @@ public class FavoriteController {
 		}
 	}
 
+	// 공구 좋아요
+	@GetMapping("/like/tool")
+	public ResponseEntity<Boolean> likeTool(@RequestParam("username") String username,
+			@RequestParam("toolIdx") Integer toolIdx) {
+		try {
+			return ResponseEntity.ok(favoriteService.toggleToolLike(username, toolIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
 	// 관심 전문가 조회
 	@GetMapping("/likeList/expert")
 	public ResponseEntity<Map<String, Object>> favoriteExpertList(@RequestParam("username") String username,
@@ -96,6 +108,18 @@ public class FavoriteController {
 		}
 	}
 
+	// 전문가 좋아요
+	@GetMapping("/like/expert")
+	public ResponseEntity<Boolean> likeExpert(@RequestParam("username") String username,
+			@RequestParam("expertIdx") Integer expertIdx) {
+		try {
+			return ResponseEntity.ok(favoriteService.toggleExpertLike(username, expertIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
 	// 관심 커뮤니티 조회
 	@GetMapping("/likeList/community")
 	public ResponseEntity<Map<String, Object>> favoriteCommunityList(@RequestParam("username") String username,
@@ -108,6 +132,38 @@ public class FavoriteController {
 
 			Map<String, Object> res = new HashMap<>();
 			res.put("favoriteCommunityList", favoriteCommunityList);
+			res.put("pageInfo", pageInfo);
+
+			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// 커뮤니티 좋아요
+	@GetMapping("/like/community")
+	public ResponseEntity<Boolean> likeCommunity(@RequestParam("username") String username,
+			@RequestParam("communityIdx") Integer communityIdx) {
+		try {
+			return ResponseEntity.ok(favoriteService.toggleCommunityLike(username, communityIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// 내 커뮤니티 목록 조회
+	@GetMapping("/my/communityList")
+	public ResponseEntity<Map<String, Object>> myCommunityList(@RequestParam("username") String username,
+			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page) {
+		try {
+			PageInfo pageInfo = new PageInfo(page);
+
+			List<FavoriteCommunityDto> myCommunityList = favoriteService.getMyCommunityList(username, pageInfo);
+
+			Map<String, Object> res = new HashMap<>();
+			res.put("myCommunityList", myCommunityList);
 			res.put("pageInfo", pageInfo);
 
 			return ResponseEntity.ok(res);
