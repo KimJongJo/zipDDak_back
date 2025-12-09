@@ -18,12 +18,14 @@ import com.zipddak.admin.dto.OptionDto;
 import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderItemsDto;
 import com.zipddak.admin.dto.OrderListResponseDto;
+import com.zipddak.admin.dto.OrderListToListDto;
 import com.zipddak.admin.dto.ProductCardDto;
 import com.zipddak.admin.dto.ProductDetailDto;
 import com.zipddak.admin.dto.ProductInquiriesDto;
 import com.zipddak.admin.dto.ProductReviewsDto;
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.UserDto;
+import com.zipddak.entity.QCart;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QFavoritesProduct;
 import com.zipddak.entity.QInquiries;
@@ -330,7 +332,7 @@ public class ProductDslRepository {
 		return jpaQueryFactory.select(Projections.bean(OrderItemsDto.class, orderItem.orderItemIdx, // order_item_idx
 				orderItem.quantity, // quantity
 				productFile.fileRename.as("fileRename"), productFile.storagePath.as("storagePath"),
-				product.name.as("productName"), orderItem.unitPrice.as("productPrice"),
+				product.name.as("productName"), product.salePrice.as("productPrice"),
 				Projections.bean(OptionDto.class, // 옵션 정보 매핑
 						productOption.name.as("optionName"), productOption.value.as("optionValue"),
 						productOption.price.as("optionPrice")).as("option")))
@@ -339,5 +341,6 @@ public class ProductDslRepository {
 				.on(orderItem.productOptionIdx.eq(productOption.productOptionIdx)) // 옵션 join
 				.where(orderItem.orderIdx.eq(orderIdx)).fetch();
 	}
+
 
 }

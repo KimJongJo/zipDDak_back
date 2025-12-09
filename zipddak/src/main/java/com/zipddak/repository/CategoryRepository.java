@@ -2,7 +2,9 @@ package com.zipddak.repository;
 
 import java.util.List;
 
+import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.zipddak.entity.Category;
 import com.zipddak.entity.Category.CategoryType;
@@ -18,6 +20,12 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 //    List<Category> findByParentIdxAndCategoryType_Type(Integer parentIdx, String type);
     
 	List<Category> findByParentIdxAndType(Integer parentIdx, CategoryType type);
+
+	@Query("SELECT c.categoryIdx FROM Category c WHERE c.name = :name")
+	Integer findCategoryIdxByName(@Param("name") String name);
+	
+	Category findByName(String name);
+
 
 
 }

@@ -8,4 +8,6 @@ import com.zipddak.entity.FavoritesProduct;
 
 public interface FavoritesProductRepository extends JpaRepository<FavoritesProduct, Integer> {
 	Optional<FavoritesProduct> findByUserUsernameAndProductIdx(String username, Integer productIdx);
+	
+	Optional<FavoritesProduct> findByProductIdxAndUserUsername(Integer productIdx, String userUsername);
 }
