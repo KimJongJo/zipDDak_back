@@ -16,12 +16,13 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
+import com.zipddak.dto.OrderItemDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Getter
 @Setter
@@ -83,6 +84,15 @@ public class OrderItem {
 	}
 
 	public enum OrderStatus {
-		상품준비중, 배송중, 배송완료, 취소완료, 교환요청, 교환회수, 교환발송, 교환완료, 교환거절, 반품요청, 반품회수, 반품완료, 반품거절
+		상품준비중, 배송중, 배송완료, 취소완료, 교환요청, 교환회수, 교환발송, 교환완료, 교환거절, 반품요청, 반품회수, 반품완료, 반품거절, 결제대기
+	}
+
+	public OrderItemDto toDto() {
+		return OrderItemDto.builder().orderItemIdx(orderItemIdx).orderIdx(orderIdx).productOptionIdx(productOptionIdx)
+				.unitPrice(unitPrice).quantity(quantity).receiveWay(receiveWay.toString()).postComp(postComp)
+				.trackingNo(trackingNo).orderStatus(orderStatus.toString()).refundIdx(refundIdx)
+				.exchangeIdx(exchangeIdx).exchangeNewOptIdx(exchangeNewOptIdx).createdAt(createdAt)
+				.productIdx(product.getProductIdx()).name(product.getName()).sellerUsername(product.getSellerUsername())
+				.build();
 	}
 }

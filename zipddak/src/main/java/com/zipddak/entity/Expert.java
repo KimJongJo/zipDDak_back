@@ -4,9 +4,12 @@ import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -29,8 +32,9 @@ public class Expert {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer expertIdx;
 
-    @Column(nullable = false)
-    private String userUsername;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="username")
+    private User user;
 
     @Column(nullable = false)
     private String activityName;
@@ -85,6 +89,9 @@ public class Expert {
 
     @Column
     private Integer certImage3Id;
+    
+    @Column
+    private String businessLicense;	//사업자 등록번호 추가
 
     @Column
     private Integer businessLicensePdfId;

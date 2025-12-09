@@ -15,7 +15,8 @@ public class SellerDto {
     private String phone;
     private Integer logoFileIdx;
     private String compBno;
-    private Integer profileFileIdx;
+    private Integer compFileIdx;	//사업자등록증 추가
+//    private Integer profileFileIdx;	//logofile과 중복되는 듯
     private Integer onlinesalesFileIdx;
     private String compName;
     private String compHp;
@@ -29,9 +30,9 @@ public class SellerDto {
     private String settleBank;
     private String settleAccount;
     private String settleHost;
-    private String compZonecode;
-    private String compAddr1;
-    private String compAddr2;
+    private String zonecode;	//userTable과 동일하게 컬럼명 수정
+    private String addr1;	//userTable과 동일하게 컬럼명 수정
+    private String addr2;	//userTable과 동일하게 컬럼명 수정
     private String pickupZonecode;
     private String pickupAddr1;
     private String pickupAddr2;
@@ -39,6 +40,6 @@ public class SellerDto {
     private Long freeChargeAmount;
     private String role;
     private Boolean approvalYn;
-    private Date createdAt;
+    private Date createdate;	//userTable과 동일하게 컬럼명 수정
     private Date updatedAt;
 }

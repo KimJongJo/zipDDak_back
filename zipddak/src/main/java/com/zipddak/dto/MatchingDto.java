@@ -9,13 +9,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MatchingDto {
-    private Integer matchingIdx;
-    private String matchingCode;
-    private Integer requestIdx;
-    private Integer estimateIdx;
-    private Integer paymentIdx;
-    private Date workStartDate;
-    private Date workEndDate;
-    private String status;
-    private Date createdAt;
+	private Integer matchingIdx;
+	private String matchingCode;
+	private String userUsername;
+	private Integer expertIdx;
+	private Integer requestIdx;
+	private Integer estimateIdx;
+	private Integer paymentIdx;
+	private Date workStartDate;
+	private Date workEndDate;
+	private String status;
+	private Date createdAt;
 }

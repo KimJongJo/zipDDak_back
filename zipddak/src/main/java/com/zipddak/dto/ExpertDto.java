@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class ExpertDto {
 
     private Integer expertIdx;
-    private String userUsername;
+    private String username;
     private String activityName;
     private Integer profileImageIdx;
     private String introduction;
