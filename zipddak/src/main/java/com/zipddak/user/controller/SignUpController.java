@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.CategoryDto;
+import com.zipddak.dto.SellerDto;
 import com.zipddak.dto.UserDto;
-import com.zipddak.entity.Category.CategoryType;
 import com.zipddak.user.dto.ExpertInsertDto;
+import com.zipddak.user.dto.SellerInsertDto;
 import com.zipddak.user.service.SignUpService;
 
 @RestController
@@ -58,14 +59,12 @@ public class SignUpController {
 
 	@GetMapping(value = "/signUpExpertCategory")
 	public ResponseEntity<Map<Integer, List<CategoryDto>>> signUpExpertCategory(
-			@RequestParam("parentIdx") List<Integer> parentIdx, @RequestParam("type") CategoryType type) {
+			@RequestParam("parentIdx") List<Integer> parentIdx) {
 
 		Map<Integer, List<CategoryDto>> categoryList = new HashMap<>();
-		System.out.println("타입>>"+type);
-		System.out.println("dddd>>>>" + parentIdx);
-
+		
 		try {
-			categoryList = signUpService.showExpertCategory(parentIdx, type);
+			categoryList = signUpService.showExpertCategory(parentIdx);
 			return ResponseEntity.ok(categoryList);
 
 		} catch (Exception e) {
@@ -76,12 +75,27 @@ public class SignUpController {
 
 	@PostMapping(value = "/joinExpert")
 	public ResponseEntity<Boolean> joinExpert(@RequestPart("businessLicenseFile") MultipartFile file,
-			@RequestPart("expert") ExpertInsertDto expertDto) {
+			ExpertInsertDto expertDto) {
 		try {
-			System.out.println("보자>>>>>>>>"+expertDto);
+			
 			signUpService.joinExpert(expertDto,file);
 			
-			System.out.println("한번더>>>>>>>>"+expertDto);
+			return ResponseEntity.ok(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(false);
+		}
+	}
+	
+	@PostMapping(value = "/joinSeller")
+	public ResponseEntity<Boolean> joinSeller(@RequestPart("compFile") MultipartFile file, 
+			@RequestPart("onlinesalesFile")MultipartFile imgfile, SellerInsertDto sellerDto) {
+		try {
+			
+			String password = bCryptPasswordEncoder.encode(sellerDto.getPassword());
+			sellerDto.setPassword(password);
+			signUpService.joinSeller(sellerDto, file, imgfile);
+			
 			return ResponseEntity.ok(true);
 		} catch (Exception e) {
 			e.printStackTrace();

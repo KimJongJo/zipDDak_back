@@ -18,6 +18,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 //    List<Category> findByParentIdxAndCategoryType_Type(Integer parentIdx, String type);
     
 	List<Category> findByParentIdxAndType(Integer parentIdx, CategoryType type);
-
+	List<Category> findByParentIdx(Integer parentIdx);
 
 }

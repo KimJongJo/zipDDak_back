@@ -31,7 +31,10 @@ public class Seller {
     private Integer logoFileIdx;
 
     @Column(nullable = false, unique = true)
-    private String compBno; 
+    private String compBno;
+    
+    @Column(nullable = false)
+    private Integer compFileIdx;
 
     @Column(unique = true)
     private Integer onlinesalesFileIdx;
