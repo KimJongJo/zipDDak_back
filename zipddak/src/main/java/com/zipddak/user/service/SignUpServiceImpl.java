@@ -23,14 +23,15 @@ import com.zipddak.entity.ExpertFile;
 import com.zipddak.entity.Seller;
 import com.zipddak.entity.SellerFile;
 import com.zipddak.entity.User;
+import com.zipddak.entity.User.UserRole;
 import com.zipddak.repository.CategoryRepository;
 import com.zipddak.repository.ExpertFileRepository;
 import com.zipddak.repository.SellerFileRepository;
+import com.zipddak.repository.ExpertRepository;
+import com.zipddak.repository.SellerRepository;
+import com.zipddak.repository.UserRepository;
 import com.zipddak.user.dto.ExpertInsertDto;
 import com.zipddak.user.dto.SellerInsertDto;
-import com.zipddak.user.repository.SignExpertRepository;
-import com.zipddak.user.repository.SignSellerRepository;
-import com.zipddak.user.repository.UserRepository;
 
 @Service
 public class SignUpServiceImpl implements SignUpService {
@@ -39,26 +40,26 @@ public class SignUpServiceImpl implements SignUpService {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private SignExpertRepository signExpertRepository;
+	private ExpertRepository signExpertRepository;
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
 	@Autowired
-	private SignSellerRepository signSellerRepository;
+	private SellerRepository signSellerRepository;
 	
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@Value("${file.upload.expert}")
+	@Value("${profileFile.path}")
+	private String profileUpload;
+	
+	@Value("${expertFile.path}")
 	private String expertUpload;
 	@Autowired
 	private ExpertFileRepository expertFileRepository;
 	
-	@Value("${file.upload.profile}")
-	private String profileUpload;
-	
-	@Value("${file.upload.seller}")
+	@Value("${productFile.path}")
 	private String sellerUpload;
 	@Autowired
 	private SellerFileRepository sellerFileRepository;
@@ -104,10 +105,11 @@ public class SignUpServiceImpl implements SignUpService {
 		
 		Integer expertFileIdx = null;
 
-		try {
-	    //1. 파일이 있을 경우 ExpertFile에 먼저 저장
+	    //파일이 있을 경우 ExpertFile에 먼저 저장
 	    if (file != null && !file.isEmpty()) {
 
+	    	try {
+	    	
 	        String originName = file.getOriginalFilename();
 	        String rename = UUID.randomUUID() + "_" + originName;
 
@@ -124,14 +126,20 @@ public class SignUpServiceImpl implements SignUpService {
 	        System.out.println(savedFile);
 	        System.out.println(">>>>전문가파일"+expertFileIdx);
 	        
-	     //2. Expert 등록
+	    	}catch (Exception e) {
+	    		e.printStackTrace();
+			}
+	        
+	     //Expert 등록
+	        String username = expertDto.getUsername();
+	        User user = userRepository.findById(username).orElseThrow(()-> new Exception("username error"));
+	        user.setRole(UserRole.EXPERT);
+	        
 	        Expert expert = expertDto.toEntity();
 	        expert.setBusinessLicensePdfId(expertFileIdx);
+	        expert.setUser(user);
 
 	        signExpertRepository.save(expert);
-	    }
-	    }catch(Exception e) {
-	    	e.printStackTrace();
 	    }
 		
 	}
@@ -142,9 +150,10 @@ public class SignUpServiceImpl implements SignUpService {
 		Integer sellerFileIdx = null;
 		Integer SellerImgFileIdx = null;
 
-		try {
 	    //SellerFile에 파일 저장
 	    if (file != null && !file.isEmpty()) {
+	    	
+	    	try {
 
 	        String originName = file.getOriginalFilename();
 	        String rename = UUID.randomUUID() + "_" + originName;
@@ -161,11 +170,17 @@ public class SignUpServiceImpl implements SignUpService {
 	        sellerFileIdx = savedFile.getSellerFileIdx(); 
 	        System.out.println(savedFile);
 	        System.out.println(">>>>셀러파일"+sellerFileIdx);
+	        
+	    	}catch (Exception e) {
+	    		e.printStackTrace();
+	    	}
 	    }
 	        
 	      //SellerFile에 이미지파일 저장
 	    if (imgFile != null && !imgFile.isEmpty()) {
-
+	    	
+	    	try {
+	    		
 	        String originName = imgFile.getOriginalFilename();
 	        String rename = UUID.randomUUID() + "_" + originName;
 
@@ -181,6 +196,10 @@ public class SignUpServiceImpl implements SignUpService {
 	        SellerImgFileIdx = savedImgFile.getSellerFileIdx(); 
 	        System.out.println(savedImgFile);
 	        System.out.println(">>>>셀러파일"+SellerImgFileIdx);
+	        
+	    	}catch (Exception e) {
+	    		e.printStackTrace();
+	    	}
 	    }
 	     
 		    //User테이블 등록
@@ -194,19 +213,8 @@ public class SignUpServiceImpl implements SignUpService {
 	        seller.setOnlinesalesFileIdx(SellerImgFileIdx);
 	        seller.setCompFileIdx(sellerFileIdx);
 	        signSellerRepository.save(seller);
-
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    }
 		
 	}
-	
-	@Override
-	public UserDto login(String username, String password) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	
 

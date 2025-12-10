@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.auth.PrincipalDetails;
 import com.zipddak.entity.User;
-import com.zipddak.user.repository.UserRepository;
+import com.zipddak.repository.UserRepository;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	

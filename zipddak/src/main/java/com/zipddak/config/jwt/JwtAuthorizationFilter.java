@@ -22,7 +22,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.auth.PrincipalDetails;
 import com.zipddak.entity.User;
-import com.zipddak.user.repository.UserRepository;
+import com.zipddak.repository.UserRepository;
 
 // 인가 : 로그인 처리가 되어야만 하는 처리가 들어왔을 때 실행
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -48,7 +48,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		System.out.println(uri);
 		
 		// 로그인(인증) 필요없는 요청은 토큰 체크하지 않는다
-		if(!(uri.contains("/user") || uri.contains("/admin") || uri.contains("/manager"))) {
+		if(!(uri.contains("/zipddak") || uri.contains("/admin") || uri.contains("/manager"))) {
 			chain.doFilter(request, response);
 			return;
 		}

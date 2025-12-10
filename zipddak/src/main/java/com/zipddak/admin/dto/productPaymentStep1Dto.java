@@ -14,9 +14,7 @@ import lombok.NoArgsConstructor;
 public class productPaymentStep1Dto {
 
 	private String username;
-	private Integer productId;
-	private List<OrderListDto> orderList;
-	private Integer postCharge;
+	private List<BrandDto> brandList;
 	private RecvUserDto recvUser;
 	
 }

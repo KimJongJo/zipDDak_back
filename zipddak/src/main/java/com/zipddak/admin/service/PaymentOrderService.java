@@ -2,9 +2,12 @@ package com.zipddak.admin.service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.zipddak.admin.dto.BrandDto;
+import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.RecvUserDto;
 import com.zipddak.admin.repository.ProductDslRepository;
@@ -33,8 +36,8 @@ public class PaymentOrderService implements OrderService {
 
 	// 주문과 주문 상품을 db에 저장
 	@Override
-	public void addOrder(String username, String orderId, Integer amount, Integer postCharge, RecvUserDto recvUser,
-			List<OrderListDto> orderList, Integer productId) {
+	public void addOrder(String username, String orderId, Map<String, Long> amount, RecvUserDto recvUser,
+			List<BrandDto> brandList) {
 
 		
 		
@@ -43,9 +46,9 @@ public class PaymentOrderService implements OrderService {
 						.user(User.builder()
 								.username(username)
 								.build())
-						.subtotalAmount((long)(amount - postCharge))
-						.shippingAmount((long)postCharge)
-						.totalAmount((long)amount)
+						.subtotalAmount(amount.get("productTotal"))
+						.shippingAmount(amount.get("postChargeTotal"))
+						.totalAmount(amount.get("totalPrice"))
 						.postZonecode(recvUser.getZonecode())
 						.postAddr1(recvUser.getAddr1())
 						.postAddr2(recvUser.getDetailAddress())
@@ -61,28 +64,32 @@ public class PaymentOrderService implements OrderService {
 		
 		Integer orderIdx = savedOrder.getOrderIdx();
 		
-		for(OrderListDto orderListDto : orderList) {
-			
-			OrderItem orderItem = OrderItem.builder()
-									.orderIdx(orderIdx)
-									.product(Product.builder()
-											.productIdx(productId)
-											.build())
-									.unitPrice((long)orderListDto.getPrice())
-									.quantity(orderListDto.getCount())
-									.receiveWay(ReceiveWay.post)
-									.orderStatus(OrderStatus.결제대기)
-									.productOptionIdx(orderListDto.getOptionId())
-									.createdAt(new java.sql.Date(System.currentTimeMillis()))
-									.build();
-			
-			orderItemRepository.save(orderItem);
-			
+		for (BrandDto brand : brandList) {
+		    List<OptionListDto> orderList = brand.getOrderList();
+		    if (orderList == null) continue;
+
+		    for (OptionListDto optionListDto : orderList) {
+		        OrderItem orderItem = OrderItem.builder()
+		                .orderIdx(orderIdx)
+		                .product(Product.builder()
+		                        .productIdx(optionListDto.getProductId())
+		                        .build())
+		                .unitPrice(optionListDto.getSalePrice() + optionListDto.getPrice()) // long 타입으로 처리 가능
+		                .quantity(optionListDto.getCount())
+		                .receiveWay(ReceiveWay.post)
+		                .orderStatus(OrderStatus.결제대기)
+		                .productOptionIdx(optionListDto.getOptionId())
+		                .createdAt(new java.sql.Date(System.currentTimeMillis()))
+		                .build();
+
+		        orderItemRepository.save(orderItem);
+		    }
 		}
-		
-		
-		
+
+			
 	}
+		
+		
 
 	// 주문 정보 받아오기
 	@Override

@@ -27,19 +27,14 @@ public class SellerOrderController {
 
 	// 주문 리스트
 	@GetMapping("/myOrderList")
-	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername, @RequestParam int page, @RequestParam int size, SearchConditionDto scDto) {
-		PageRequest pr = PageRequest.of(page, size);
+	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername, 
+										@RequestParam(value="page", required=false, defaultValue="1") Integer page,
+										SearchConditionDto scDto) {
+		
 
-		List<OrderDto> myOrderList;
 		try {
-			myOrderList = order_svc.getMyOrderList(pr, scDto);
-			Long myOrderCount = order_svc.getMyOrderCount(scDto);
-
-			Map<String, Object> result = new HashMap<>();
-			result.put("myOrderList", myOrderList);
-			result.put("myOrderCount", myOrderCount);
-			
-			return ResponseEntity.ok(result);
+			Map<String, Object> myOrder = order_svc.getMyOrderList(sellerUsername, page, scDto);
+			return ResponseEntity.ok(myOrder);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.admin.dto.LastOrderResponseDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.OrderListResponseDto;
 import com.zipddak.admin.dto.OrderListWrapperDto;
@@ -132,6 +133,8 @@ public class ProductController {
 			// 1. 자재 상품 id
 			// 2. 옵션 id
 			// 3. 개수
+			
+			
 			List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
 			OrderListResponseDto orderListResponseDto = productService.getOrderList(orderList);
 			
@@ -153,6 +156,48 @@ public class ProductController {
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// 테스트
+		@PostMapping("orderListProduct2")
+		public ResponseEntity<LastOrderResponseDto> orderListProduct2(@RequestBody OrderListWrapperDto orderListWrapperDto){
+			
+			try {
+				
+				// 리스트 안에
+				// userDto가 들어가야하고
+				// 리스트인데 브랜드별 상품 목록이 들어가야함
+				
+				
+				List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
+				LastOrderResponseDto lastOrderResponseDto = productService.getTestList(orderList);
+				
+				UserDto userInfo = productService.getUserInfo(orderListWrapperDto.getUsername());
+				
+				// 전화번호에서 010이랑 - 잘라주기
+				String phone = userInfo.getPhone();
+				phone = phone.replaceAll("-", "");
+				phone = phone.substring(3);
+				
+				userInfo.setPhone(phone);
+				
+				lastOrderResponseDto.setUserInfo(userInfo);
+				
+				return ResponseEntity.ok(lastOrderResponseDto);
+			}catch(Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(null);
+			}
+			
+		}
 	
 	
 	

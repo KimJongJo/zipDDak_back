@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -20,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zipddak.admin.dto.BrandDto;
+import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 import com.zipddak.admin.repository.ProductDslRepository;
@@ -27,6 +30,7 @@ import com.zipddak.entity.Order;
 import com.zipddak.entity.Payment;
 import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.OrderItem.OrderStatus;
+import com.zipddak.entity.Product.PostType;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
@@ -49,39 +53,68 @@ public class PaymentServiceImpl implements PaymentService {
 
 	// 결제 금액 계산
 	@Override
-	public Integer getTotalPrice(Integer productId, List<OrderListDto> orderList, Integer postCharge) {
+	public Map<String, Long> getTotalPrice(List<BrandDto> brandList) {
 		
-		Integer productPrice = (int)productDslRepository.getProductPrice(productId);
 		
-		Integer amount = 0;
 		
-		for(OrderListDto orderListDto : orderList) {
-			amount += (orderListDto.getPrice() + productPrice) * orderListDto.getCount();
-		}
-		
-		amount += postCharge;
-		
-		return amount;
+		long productTotal = 0;   // 상품 전체 금액
+	    long postChargeTotal = 0; // 배송비 합계
+
+	    for (BrandDto brand : brandList) {
+	        List<OptionListDto> orderList = brand.getOrderList();
+	        if (orderList == null || orderList.isEmpty()) continue;
+
+	        // 1. 상품 금액 합계
+	        long brandProductTotal = orderList.stream()
+	                .mapToLong(o -> (o.getSalePrice() + o.getPrice()) * o.getCount())
+	                .sum();
+
+	        productTotal += brandProductTotal;
+
+	        // 2. 배송비 합계
+	        // single 배송비
+	        long singlePost = orderList.stream()
+	                .filter(o -> o.getPostType() == PostType.single)
+	                .mapToLong(OptionListDto::getPostCharge)
+	                .sum();
+
+	        // bundle 배송비
+	        long bundleTotalPrice = orderList.stream()
+	                .filter(o -> o.getPostType() == PostType.bundle)
+	                .mapToLong(o -> (o.getSalePrice() + o.getPrice()) * o.getCount())
+	                .sum();
+
+	        long bundlePost = bundleTotalPrice >= brand.getFreeChargeAmount() ? 0 : brand.getBasicPostCharge();
+
+	        postChargeTotal += (singlePost + bundlePost);
+	    }
+
+	    long totalPrice = productTotal + postChargeTotal;
+	    
+	    Map<String, Long> amount = new HashMap<String, Long>();
+	    amount.put("productTotal", productTotal);
+	    amount.put("postChargeTotal", postChargeTotal);
+	    amount.put("totalPrice", totalPrice);
+	    
+	    return amount;
+	    
 	}
 
 	
 	// orderName 생성
 	@Override
-	public String getOrderName(Integer productId, List<OrderListDto> orderList) {
+	public String getOrderName(List<BrandDto> brandList) {
 		
-		String productName = productDslRepository.getProductName(productId);
+		OptionListDto option = brandList.get(0).getOrderList().get(0);
 		
-		int sum = 0;
-		for(OrderListDto orderDto : orderList) {
-			sum += orderDto.getCount();
-		}
+		int totalSize = brandList.stream()
+		        .mapToInt(brand -> brand.getOrderList() != null ? brand.getOrderList().size() : 0)
+		        .sum();
+
 		
-		// 상품 수량이 1개 이상이면
-		if(sum > 1){
-			return productName + "(" + orderList.size() + ")개";
-		}else {
-			return productName;
-		}
+		String name = option.getProductName() + "외 " + totalSize + "개의 상품"; 
+		
+		return name;
 		
 	}
 
