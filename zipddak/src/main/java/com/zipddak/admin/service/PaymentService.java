@@ -1,16 +1,17 @@
 package com.zipddak.admin.service;
 
 import java.util.List;
+import java.util.Map;
 
-import com.zipddak.admin.dto.OrderListDto;
+import com.zipddak.admin.dto.BrandDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 
 public interface PaymentService {
 
 
-	Integer getTotalPrice(Integer productId, List<OrderListDto> orderList, Integer postCharge);
+	Map<String, Long> getTotalPrice(List<BrandDto> brandList);
 
-	String getOrderName(Integer productId, List<OrderListDto> orderList);
+	String getOrderName(List<BrandDto> brandList);
 
 	void approvePayment(PaymentComplateDto paymentComplateDto) throws Exception;
 

@@ -161,17 +161,28 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 	// 특정 셀러의 상품 리스트
 	public Map<String, Object> searchMyProductList(String sellerUsername,
-										            String visible,
+										            String status,
 										            String category,
 										            String keyword,
 										            Integer page) {
 
         PageRequest pr = PageRequest.of(page - 1, 10);
+        
+        // -> status 문자열을 Boolean 리스트로 변환 
+        List<Boolean> visibleList = null;
+        if (status != null && !status.isEmpty()) {
+            visibleList = Arrays.stream(status.split(","))
+                    .map(s -> {
+                        s = s.trim();
+                        if (s.equals("1")) return true;
+                        if (s.equals("0")) return false;
+                        // fallback: "true"/"false" 같은 문자열을 파싱
+                        return Boolean.parseBoolean(s);
+                    })
+                    .collect(Collectors.toList());
+        }
 
-        List<Integer> visibleList = visible != null && !visible.isEmpty()
-                ? Arrays.stream(visible.split(",")).map(Integer::parseInt).collect(Collectors.toList())
-                : null;
-
+        // 카테고리 (int 리스트)
         List<Integer> categoryList = category != null && !category.isEmpty()
                 ? Arrays.stream(category.split(",")).map(Integer::parseInt).collect(Collectors.toList())
                 : null;
@@ -183,10 +194,10 @@ public class SellerProductServiceImpl implements SellerProductService {
                 .keyword(keyword)
                 .build();
 
-        List<ProductDto> list = sellerProduct_repo.searchMyProducts(pr, scDto);
-        Long totalCount = sellerProduct_repo.countMyProducts(scDto);
+        List<ProductDto> myProductList = sellerProduct_repo.searchMyProducts(pr, scDto);
+        Long myProductCount = sellerProduct_repo.countMyProducts(scDto);
 
-        int allPage = (int) Math.ceil(totalCount / 10.0);
+        int allPage = (int) Math.ceil(myProductCount / 10.0);
         int startPage = (page - 1) / 10 * 10 + 1;
         int endPage = Math.min(startPage + 9, allPage);
 
@@ -195,7 +206,8 @@ public class SellerProductServiceImpl implements SellerProductService {
         result.put("allPage", allPage);
         result.put("startPage", startPage);
         result.put("endPage", endPage);
-        result.put("myproductsList", list);
+        result.put("myProductList", myProductList);
+        result.put("myProductCount", myProductCount);
 
         return result;
     }

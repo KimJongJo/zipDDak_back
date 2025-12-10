@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.ColorOption;
+import com.zipddak.admin.dto.LastOrderResponseDto;
 import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.OrderListResponseDto;
@@ -146,6 +147,8 @@ public class ProductServiceImpl implements ProductService {
 		
 		OrderListResponseDto orderListResponseDto = productDslRepository.orderListResponse(productId);
 		
+//		System.out.println(orderListResponseDto);
+		
 		List<OptionListDto> optionList = new ArrayList<OptionListDto>();
 		
 		// 구매목록을 돌아서 개수를 제외한 옵션 정보를 queryDsl을 통해서 가져오고
@@ -167,6 +170,13 @@ public class ProductServiceImpl implements ProductService {
 	public UserDto getUserInfo(String username) {
 
 		return productDslRepository.getUserInfo(username);
+	}
+
+	// 테스트
+	@Override
+	public LastOrderResponseDto getTestList(List<OrderListDto> orderList) {
+		
+		return productDslRepository.getTestList(orderList);
 	}
 
 

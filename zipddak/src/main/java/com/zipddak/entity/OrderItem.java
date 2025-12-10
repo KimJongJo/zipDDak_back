@@ -62,6 +62,9 @@ public class OrderItem {
 
 	@Column
 	private String trackingNo;
+	
+	@CreationTimestamp
+	private Date firstShipDate;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -75,6 +78,9 @@ public class OrderItem {
 
 	@Column
 	private Integer exchangeNewOptIdx;
+	
+	@Column
+	private Integer cancelIdx;
 
 	@CreationTimestamp
 	private Date createdAt;

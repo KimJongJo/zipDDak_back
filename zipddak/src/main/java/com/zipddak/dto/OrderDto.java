@@ -2,6 +2,8 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
+import com.zipddak.entity.OrderItem;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,4 +30,14 @@ public class OrderDto {
     
     private String username;
     private String name;
+    
+    //join용 컬럼
+    
+    private String customerUsername;	//order_item
+    private OrderItem.OrderStatus orderStatus;  //order_item
+    private String productIdx;	//product
+    private String productName;	//product
+    private Long itemCount;
+    
+    
 }

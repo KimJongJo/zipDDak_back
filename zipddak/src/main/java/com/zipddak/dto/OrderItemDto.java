@@ -19,7 +19,8 @@ public class OrderItemDto {
 	private Integer quantity;
 	private String receiveWay;
 	private String postComp;
-	private String trackingNo;
+	private String trackingNo; 
+	private Date firstShipDate; // 최초 출고일자
 	private String orderStatus;
 	private Integer refundIdx;
 	private Integer exchangeIdx;
