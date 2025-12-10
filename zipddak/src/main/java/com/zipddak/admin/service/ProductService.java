@@ -3,6 +3,7 @@ package com.zipddak.admin.service;
 import java.util.List;
 import java.util.Map;
 
+import com.zipddak.admin.dto.LastOrderResponseDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.OrderListResponseDto;
 import com.zipddak.admin.dto.ProductCardDto;
@@ -24,4 +25,6 @@ public interface ProductService {
 	OrderListResponseDto getOrderList(List<OrderListDto> orderList);
 
 	UserDto getUserInfo(String username);
+
+	LastOrderResponseDto getTestList(List<OrderListDto> orderList);
 }

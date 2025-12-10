@@ -2,6 +2,7 @@ package com.zipddak.admin.dto;
 
 import java.util.List;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class productPaymentStep1Dto {
+public class BrandDto {
 
-	private String username;
-	private List<BrandDto> brandList;
-	private RecvUserDto recvUser;
+	private Integer sellerIdx;
+	private String brandName;
+	private long freeChargeAmount;
+	private long basicPostCharge;
+	private List<OptionListDto> orderList;
 	
 }

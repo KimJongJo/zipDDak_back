@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.admin.dto.BrandDto;
+import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 import com.zipddak.admin.dto.PaymentInfoDto;
@@ -49,25 +51,23 @@ public class PaymentController {
 			String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 	                + "-" + (int)(Math.random() * 9000 + 1000);
 			
-			Integer productId = paymentDto.getProductId();
-			List<OrderListDto> orderList = paymentDto.getOrderList();
-			Integer postCharge = paymentDto.getPostCharge();
+			List<BrandDto> brandList = paymentDto.getBrandList();
 			
 			// 총 결제 가격 계산
-			Integer amount = paymentService.getTotalPrice(productId, orderList, postCharge);
+			Map<String, Long> amount = paymentService.getTotalPrice(brandList);
 			
 			// 상품 이름 + 옵션 개수 string 생성
-			String orderName = paymentService.getOrderName(productId, orderList);
+			String orderName = paymentService.getOrderName(brandList);
 			
 			// 주문 테이블 + 주문 상품 테이블에 저장
 			RecvUserDto recvUser = paymentDto.getRecvUser();
 			String username = paymentDto.getUsername();
-			paymentOrderService.addOrder(username, orderId, amount, postCharge, recvUser, orderList, productId);
+			paymentOrderService.addOrder(username, orderId, amount, recvUser, brandList);
 			
 			
 			PaymentInfoDto paymentInfo = PaymentInfoDto.builder()
 				.orderId(orderId)
-				.amount(amount)
+				.amount(((Long) amount.get("totalPrice")).intValue())
 				.orderName(orderName)
 				.build();
 			
