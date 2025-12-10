@@ -48,7 +48,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		System.out.println(uri);
 		
 		// 로그인(인증) 필요없는 요청은 토큰 체크하지 않는다
-		if(!(uri.contains("/user") || uri.contains("/admin") || uri.contains("/manager"))) {
+		if(!(uri.contains("/zipddak") || uri.contains("/admin") || uri.contains("/manager"))) {
 			chain.doFilter(request, response);
 			return;
 		}

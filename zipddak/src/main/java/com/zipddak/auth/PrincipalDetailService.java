@@ -6,6 +6,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.zipddak.entity.User;
+import com.zipddak.repository.UserRepository;
+
 
 
 // security 설정에서 loginProcessingUrl("/loginProc")
@@ -14,14 +17,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrincipalDetailService implements UserDetailsService {
 
-//	@Autowired
-//	private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//		User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException(username));
-//		return new PrincipalDetails(user);
-		return null;
+		User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException(username));
+		return new PrincipalDetails(user);
+//		return null;
 	}
 
 }

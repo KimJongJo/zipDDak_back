@@ -80,6 +80,6 @@ public class User {
     private Integer profileImg;
 
     public enum UserRole {
-        USER, ADMIN, APPROVAL_SELLER
+        USER, ADMIN, EXPERT, APPROVAL_SELLER
     }
 }
