@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.OrderDto;
+import com.zipddak.dto.OrderItemDto;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
+import com.zipddak.entity.QUser;
 import com.zipddak.seller.dto.SearchConditionDto;
 
 import lombok.RequiredArgsConstructor;
@@ -87,6 +89,40 @@ public class SellerOrderRepository {
 										QPredicate.dateEq(order.createdAt, scDto.getSearchDate()))
 								.fetchOne();
 	}
+	
+	
+
+	// ============================
+	// 주문 상세보기 
+	// ============================
+	public List<OrderItemDto> findMyOrderItems(String sellerUsername, Integer orderIdx) {
+		QOrder order = QOrder.order;
+		QOrderItem item = QOrderItem.orderItem;
+		QProduct product = QProduct.product;
+		QUser user = QUser.user;
+		
+		return jpaQueryFactory.select(Projections.fields(OrderItemDto.class,
+										item.orderItemIdx,
+										item.orderIdx,
+										item.quantity,
+										item.unitPrice,
+										item.orderStatus.stringValue().as("orderStatus"),
+								        product.name.as("productName"),
+								        product.sellerUsername.as("sellerUsername"),
+								        order.orderCode.as("orderCode"),
+								        order.user.username.as("customerUsername"),
+								        order.createdAt.as("orderDate")
+								))
+								.from(item)
+								.join(product).on(item.product.productIdx.eq(product.productIdx))
+								.join(order).on(item.orderIdx.eq(order.orderIdx))
+								.join(user).on(order.user.username.eq(user.username))
+								.where(product.sellerUsername.eq(sellerUsername)
+										.and(item.orderIdx.eq(orderIdx)))
+								.fetch();
+	}
+	
+	
 
 	// ============================
 	// 문자열 → Enum 변환
@@ -103,4 +139,5 @@ public class SellerOrderRepository {
 			}
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
+
 }
