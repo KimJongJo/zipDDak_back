@@ -27,8 +27,8 @@ public class ExpertFindController {
 			
 			// 광고 전문가
 			List<ExpertCardDto> addExperts = expertFindService.addExperts();
-			// 일반 전문가
-			List<ExpertCardDto> experts = expertFindService.experts();
+			// 일반 전문가							1 -> page	23 -> 수리 카테고리
+			List<ExpertCardDto> experts = expertFindService.experts(1, 23, null, "popular");
 			
 			ExpertsMainListsDto expertListDto = new ExpertsMainListsDto(addExperts, experts);
 			
