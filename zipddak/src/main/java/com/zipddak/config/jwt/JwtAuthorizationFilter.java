@@ -22,7 +22,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.auth.PrincipalDetails;
 import com.zipddak.entity.User;
-import com.zipddak.user.repository.UserRepository;
+import com.zipddak.repository.UserRepository;
 
 // 인가 : 로그인 처리가 되어야만 하는 처리가 들어왔을 때 실행
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {

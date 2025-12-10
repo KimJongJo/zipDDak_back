@@ -15,7 +15,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import com.zipddak.config.jwt.JwtAuthenticationFilter;
 import com.zipddak.config.jwt.JwtAuthorizationFilter;
-import com.zipddak.user.repository.UserRepository;
+import com.zipddak.repository.UserRepository;
 
 @Configuration
 @EnableWebSecurity
