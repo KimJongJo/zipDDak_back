@@ -2,6 +2,8 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
+import javax.persistence.Column;
+
 import lombok.*;
 
 @Data
@@ -12,10 +14,10 @@ public class SettlementDto {
     private Integer settlementIdx;
     private String targetUsername;
     private String targetType;
+    private Integer workIdx;
+    private String workType;
     private Integer amount;
     private String state;
-    private Date periodStart;
-    private Date periodEnd;
     private Date completedAt;
     private String comment;
 }
