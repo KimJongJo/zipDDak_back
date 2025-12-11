@@ -9,5 +9,6 @@ import com.zipddak.entity.User;
 public interface UserRepository extends JpaRepository<User, String>{
 	
 	Optional<User> findByProviderIdAndProvider(String providerId, String provider);
+	Optional<User> findByProviderId (String providerId);
 	
 }

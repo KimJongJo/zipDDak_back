@@ -43,39 +43,33 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 
 	private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
-		System.out.println(registrationId);
 		
 		OAuth2UserInfo oAuth2UserInfo = null;
 		
 		if(registrationId.equals("naver")) {
 			System.out.println("naver");
-			System.out.println(oAuth2User.getAttributes());
 			oAuth2UserInfo = new NaverUserInfo(oAuth2User.getAttribute("response"));
 		}else if(registrationId.equals("kakao")) {
 			System.out.println("kakao");
-			System.out.println(oAuth2User.getAttributes());
 			oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes(), oAuth2User.getAttribute("properties"));
-		}else if(registrationId.equals("google")) {
-			System.out.println("google");
-			System.out.println(oAuth2User.getAttributes());
-			oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes(), oAuth2User.getAttribute("properties"));
+		
 		}else {
 			System.out.println("구글,네이버,카카오만 지원");
 			return null;
 		}
 		
-		// 1. DB 에서 조회
-		Optional<User> ouser = userRepository.findByProviderIdAndProvider(oAuth2UserInfo.getProviderId(), oAuth2UserInfo.getProvider());
 		User user = null;
 		ProfileFile profile;
 		File socialProfile;
-		String email;
 		
+		String email;		
 		if (oAuth2UserInfo.getEmail() == null || oAuth2UserInfo.getEmail().isEmpty()) {
 			    email = oAuth2UserInfo.getProviderId();
 		} else {
 			    email = oAuth2UserInfo.getEmail();
 		}
+		
+		Optional<User> ouser = userRepository.findByProviderIdAndProvider(oAuth2UserInfo.getProviderId(), oAuth2UserInfo.getProvider());
 		
 		if(ouser.isEmpty()) { // 가입
 			
@@ -87,7 +81,7 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 			}
 			
 			profile = ProfileFile.builder()
-							.fileName("socialLogin"+oAuth2UserInfo.getName())
+							.fileName("socialLogin"+oAuth2UserInfo.getProvider())
 							.fileRename(socialProfile.getName())
 							.storagePath(profileUpload)
 							.build();
@@ -95,14 +89,14 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 			ProfileFile savedProfile = profileFileRepository.save(profile);
 			
 			user = User.builder()
-					.providerId(oAuth2UserInfo.getProviderId())
 					.username(email)
 					.provider(oAuth2UserInfo.getProvider())
 					.providerId(oAuth2UserInfo.getProviderId())
 					.profileImg(savedProfile.getProfileFileIdx())
 					.name(oAuth2UserInfo.getName())
 					.nickname(oAuth2UserInfo.getName())
-					.phone(oAuth2UserInfo.getName()+"socialphone")
+					.phone(oAuth2UserInfo.getProvider()+"socialphone")
+					.expert(false)
 					.role(UserRole.USER)
 					.build();
 			
@@ -117,7 +111,7 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 			}
 			
 			profile = ProfileFile.builder()
-							.fileName("socialLogin"+oAuth2UserInfo.getName())
+							.fileName("socialLogin"+oAuth2UserInfo.getProvider())
 							.fileRename(socialProfile.getName())
 							.storagePath(profileUpload)
 							.build();

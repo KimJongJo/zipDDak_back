@@ -2,11 +2,13 @@ package com.zipddak.user.service;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.zipddak.dto.UserDto;
 import com.zipddak.entity.User;
 import com.zipddak.repository.UserRepository;
 
+@Service
 public class UserServiceImpl implements UserService {
 	
 	@Autowired
@@ -15,10 +17,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+
 	@Override
-	public UserDto login(String username, String password) throws Exception {
-		
-		User user = userRepository.findById(username).orElseThrow(()-> new Exception("username오류"));		
+	public UserDto login(User user) throws Exception {
+		userRepository.save(user);
 		return modelMapper.map(user, UserDto.class);
 	}
 

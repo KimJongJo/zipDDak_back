@@ -30,4 +30,5 @@ public class OrderItemDto {
 	private Integer productIdx;
 	private String name;
 	private String sellerUsername;
+	private String customerUsername;
 }

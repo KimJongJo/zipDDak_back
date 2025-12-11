@@ -28,11 +28,10 @@ public class OrderDto {
 	private String postNote;
 	private Date createdAt;
     
-    private String username;
+    private String username; 
     private String name;
     
     //join용 컬럼
-    
     private String customerUsername;	//order_item
     private OrderItem.OrderStatus orderStatus;  //order_item
     private String productIdx;	//product
