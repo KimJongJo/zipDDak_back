@@ -48,7 +48,7 @@ public class SellerShippingRepository {
 				 						order.orderIdx.as("orderIdx"),
 					                    order.orderCode.as("orderCode"),
 					                    product.name.as("productName"),
-					                    item.firstShipDate.as("firstShipDate"),     
+//					                    item.firstShipDate.as("firstShipDate"),     
 					                    item.trackingNo.as("trackingNo"),
 					                    item.postComp.as("postComp"),
 					                    item.orderStatus.stringValue().as("orderStatus"),

@@ -2,6 +2,8 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
+import com.zipddak.entity.Portfolio.WorkTimeType;
+
 import lombok.*;
 
 @Data
@@ -15,7 +17,7 @@ public class PortfolioDto {
     private Integer serviceIdx;
     private String region;
     private Integer price;
-    private String workTimeType;
+    private WorkTimeType workTimeType;
     private Integer workTimeValue;
     private Integer image1Idx;
     private Integer image2Idx;
