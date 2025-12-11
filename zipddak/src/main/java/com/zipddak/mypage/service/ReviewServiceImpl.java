@@ -216,7 +216,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void modifyToolReview(ReviewToolDto reviewTooldto, MultipartFile[] reviewImages) throws Exception {
-		System.out.print(reviewImages);
 
 		// 기존 리뷰 조회
 		ReviewTool reviewTool = reviewToolRepository.findById(reviewTooldto.getReviewToolIdx())
