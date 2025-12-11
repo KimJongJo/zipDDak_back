@@ -58,6 +58,8 @@ public class ExpertFindDslRepository {
 								career.startDate).desc(); break;
 		}
 		
+		OrderSpecifier<?> secondOrder = expert.expertIdx.desc();
+		
 		
 		
 		
@@ -89,7 +91,7 @@ public class ExpertFindDslRepository {
 				.leftJoin(career).on(expert.expertIdx.eq(career.expertIdx))
 				.where(builder)
 				.groupBy(expert.expertIdx)
-				.orderBy(order)
+				.orderBy(order, secondOrder)
 				.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
 				.fetch();
