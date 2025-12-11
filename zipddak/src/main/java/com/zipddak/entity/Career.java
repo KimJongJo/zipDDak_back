@@ -48,4 +48,8 @@ public class Career {
 
     @CreationTimestamp
     private Date createdAt;
+    
+    @Column(nullable = false)
+    private Integer months;
+    
 }

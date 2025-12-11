@@ -19,9 +19,9 @@ public class ExpertFindServiceImpl implements ExpertFindService{
 	
 	// 광고 전문가
 	@Override
-	public List<ExpertCardDto> addExperts() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ExpertCardDto> addExperts(Integer categoryNo) throws Exception {
+		
+		return expertFindDslRepository.addExperts(categoryNo);
 	}
 
 	// 일반 전문가
