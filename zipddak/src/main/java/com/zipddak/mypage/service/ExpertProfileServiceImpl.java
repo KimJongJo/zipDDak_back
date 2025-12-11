@@ -19,6 +19,7 @@ import com.zipddak.entity.Expert;
 import com.zipddak.entity.ExpertFile;
 import com.zipddak.entity.Portfolio;
 import com.zipddak.mypage.dto.ExpertProfileDto;
+import com.zipddak.mypage.dto.ExpertSettleDto;
 import com.zipddak.mypage.dto.PortfolioListDto;
 import com.zipddak.mypage.repository.ExpertDslRepository;
 import com.zipddak.repository.CareerRepository;
@@ -308,5 +309,46 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 		Career career = careerRepository.findById(careerIdx).orElseThrow(() -> new RuntimeException("잘못된 경력 아이디"));
 
 		careerRepository.delete(career);
+	}
+
+	// 전문가 정산계좌 정보 조회
+	@Override
+	public ExpertSettleDto getExpertSettleDetail(String username) throws Exception {
+		Expert expert = expertRepository.findByUser_Username(username).get();
+		
+		ExpertSettleDto expertSettleDto = new ExpertSettleDto();
+		
+		expertSettleDto.setSettleBank(expert.getSettleBank());
+		expertSettleDto.setSettleAccount(expert.getSettleAccount());
+		expertSettleDto.setSettleHost(expert.getSettleHost());
+		expertSettleDto.setActivityStatus(expert.getActivityStatus());
+		
+		return expertSettleDto;
+	}
+
+	// 전문가 정산계좌 정보 수정
+	@Override
+	public void modifyExpertSettle(String username, ExpertSettleDto expertSettleDto) throws Exception {
+		Expert expert = expertRepository.findByUser_Username(username).get();
+		
+		expert.setSettleBank(expertSettleDto.getSettleBank());
+		expert.setSettleAccount(expertSettleDto.getSettleAccount());
+		expert.setSettleHost(expertSettleDto.getSettleHost());
+		
+		expertRepository.save(expert);
+	}
+
+	
+	// 전문가 활동상태 토글
+	@Override
+	public void toggleActivityStatus(String username) throws Exception {
+		Expert expert = expertRepository.findByUser_Username(username).get();
+		System.out.print(expert.getActivityStatus());
+		
+		if(expert.getActivityStatus().equals("ACTIVE")) 
+			expert.setActivityStatus("STOPPED");
+		else expert.setActivityStatus("ACTIVE");
+		
+		expertRepository.save(expert);
 	}
 }

@@ -42,4 +42,5 @@ public class ExpertDto {
     private String settleAccount;
     private String settleHost;
     private Date createdAt;
+    private String activityStatus;
 }
