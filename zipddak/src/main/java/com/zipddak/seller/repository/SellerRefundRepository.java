@@ -43,7 +43,7 @@ public class SellerRefundRepository {
 
 		 return jpaQueryFactory.select(Projections.fields(RefundDto.class,
 				 						refund.refundIdx.as("refundIdx"),
-				 						refund.refundIdx.as("orderIdx"),
+				 						refund.orderIdx.as("orderIdx"),
 					                    order.orderCode.as("orderCode"),
 					                    order.createdAt.as("orderDate"),
 					                    product.name.min().as("refundProductName"), // 대표 상품명
@@ -73,8 +73,12 @@ public class SellerRefundRepository {
 	}
 
 	public Long countMyRefunds(String sellerUsername, SearchConditionDto scDto) {
-		// TODO Auto-generated method stub
-		return null;
+		QOrderItem item = QOrderItem.orderItem;
+		
+		return jpaQueryFactory.select(item.count())
+					            .from(item)
+					            .where(item.orderStatus.in(refundStatuses))
+					            .fetchOne();
 	}
 	
 

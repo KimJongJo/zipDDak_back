@@ -30,11 +30,26 @@ public class SellerOrderController {
 	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername, 
 										@RequestParam(value="page", required=false, defaultValue="1") Integer page,
 										SearchConditionDto scDto) {
-		
-
 		try {
 			Map<String, Object> myOrder = order_svc.getMyOrderList(sellerUsername, page, scDto);
 			return ResponseEntity.ok(myOrder);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+	
+	
+	// 주문 내역 상세보기
+	@GetMapping("/myOrderDetail")
+	public ResponseEntity<?> orderDetail(@RequestParam("sellerId") String sellerUsername,@RequestParam("num") Integer orderIdx) {
+		
+		System.out.println("sellerId  ; " + sellerUsername);
+		try {
+			 Map<String, Object> myOrderDetail = order_svc.getMyOrderDetail(sellerUsername, orderIdx);
+			System.out.println("myOrderDto : " + myOrderDetail);
+			return ResponseEntity.ok(myOrderDetail);
 
 		} catch (Exception e) {
 			e.printStackTrace();
