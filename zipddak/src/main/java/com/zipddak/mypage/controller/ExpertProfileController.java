@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.dto.CareerDto;
 import com.zipddak.dto.ExpertDto;
-import com.zipddak.dto.InquiriesDto;
 import com.zipddak.dto.PortfolioDto;
 import com.zipddak.mypage.dto.ExpertProfileDto;
 import com.zipddak.mypage.dto.ExpertSettleDto;
