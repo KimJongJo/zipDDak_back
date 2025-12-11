@@ -48,10 +48,6 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
-<<<<<<< HEAD
-	
-=======
->>>>>>> branch 'main' of https://github.com/KimJongJo/zipDDak_back.git
 	// https://mvnrepository.com/artifact/com.auth0/java-jwt
 	implementation("com.auth0:java-jwt:3.19.2")
 	

@@ -6,6 +6,9 @@ import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.zipddak.entity.User;
@@ -20,57 +23,61 @@ import lombok.Data;
 // 즉, (Security ContextHolder (new Authentication(new UserDetails(new User))))
 
 @Data
-public class PrincipalDetails implements UserDetails, OAuth2User{
+public class PrincipalDetails implements UserDetails, OAuth2User,OidcUser{
 
 	private User user;
 	private Map<String, Object> attributes;
+	private OidcIdToken idToken; 
+    private OidcUserInfo userInfo;
 	
-	
-	public PrincipalDetails(User user){
-		this.user = user;
-	}
-	public PrincipalDetails(User user, Map<String, Object> attributes) {
-		super();
-		this.user = user;
-		this.attributes = attributes;
-	}
-	
+    //구글 로그인
+    public PrincipalDetails(User user, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
+        this.user = user;
+        this.attributes = attributes;
+        this.idToken = idToken;
+        this.userInfo = userInfo;
+    }
+    
+    //소셜 로그인
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this(user, attributes, null, null); 
+    }
+
+    //일반 로그인
+    public PrincipalDetails(User user){
+        this(user, null, null, null);
+    }
+    
+    
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collect = new ArrayList<GrantedAuthority>();
 		collect.add(() -> user.getRole().toString());
 		return collect;
-		
-//		return null;
 	}
 
 	@Override
 	public String getPassword() {
 		return user.getPassword();
-//		return null;
 	}
 
 	@Override
 	public String getUsername() {
 		return user.getUsername();
-//		return null;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -90,8 +97,24 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 	
 	@Override
 	public String getName() {
-		return user.getUsername();
-//		return null;
+		return user.getProviderId();
+	}
+	
+	
+	//구글 추가됨
+	@Override
+	public Map<String, Object> getClaims() {
+		return attributes;
+	}
+	
+	@Override
+	public OidcUserInfo getUserInfo() {
+		return this.userInfo;
+	}
+	
+	@Override
+	public OidcIdToken getIdToken() {
+		return this.idToken;
 	}
 	
 	
