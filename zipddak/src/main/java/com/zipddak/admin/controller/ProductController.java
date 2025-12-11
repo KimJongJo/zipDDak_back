@@ -106,6 +106,8 @@ public class ProductController {
 	// 관심 상품 토글
 	@PostMapping("favoriteToggle")
 	public ResponseEntity<Void> favoriteToggle(@RequestBody Map<String, Object> requestMap){
+		
+		System.out.println("fffffffffffffffffffffffffffffffffffffffffffff");
 		String username = (String)requestMap.get("username");
 		Integer productIdx = (Integer)requestMap.get("productIdx");
 		
