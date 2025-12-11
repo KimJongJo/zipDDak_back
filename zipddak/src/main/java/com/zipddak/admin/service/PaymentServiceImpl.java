@@ -112,7 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
 		        .sum();
 
 		
-		String name = option.getProductName() + "외 " + totalSize + "개의 상품"; 
+		String name = option.getProductName() + "외 " + (totalSize - 1) + "개의 상품"; 
 		
 		return name;
 		
