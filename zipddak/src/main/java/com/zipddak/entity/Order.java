@@ -88,11 +88,23 @@ public class Order {
 	}
 
 	public OrderDto toDto() {
-		return OrderDto.builder().orderIdx(orderIdx).orderCode(orderCode).subtotalAmount(subtotalAmount)
-				.shippingAmount(shippingAmount).totalAmount(totalAmount).paymentIdx(paymentIdx)
-				.postZonecode(postZonecode).postAddr1(postAddr1).postAddr2(postAddr2).phone(phone)
-				.postRecipient(postRecipient).postNote(postNote).createdAt(createdAt).username(user.getUsername())
-				.name(user.getName()).build();
+		return OrderDto.builder()
+						.orderIdx(orderIdx)
+						.orderCode(orderCode)
+						.subtotalAmount(subtotalAmount)
+						.shippingAmount(shippingAmount)
+						.totalAmount(totalAmount)
+						.paymentIdx(paymentIdx)
+						.postZonecode(postZonecode)
+						.postAddr1(postAddr1)
+						.postAddr2(postAddr2)
+						.phone(phone)
+						.postRecipient(postRecipient)
+						.postNote(postNote)
+						.createdAt(createdAt)
+						.username(user.getUsername())
+						.name(user.getName())
+						.build();
 	}
 
 }

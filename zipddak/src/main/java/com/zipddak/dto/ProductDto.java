@@ -28,7 +28,7 @@ public class ProductDto {
     private Integer discount;	//할인율 
     private Boolean optionYn;	//옵션유무 -> 있을경우 ProductOption과 연관 
     private Boolean postYn; //택배배송 여부 
-    private String postType;	//배송타입 
+    private String postType;	//배송타입 (bundle / single)
     private Long postCharge;	//배송비 
     private Boolean pickupYn;	//직접픽업여부 
     private String zonecode;	//픽업주소지 우편번호 
