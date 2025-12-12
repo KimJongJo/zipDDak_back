@@ -52,7 +52,6 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 		}else if(registrationId.equals("kakao")) {
 			System.out.println("kakao");
 			oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes(), oAuth2User.getAttribute("properties"));
-		
 		}else {
 			System.out.println("구글,네이버,카카오만 지원");
 			return null;
@@ -62,12 +61,27 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 		ProfileFile profile;
 		File socialProfile;
 		
-		String email;		
+		String email;
 		if (oAuth2UserInfo.getEmail() == null || oAuth2UserInfo.getEmail().isEmpty()) {
-			    email = oAuth2UserInfo.getProviderId();
+			email = oAuth2UserInfo.getProviderId();
 		} else {
-			    email = oAuth2UserInfo.getEmail();
+			email = oAuth2UserInfo.getEmail();
 		}
+		
+		String nickName;
+		if (oAuth2UserInfo.getNickName() == null || oAuth2UserInfo.getNickName().isEmpty()) {
+			nickName = oAuth2UserInfo.getName();
+		} else {
+			nickName = oAuth2UserInfo.getNickName();
+		}
+		
+		String mobile;
+		if (oAuth2UserInfo.getMobile() == null || oAuth2UserInfo.getMobile().isEmpty()) {
+			mobile ="";
+		} else {
+			mobile = oAuth2UserInfo.getMobile();
+		}
+		
 		
 		Optional<User> ouser = userRepository.findByProviderIdAndProvider(oAuth2UserInfo.getProviderId(), oAuth2UserInfo.getProvider());
 		
@@ -94,8 +108,8 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 					.providerId(oAuth2UserInfo.getProviderId())
 					.profileImg(savedProfile.getProfileFileIdx())
 					.name(oAuth2UserInfo.getName())
-					.nickname(oAuth2UserInfo.getName())
-					.phone(oAuth2UserInfo.getProvider()+"socialphone")
+					.nickname(nickName)
+					.phone(mobile)
 					.expert(false)
 					.role(UserRole.USER)
 					.build();
@@ -103,25 +117,11 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 		} else { // 정보 변경
 			user = ouser.get();
 			
-			try {
-			    socialProfile = profileDownload.ProfiledownloadImage(oAuth2UserInfo.getProfileImage());
-			} catch (Exception e) {
-			    e.printStackTrace();
-			    throw new RuntimeException("프로필 이미지 다운로드 실패");
-			}
-			
-			profile = ProfileFile.builder()
-							.fileName("socialLogin"+oAuth2UserInfo.getProvider())
-							.fileRename(socialProfile.getName())
-							.storagePath(profileUpload)
-							.build();
-			
-			ProfileFile savedProfile = profileFileRepository.save(profile);
-			
 			user.setUsername(email);
 			user.setName(oAuth2UserInfo.getName());
-			user.setNickname(oAuth2UserInfo.getName());
-			user.setProfileImg(savedProfile.getProfileFileIdx());
+			user.setNickname(nickName);
+			user.setPhone(mobile);
+
 		}
 		
 		userRepository.save(user);
