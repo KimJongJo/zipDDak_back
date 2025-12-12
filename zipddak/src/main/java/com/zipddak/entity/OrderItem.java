@@ -1,6 +1,7 @@
 package com.zipddak.entity;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -63,8 +64,8 @@ public class OrderItem {
 	@Column
 	private String trackingNo;
 	
-	@CreationTimestamp
-	private Date firstShipDate;
+	@Column
+	private LocalDate firstShipDate;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

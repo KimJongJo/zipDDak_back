@@ -32,9 +32,11 @@ public class OrderDto {
     private String name;
     
     //join용 컬럼
-    private String customerUsername;	//order_item
-    private OrderItem.OrderStatus orderStatus;  //order_item
-    private String productIdx;	//product
+    private String customerUsername;	//주문자 id
+    private String customerName;	//주문자명
+    private String customerPhone;	//주문자 연락처
+    private OrderItem.OrderStatus orderStatus;  //주문상태
+    private String productIdx;	//productIdx
     private String productName;	//product
     private Long itemCount;
     

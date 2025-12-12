@@ -1,6 +1,7 @@
 package com.zipddak.dto;
 
 import java.sql.Date;
+import java.sql.Time;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +24,8 @@ public class ExpertDto {
     private String addr1;
     private String addr2;
     private Integer employeeCount;
-    private Date contactStartTime;
-    private Date contactEndTime;
+    private Time contactStartTime;
+    private Time contactEndTime;
     private String externalLink1;
     private String externalLink2;
     private String externalLink3;

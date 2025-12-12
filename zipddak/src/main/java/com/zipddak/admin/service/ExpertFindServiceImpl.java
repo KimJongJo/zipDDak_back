@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.ExpertCardDto;
+import com.zipddak.admin.dto.ExpertProfileDto;
 import com.zipddak.admin.repository.ExpertFindDslRepository;
 import com.zipddak.util.PageInfo;
 
@@ -19,9 +20,9 @@ public class ExpertFindServiceImpl implements ExpertFindService{
 	
 	// 광고 전문가
 	@Override
-	public List<ExpertCardDto> addExperts() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ExpertCardDto> addExperts(Integer categoryNo) throws Exception {
+		
+		return expertFindDslRepository.addExperts(categoryNo);
 	}
 
 	// 일반 전문가
@@ -31,6 +32,13 @@ public class ExpertFindServiceImpl implements ExpertFindService{
 		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 9);
 		
 		return expertFindDslRepository.experts(pageRequest, categoryNo, keyword, sort);
+	}
+
+	// 전문가 프로필 구하기
+	@Override
+	public ExpertProfileDto expertProfile(Integer expertIdx) throws Exception {
+		
+		return expertFindDslRepository.expertProfile(expertIdx); 
 	}
 
 
