@@ -27,6 +27,12 @@ public class Settlement {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TargetType targetType;
+    
+    @Column
+    private Integer workIdx;
+
+    @Column
+    private String workType;
 
     @Column(nullable = false)
     private Integer amount;
@@ -34,12 +40,6 @@ public class Settlement {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SettlementState state;
-
-    @Column(nullable = false)
-    private Date periodStart;
-
-    @Column(nullable = false)
-    private Date periodEnd;
 
     @CreationTimestamp
     private Date completedAt;
