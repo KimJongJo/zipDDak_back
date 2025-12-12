@@ -47,8 +47,9 @@ public class ImageViewController {
 		try {
 			// 1. 타입별 디렉토리 매핑
 			String basePath = null;
+			
 
-			switch (type) {
+			switch (type.toLowerCase()) {
 			case "expert":
 				basePath = expertPath;
 				break;
@@ -76,13 +77,20 @@ public class ImageViewController {
 			case "inquiry":
 				basePath = inquiryPath;
 				break;
+			case "user":
+				basePath = profilePath;
+				break;
+			case "approval_seller":
+				basePath = sellerPath;
+				break;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 			}
+			
 
 			// 2. 파일 객체 생성
 			File file = new File(basePath, fileName);
-
+			
 			if (!file.exists()) {
 				file = new File(basePath, "no-image.png");
 			}

@@ -42,6 +42,8 @@ public class CustomOidcUserService extends OidcUserService {
 		
 		OidcUser oidcUser = super.loadUser(userRequest);
 		Map<String, Object> attributes = oidcUser.getAttributes();
+		
+		System.out.println("구글"+oidcUser.getAttributes());
        
 		User user = null;
 		ProfileFile profile;
@@ -80,7 +82,7 @@ public class CustomOidcUserService extends OidcUserService {
 					.profileImg(savedProfile.getProfileFileIdx())
 					.name(oidcUser.getFullName())
 					.nickname(nickName)
-					.phone(oidcUser.getName()+"socialphone")
+					.phone("")
 					.expert(false)
 					.role(UserRole.USER)
 					.build();
@@ -117,7 +119,7 @@ public class CustomOidcUserService extends OidcUserService {
 	            oidcUser.getIdToken(), // OidcUser 전용 정보
 	            oidcUser.getUserInfo() // OidcUser 전용 정보
 	        );
-
 	}
+	
 
 }

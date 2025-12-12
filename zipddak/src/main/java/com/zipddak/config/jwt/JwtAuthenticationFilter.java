@@ -59,10 +59,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		Map<String, Object> userInfo = new HashMap<String, Object>();
 		userInfo.put("username", user.getUsername());
 		userInfo.put("name", user.getName());
-//		userInfo.put("email", user.getEmail());
-//		userInfo.put("address", user.getAddress());
-//		userInfo.put("detailAddress", user.getDetailAddress());
-//		userInfo.put("roles", user.getRoles());
+		userInfo.put("nickname", user.getNickname());
+		userInfo.put("role", user.getRole());
+		userInfo.put("expert", false);
+		userInfo.put("profile", user.getProfileImg());
 		
 		response.getWriter().write(objectMapper.writeValueAsString(userInfo));
 

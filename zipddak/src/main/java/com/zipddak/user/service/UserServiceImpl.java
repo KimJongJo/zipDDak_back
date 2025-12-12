@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.zipddak.dto.UserDto;
 import com.zipddak.entity.User;
 import com.zipddak.repository.UserRepository;
+import com.zipddak.user.dto.UserInfoDto;
+import com.zipddak.user.repository.LoginProfileRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -15,19 +17,48 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 	
 	@Autowired
+	private LoginProfileRepository loginProfileRepository;
+	
+	@Autowired
 	private ModelMapper modelMapper;
 
 
 	@Override
-	public UserDto login(User user) throws Exception {
+	public UserInfoDto login(User user) throws Exception {
 		userRepository.save(user);
-		return modelMapper.map(user, UserDto.class);
+		UserDto userdto = modelMapper.map(user, UserDto.class);
+		
+		String username= userdto.getUsername();
+		String role = userdto.getRole();
+		Boolean expertYN = userdto.getExpert();
+		
+		String profile = loginProfileRepository.profileFileRename(username, role, expertYN);
+		
+		//userAtom에 들어가는 값
+		UserInfoDto userInfo = modelMapper.map(userdto, UserInfoDto.class);
+		userInfo.setProfile(profile);
+		
+		return userInfo;
 	}
 
 	@Override
-	public Boolean checkExpert(String username) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public UserInfoDto expertYN(Boolean isExpert, String username) throws Exception {
+		
+		User user = userRepository.findById(username).orElseThrow(()-> new Exception("username error"));
+		user.setExpert(isExpert);
+		userRepository.save(user);
+		
+		UserDto userdto = modelMapper.map(user, UserDto.class);
+		String role = userdto.getRole();
+		Boolean expertYN = userdto.getExpert();
+		
+		String profile = loginProfileRepository.profileFileRename(username, role, expertYN);
+		
+		UserInfoDto userInfo = modelMapper.map(userdto, UserInfoDto.class);
+		userInfo.setProfile(profile);
+		
+		return userInfo;
+		
 	}
 
 	@Override
@@ -35,5 +66,6 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

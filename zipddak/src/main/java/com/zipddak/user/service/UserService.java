@@ -1,15 +1,15 @@
 package com.zipddak.user.service;
 
-import com.zipddak.dto.UserDto;
 import com.zipddak.entity.User;
+import com.zipddak.user.dto.UserInfoDto;
 
 public interface UserService {
 	
 	//로그인
-	UserDto login(User user) throws Exception;
+	UserInfoDto login(User user) throws Exception;
 
-	// 전문가 여부 확인
-	Boolean checkExpert(String username) throws Exception;
+	// 전문가 전환
+	UserInfoDto expertYN(Boolean isExpert, String username) throws Exception;
 
 	// 주소 불러오기
 	Boolean checkAddr(String username) throws Exception;
