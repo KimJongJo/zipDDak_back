@@ -93,12 +93,17 @@ public class ProductDslRepository {
 		// cate2는 없음
 
 		// 로그인 했을때 안했을때 구분
-		Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false);
+		Expression<Boolean> isFavoriteExpr =
+			    Expressions.booleanTemplate("false").as("favorite");
 
-		if (username != null && !username.isBlank()) {
-			isFavoriteExpr = new CaseBuilder().when(favorite.productIdx.isNotNull()).then(true).otherwise(false)
-					.as("favorite");
-		}
+			if (username != null && !username.equals("")) {
+			    isFavoriteExpr =
+			        new CaseBuilder()
+			            .when(favorite.productIdx.isNotNull()).then(true)
+			            .otherwise(false)
+			            .as("favorite");
+			}
+
 
 		BooleanBuilder where = new BooleanBuilder();
 
