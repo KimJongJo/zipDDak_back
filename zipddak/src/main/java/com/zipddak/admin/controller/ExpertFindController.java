@@ -9,8 +9,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.admin.dto.ExpertCardDto;
+import com.zipddak.admin.dto.ExpertCareerDto;
+import com.zipddak.admin.dto.ExpertPortfolioDto;
+import com.zipddak.admin.dto.ExpertProfileDto;
 import com.zipddak.admin.dto.ExpertsMainListsDto;
+import com.zipddak.admin.dto.ResponseExpertProfileDto;
+import com.zipddak.admin.service.CategoryService;
+import com.zipddak.admin.service.ExpertCareerService;
 import com.zipddak.admin.service.ExpertFindService;
+import com.zipddak.admin.service.PortfolioService;
+import com.zipddak.dto.CategoryDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +28,9 @@ import lombok.RequiredArgsConstructor;
 public class ExpertFindController {
 
 	private final ExpertFindService expertFindService;
+	private final CategoryService categoryService;
+	private final ExpertCareerService expertCareerService;
+	private final PortfolioService portFolioService;
 	
 	@GetMapping("experts")
 	public ResponseEntity<List<ExpertCardDto>> experts(
@@ -61,12 +72,27 @@ public class ExpertFindController {
 	}
 	
 	@GetMapping("expertProfile")
-	public ResponseEntity<?> expertInfo(@RequestParam("expertIdx") Integer expertIdx){
+	public ResponseEntity<ResponseExpertProfileDto> expertInfo(@RequestParam("expertIdx") Integer expertIdx){
 		
 		try {
-//			expertFindService.expertProfile(expertIdx);
+			ExpertProfileDto expertProfile = expertFindService.expertProfile(expertIdx);
 			
-			return null;
+			// 이거는 제공 서비스가 존재 할때
+			String providedServiceIdxs = expertProfile.getProvidedServiceIdx();
+			List<CategoryDto> categoryList = categoryService.providedService(providedServiceIdxs);
+			
+			// 커리어
+			ExpertCareerDto careerDto = expertCareerService.expertCareer(expertIdx);
+			
+			// 포트폴리오
+			List<ExpertPortfolioDto> portFolioDtoList = portFolioService.expertPortfolio(expertIdx);
+			
+			ResponseExpertProfileDto response = new ResponseExpertProfileDto(expertProfile, 
+																		categoryList,
+																		careerDto,
+																		portFolioDtoList);
+			
+			return ResponseEntity.ok(response);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);

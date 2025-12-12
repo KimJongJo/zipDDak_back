@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
+import com.zipddak.dto.CareerDto;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,5 +53,18 @@ public class Career {
     
     @Column(nullable = false)
     private Integer months;
+    
+    public CareerDto toDto() {
+    	return CareerDto.builder()
+    			.expertIdx(expertIdx)
+    			.title(title)
+    			.startDate(startDate)
+    			.endDate(endDate)
+    			.description(description)
+    			.months(months)
+    			.createdAt(createdAt)
+    			.build();
+    			
+    }
     
 }

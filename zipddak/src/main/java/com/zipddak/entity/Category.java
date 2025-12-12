@@ -43,7 +43,17 @@ public class Category {
     }
     
     
-    
+    public CategoryDto toDto() {
+    	
+    	return CategoryDto.builder()
+    			.categoryIdx(categoryIdx)
+    			.name(name)
+    			.depth(depth)
+    			.parentIdx(parentIdx)
+    			.type(name)
+    			.build();
+    	
+    }
     
     
 }

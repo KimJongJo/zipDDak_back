@@ -19,4 +19,5 @@ public class CareerDto {
 	private Date endDate;
 	private String description;
 	private Date createdAt;
+	private Integer months;
 }
