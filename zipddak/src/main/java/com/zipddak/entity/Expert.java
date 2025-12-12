@@ -1,6 +1,7 @@
 package com.zipddak.entity;
 
 import java.sql.Date;
+import java.sql.Time;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,10 +62,10 @@ public class Expert {
     private Integer employeeCount;
 
     @Column
-    private Date contactStartTime;
+    private Time contactStartTime;
 
     @Column
-    private Date contactEndTime;
+    private Time contactEndTime;
 
     @Column
     private String externalLink1;

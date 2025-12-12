@@ -13,6 +13,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.admin.dto.ExpertCardDto;
+import com.zipddak.admin.dto.ExpertProfileDto;
 import com.zipddak.entity.QCareer;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QExpert;
@@ -163,6 +164,51 @@ public class ExpertFindDslRepository {
 		        .limit(3)
 				.fetch();
 		
+	}
+
+	// 전문가 프로필 구하기
+	public ExpertProfileDto expertProfile(Integer expertIdx) {
+
+		QExpert expert = QExpert.expert;
+		QExpertFile profile = new QExpertFile("profile");
+		QExpertFile cert1 = new QExpertFile("cert1");
+		QExpertFile cert2 = new QExpertFile("cert2");
+		QExpertFile cert3 = new QExpertFile("cert3");
+		QCategory category = QCategory.category;
+		
+		return jpaQueryFactory.select(Projections.bean(ExpertProfileDto.class,
+						expert.activityName,
+						expert.expertIdx,
+						profile.fileRename,
+						profile.storagePath.as("imgStoragePath"),
+						expert.mainServiceIdx,
+						category.name.as("mainServiceName"),
+						expert.introduction,
+						expert.addr1,
+						expert.addr2,
+						expert.employeeCount,
+						expert.contactStartTime,
+						expert.contactEndTime,
+						expert.externalLink1,
+						expert.externalLink2,
+						expert.externalLink3,
+						cert1.fileRename.as("certImage1"),
+						cert2.fileRename.as("certImage2"),
+						cert3.fileRename.as("certImage3"),
+						expert.questionAnswer1,
+						expert.questionAnswer2,
+						expert.questionAnswer3,
+						expert.providedServiceIdx,
+						expert.providedServiceDesc
+				))
+				.from(expert)
+				.leftJoin(profile).on(expert.profileImageIdx.eq(profile.expertFileIdx))
+				.leftJoin(cert1).on(expert.certImage1Id.eq(cert1.expertFileIdx))
+				.leftJoin(cert2).on(expert.certImage2Id.eq(cert2.expertFileIdx))
+				.leftJoin(cert3).on(expert.certImage3Id.eq(cert3.expertFileIdx))
+				.leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
+				.where(expert.expertIdx.eq(expertIdx))
+				.fetchOne();
 	}
 	
 	
