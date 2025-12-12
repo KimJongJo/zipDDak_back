@@ -22,7 +22,7 @@ public class ExpertFindController {
 	private final ExpertFindService expertFindService;
 	
 	@GetMapping("experts")
-	public ResponseEntity<ExpertsMainListsDto> experts(
+	public ResponseEntity<List<ExpertCardDto>> experts(
 				@RequestParam("page") Integer page,
 				@RequestParam("cateNo") Integer cateNo,
 				@RequestParam(value = "keyword", required = false) String keyword,
@@ -30,20 +30,43 @@ public class ExpertFindController {
 			) {
 		
 		try {
-			
-			System.out.println("page : " + page);
-			System.out.println("cateNo : " + cateNo);
-			System.out.println("keyword : " + keyword);
-			System.out.println("sort : " + sort);
-			
-			// 광고 전문가
-			List<ExpertCardDto> addExperts = expertFindService.addExperts();
-			
 			List<ExpertCardDto> experts = expertFindService.experts(page, cateNo, keyword, sort);
 			
-			ExpertsMainListsDto expertListDto = new ExpertsMainListsDto(addExperts, experts);
+//			ExpertsMainListsDto expertListDto = new ExpertsMainListsDto(addExperts, experts);
 			
-			return ResponseEntity.ok(expertListDto);
+			return ResponseEntity.ok(experts);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@GetMapping("addExperts")
+	public ResponseEntity<List<ExpertCardDto>> addExperts(
+				@RequestParam("cateNo") Integer cateNo
+			) {
+		
+		try {
+			
+			// 광고 전문가
+			List<ExpertCardDto> addExperts = expertFindService.addExperts(cateNo);
+			
+			return ResponseEntity.ok(addExperts);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@GetMapping("expertProfile")
+	public ResponseEntity<?> expertInfo(@RequestParam("expertIdx") Integer expertIdx){
+		
+		try {
+//			expertFindService.expertProfile(expertIdx);
+			
+			return null;
 		}catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);
