@@ -62,10 +62,11 @@ public class RequestDslRepository {
 
 		return jpaQueryFactory
 				.select(Projections.constructor(PublicRequestDetailDto.class, request.requestIdx, request.createdAt,
-						estimate.count(), user.name, profileFile.fileRename, matching.count(), category.name,
-						request.location, request.budget, request.preferredDate, request.constructionSize,
-						request.additionalRequest, expertFile1.fileRename, expertFile2.fileRename,
-						expertFile3.fileRename, request.purpose, request.place))
+						estimate.count(), user.name, profileFile.fileRename, matching.count(), request.largeServiceIdx,
+						request.midServiceIdx, request.smallServiceIdx, category.name, request.location, request.budget,
+						request.preferredDate, request.constructionSize, request.additionalRequest,
+						expertFile1.fileRename, expertFile2.fileRename, expertFile3.fileRename, request.purpose,
+						request.place))
 				.from(request).leftJoin(estimate).on(estimate.requestIdx.eq(request.requestIdx)).leftJoin(user)
 				.on(user.username.eq(request.userUsername)).leftJoin(matching)
 				.on(matching.userUsername.eq(user.username)).leftJoin(category)

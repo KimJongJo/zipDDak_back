@@ -20,6 +20,9 @@ public class PublicRequestDetailDto {
 	private String requesterProfile; // 요청자 프로필 이미지
 	private Long requesterMatchCount; // 요청자 매칭 횟수
 
+	private Integer largeServiceIdx; // 대분류 카테고리 아이디
+	private Integer midServiceIdx; // 중분류 카테고리 아이디
+	private Integer smallServiceIdx; // 소분류 카테고리 아이디
 	private String categoryName; // 카테고리 이름
 	private String location; // 장소
 	private Integer budget; // 예산
