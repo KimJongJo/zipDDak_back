@@ -47,8 +47,8 @@ public class SellerProductController {
 											@RequestParam(value="addImageFiles", required=false) MultipartFile[] addImageFiles, 
 											@RequestParam(value="detailImageFiles") MultipartFile[] detailImageFiles,
 											@RequestParam(value = "options", required = false) String optionsJson) {
-		System.out.println("pDto : " + product_dto);
-		System.out.println(optionsJson);
+//		System.out.println("pDto : " + product_dto);
+//		System.out.println(optionsJson);
 		
         try {
         	product_dto.setSellerUsername("test");

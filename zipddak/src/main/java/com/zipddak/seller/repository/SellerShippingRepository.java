@@ -50,16 +50,15 @@ public class SellerShippingRepository {
 					                    product.name.as("productName"),
 //					                    item.firstShipDate.as("firstShipDate"),     
 					                    item.trackingNo.as("trackingNo"),
-					                    item.postComp.as("postComp"),
-					                    item.orderStatus.stringValue().as("orderStatus"),
+					                    item.postComp.as("postComp"),					                 
 					                    order.createdAt.as("orderDate"),
-					                    item.orderStatus.min().as("orderStatus"),	// 대표 주문 상태
+					                    item.orderStatus.stringValue().min().as("orderStatus"),	// 대표 주문 상태
 					                    item.countDistinct().as("itemCount"),  // 주문 상품 개수 추가))
 										product.name.min().as("shippingProductName")))	// 대표 상품명
 					            .from(item)
 					            .join(order).on(order.orderIdx.eq(item.orderIdx))
 					            .join(product).on(product.productIdx.eq(item.product.productIdx))
-					            .where(item.orderStatus.in(shippingStatuses))
+					            //.where(item.orderStatus.in(shippingStatuses))
 					            .orderBy(item.createdAt.desc())
 					            .offset(pageRequest.getOffset())
 					            .limit(pageRequest.getPageSize())

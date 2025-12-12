@@ -132,8 +132,11 @@ public class SignUpServiceImpl implements SignUpService {
 	        
 	     //Expert 등록
 	        String username = expertDto.getUsername();
+	        System.out.println(username);
+	        
 	        User user = userRepository.findById(username).orElseThrow(()-> new Exception("username error"));
 	        user.setRole(UserRole.EXPERT);
+	        user.setExpert(true);
 	        
 	        Expert expert = expertDto.toEntity();
 	        expert.setBusinessLicensePdfId(expertFileIdx);
