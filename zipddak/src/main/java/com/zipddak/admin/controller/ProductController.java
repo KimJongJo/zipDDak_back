@@ -50,6 +50,8 @@ public class ProductController {
 		
 		try {
 			
+			System.out.println("username : " + username);
+			
 				PageInfo pageInfo = new PageInfo(page);
 				List<ProductCardDto> productList = productService.productList(keyword, pageInfo, sortId, cate1, cate2, username);
 				
@@ -104,7 +106,7 @@ public class ProductController {
 	}
 	
 	// 관심 상품 토글
-	@PostMapping("favoriteToggle")
+	@PostMapping("user/favoriteToggle")
 	public ResponseEntity<Void> favoriteToggle(@RequestBody Map<String, Object> requestMap){
 		
 		System.out.println("fffffffffffffffffffffffffffffffffffffffffffff");
@@ -186,10 +188,12 @@ public class ProductController {
 				
 				// 전화번호에서 010이랑 - 잘라주기
 				String phone = userInfo.getPhone();
-				phone = phone.replaceAll("-", "");
-				phone = phone.substring(3);
+				if(phone != null && !phone.equals("")) {
+					phone = phone.replaceAll("-", "");
+					phone = phone.substring(3);
+					userInfo.setPhone(phone);
+				}
 				
-				userInfo.setPhone(phone);
 				
 				lastOrderResponseDto.setUserInfo(userInfo);
 				
