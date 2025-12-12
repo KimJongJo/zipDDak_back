@@ -11,10 +11,12 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
+import com.zipddak.entity.Order;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
+import com.zipddak.entity.QProductOption;
 import com.zipddak.entity.QUser;
 import com.zipddak.seller.dto.SearchConditionDto;
 
@@ -95,30 +97,64 @@ public class SellerOrderRepository {
 	// ============================
 	// 주문 상세보기 
 	// ============================
-	public List<OrderItemDto> findMyOrderItems(String sellerUsername, Integer orderIdx) {
+	//주문 정보 
+	public OrderDto findByOrderId(Integer orderIdx) {
 		QOrder order = QOrder.order;
 		QOrderItem item = QOrderItem.orderItem;
-		QProduct product = QProduct.product;
 		QUser user = QUser.user;
 		
+		return jpaQueryFactory.select(Projections.fields(OrderDto.class,
+										order.orderIdx,
+										order.orderCode,
+										order.subtotalAmount,
+										order.shippingAmount,
+										order.totalAmount,
+										order.postZonecode,
+										order.postAddr1,
+										order.postAddr2,
+										order.phone,
+										order.postRecipient,
+										order.postNote,
+										order.createdAt,
+//										item.orderStatus.stringValue().min().as("orderStatus"),
+										user.username.as("customerUsername"),
+										user.name.as("customerName"),
+										user.phone.as("customerPhone")
+								))
+								.from(order)
+//								.join(item).on(item.orderIdx.eq(order.orderIdx))
+								.join(user).on(order.user.username.eq(user.username))
+								.where(order.orderIdx.eq(orderIdx))
+								.fetchOne();
+	}
+	
+	//주문아이템 정보 
+	public List<OrderItemDto> findMyOrderItems(String sellerUsername, Integer orderIdx) {
+		QOrderItem item = QOrderItem.orderItem;
+		QProduct product = QProduct.product;
+		QProductOption pdOption =  QProductOption.productOption;
+		
 		return jpaQueryFactory.select(Projections.fields(OrderItemDto.class,
-										item.orderItemIdx,
-										item.orderIdx,
-										item.quantity,
-										item.unitPrice,
-										item.orderStatus.stringValue().as("orderStatus"),
+								        item.orderItemIdx,
+								        item.orderIdx,
+								        item.productOptionIdx,
+								        item.quantity,
+								        item.unitPrice,
+								        item.orderStatus.stringValue().as("orderStatus"),
+								        item.postComp,
+								        item.trackingNo,
 								        product.name.as("productName"),
-								        product.sellerUsername.as("sellerUsername"),
-								        order.orderCode.as("orderCode"),
-								        order.user.username.as("customerUsername"),
-								        order.createdAt.as("orderDate")
+								        product.postCharge, 
+								        product.postType.stringValue().as("postType"), // 배송방식 
+								        pdOption.name.as("optionName"), // 옵션명 추가
+								        pdOption.value.as("optionValue"), //옵션선택종류
+								        pdOption.price.as("optionPrice") //옵션 추가가격 
 								))
 								.from(item)
 								.join(product).on(item.product.productIdx.eq(product.productIdx))
-								.join(order).on(item.orderIdx.eq(order.orderIdx))
-								.join(user).on(order.user.username.eq(user.username))
+								.join(pdOption).on(item.productOptionIdx.eq(pdOption.productOptionIdx)) 
 								.where(product.sellerUsername.eq(sellerUsername)
-										.and(item.orderIdx.eq(orderIdx)))
+								        .and(item.orderIdx.eq(orderIdx)))
 								.fetch();
 	}
 	
@@ -139,5 +175,7 @@ public class SellerOrderRepository {
 			}
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
+
+	
 
 }

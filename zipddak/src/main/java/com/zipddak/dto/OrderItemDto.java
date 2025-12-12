@@ -27,8 +27,15 @@ public class OrderItemDto {
 	private Integer exchangeNewOptIdx;
 	private Date createdAt;
 
+	//jon용 컬럼 
 	private Integer productIdx;
 	private String name;
 	private String sellerUsername;
 	private String customerUsername;
+	private String postType;	//배송타입 (bundle / single)
+	private String productName;	//상품명
+	private Long postCharge;	//배송비
+	private String optionName;	//옵션명
+	private String optionValue;	//옵션선택값
+	private Long optionPrice;	//옵션추가금액 
 }

@@ -139,18 +139,18 @@ public class SellerProductServiceImpl implements SellerProductService {
 		productEntity = product_repo.save(productEntity);
 
 		Boolean saveResult = false;
-		Integer productIdx = 0;
+		Integer idx = 0;
 		String msg = "";
 		if (productEntity != null) {
 			saveResult = true;
-			productIdx = productEntity.getProductIdx();
+			idx = productEntity.getProductIdx();
 			msg = "상품 등록이 완료되었습니다.";
 
 		} else {
 			msg = "상품 등록 실패.";
 		}
 
-		return new SaveResultDto(saveResult, productIdx, msg);
+		return new SaveResultDto(saveResult, idx, msg);
 	}
 
 	// 셀러가 등록한 상품의 카테고리만 조회
