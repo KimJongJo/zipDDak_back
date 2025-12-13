@@ -50,7 +50,7 @@ public class ProductController {
 		
 		try {
 			
-			System.out.println("username : " + username);
+			System.out.println("page : " + page);
 			
 				PageInfo pageInfo = new PageInfo(page);
 				List<ProductCardDto> productList = productService.productList(keyword, pageInfo, sortId, cate1, cate2, username);
