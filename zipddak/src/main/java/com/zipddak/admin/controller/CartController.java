@@ -20,13 +20,13 @@ import com.zipddak.util.PageInfo;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class CartController {
 	
 	private final CartService cartService;
 
-	@PostMapping("addCart")
+	@PostMapping("/addCart")
 	public ResponseEntity<Boolean> addCart(@RequestBody OrderListToListDto orderListDto){
 		
 		try {
@@ -42,7 +42,7 @@ public class CartController {
 	}
 	
 	// 해당 유저의 장바구니 리스트 조회
-	@GetMapping("cartList")
+	@GetMapping("/cartList")
 	public ResponseEntity<List<CartBrandDto>> cartList(
 			@RequestParam("username") String username
 			){
@@ -61,7 +61,7 @@ public class CartController {
 	}
 	
 	// 장바구니 수량 증가
-	@PostMapping("cartList/increaseCount")
+	@PostMapping("/cartList/increaseCount")
 	public ResponseEntity<Boolean> increaseCount(@RequestBody Map<String, Integer> cartMap){
 		
 		try {
@@ -77,7 +77,7 @@ public class CartController {
 	}
 	
 	// 장바구니 수량 감소
-	@PostMapping("cartList/decreaseCount")
+	@PostMapping("/cartList/decreaseCount")
 	public ResponseEntity<Boolean> decreaseCount(@RequestBody Map<String, Integer> cartMap){
 		
 		try {
@@ -93,7 +93,7 @@ public class CartController {
 	}
 	
 	// 장바구니 선택 삭제
-	@PostMapping("cartList/delete")
+	@PostMapping("/cartList/delete")
 	public ResponseEntity<Boolean> deleteCartList(@RequestBody Map<String, List<Integer>> cartMap){
 		
 		try {

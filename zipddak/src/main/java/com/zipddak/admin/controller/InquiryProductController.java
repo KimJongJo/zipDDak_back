@@ -18,7 +18,7 @@ public class InquiryProductController {
 
 	private final InquiryService inquiryServiceImpl;
 	
-	@PostMapping("writeInquire")
+	@PostMapping("user/writeInquire")
 	public ResponseEntity<Boolean> writeInquire(WriteInquiryDto writeInquiryDto){
 		
 		try {
