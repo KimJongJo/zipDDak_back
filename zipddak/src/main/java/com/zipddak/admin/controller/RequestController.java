@@ -17,7 +17,7 @@ public class RequestController {
 
 	private final RequestService requestService;
 	
-	@PostMapping("writeRequest")
+	@PostMapping("user/writeRequest")
 	public ResponseEntity<Boolean> writeRequest(RequestFormDto requestForm){
 		
 		try {
