@@ -1,7 +1,9 @@
 package com.zipddak.mypage.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,9 +11,12 @@ import com.zipddak.entity.Estimate;
 import com.zipddak.entity.EstimateCost;
 import com.zipddak.entity.Expert;
 import com.zipddak.mypage.dto.EstimateWriteDto;
+import com.zipddak.mypage.dto.SentEstimateListDto;
+import com.zipddak.mypage.repository.EstimateDslRepository;
 import com.zipddak.repository.EstimateCostRepository;
 import com.zipddak.repository.EstimateRepository;
 import com.zipddak.repository.ExpertRepository;
+import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,8 +27,9 @@ public class EstimateServiceImpl implements EstimateService {
 	private final EstimateRepository estimateRepository;
 	private final ExpertRepository expertRepository;
 	private final EstimateCostRepository estimateCostRepository;
+	private final EstimateDslRepository estimateDslRepository;
 
-	// 견적서 보내기
+	// [전문가]견적서 보내기
 	@Override
 	public void writeEstimate(EstimateWriteDto estimateWriteDto) throws Exception {
 		// 전문가 조회
@@ -60,4 +66,35 @@ public class EstimateServiceImpl implements EstimateService {
 
 	}
 
+	// [전문가]보낸 견적서 조회
+	@Override
+	public List<SentEstimateListDto> getExpertSentEstimateList(String username, PageInfo pageInfo, String status)
+			throws Exception {
+		// 전문가 조회
+		Expert expert = expertRepository.findByUser_Username(username).get();
+
+		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 10);
+
+		List<SentEstimateListDto> estimateList = new ArrayList<>();
+		Long cnt = 0L;
+
+		if (status.equals("progress")) {
+			estimateList = estimateDslRepository.selectProgressSentEstimateList(expert.getExpertIdx(), pageRequest);
+			cnt = estimateDslRepository.selectProgressSentEstimateCount(expert.getExpertIdx());
+		} else {
+			estimateList = estimateDslRepository.selectFinishSentEstimateList(expert.getExpertIdx(), pageRequest);
+			cnt = estimateDslRepository.selectFinishSentEstimateCount(expert.getExpertIdx());
+		}
+
+		Integer allPage = (int) (Math.ceil(cnt.doubleValue() / pageRequest.getPageSize()));
+		Integer startPage = (pageInfo.getCurPage() - 1) / 10 * 10 + 1;
+		Integer endPage = Math.min(startPage + 10 - 1, allPage);
+
+		pageInfo.setAllPage(allPage);
+		pageInfo.setStartPage(startPage);
+		pageInfo.setEndPage(endPage);
+
+		return estimateList;
+
+	}
 }
