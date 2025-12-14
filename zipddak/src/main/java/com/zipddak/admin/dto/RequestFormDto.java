@@ -30,6 +30,8 @@ public class RequestFormDto {
 	private String place;
 	
 	private List<MultipartFile> files;
+	
+	private String expertIdx;
 	 
 	
 }

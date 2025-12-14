@@ -56,7 +56,7 @@ public class PaymentOrderService implements OrderService {
 						.postRecipient(recvUser.getRecvier())
 						.postNote(recvUser.getRequestContent())
 						.createdAt(new java.sql.Date(System.currentTimeMillis()))
-						.paymentStatus(PaymentStatus.결제대기)
+						.paymentStatus(PaymentStatus.결제취소)
 						.build();
 		
 		// 주문 저장
@@ -77,7 +77,7 @@ public class PaymentOrderService implements OrderService {
 		                .unitPrice(optionListDto.getSalePrice() + optionListDto.getPrice()) // long 타입으로 처리 가능
 		                .quantity(optionListDto.getCount())
 		                .receiveWay(ReceiveWay.post)
-		                .orderStatus(OrderStatus.결제대기)
+		                .orderStatus(OrderStatus.결제취소)
 		                .productOptionIdx(optionListDto.getOptionId())
 		                .createdAt(new java.sql.Date(System.currentTimeMillis()))
 		                .build();

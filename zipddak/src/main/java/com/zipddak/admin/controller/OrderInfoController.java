@@ -25,7 +25,7 @@ public class OrderInfoController {
 	private final OrderService orderService;
 	private final OrderItemService orderItemService;
 
-	@GetMapping("orderInfo")
+	@GetMapping("user/orderInfo")
 	public ResponseEntity<OrderComplateInfoDto> orderInfo(@RequestParam("orderCode") String orderCode){
 		
 		try {
@@ -43,7 +43,6 @@ public class OrderInfoController {
 														.orderItems(orderItems)
 														.build();
 			
-			System.out.println(complateInfoDto);
 			
 			return ResponseEntity.ok(complateInfoDto);
 		}catch(Exception e) {

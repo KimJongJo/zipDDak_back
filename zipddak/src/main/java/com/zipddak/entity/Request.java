@@ -77,5 +77,8 @@ public class Request {
 
 	@Column
 	private String status;
+	
+	@Column
+	private Integer expertIdx;
 
 }

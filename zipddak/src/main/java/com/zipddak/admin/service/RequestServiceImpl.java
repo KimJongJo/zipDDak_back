@@ -114,6 +114,10 @@ public class RequestServiceImpl implements RequestService {
 		if (fileIdxList.size() > 2) {
 			request.setImage3Idx(fileIdxList.get(2));
 		}
+		
+		if(!requestForm.getExpertIdx().equals("null")) {
+			request.setExpertIdx(Integer.parseInt(requestForm.getExpertIdx()));
+		}
 
 		requestRepository.save(request);
 	}

@@ -50,7 +50,7 @@ public class ProductController {
 		
 		try {
 			
-			System.out.println("username : " + username);
+			System.out.println("page : " + page);
 			
 				PageInfo pageInfo = new PageInfo(page);
 				List<ProductCardDto> productList = productService.productList(keyword, pageInfo, sortId, cate1, cate2, username);
@@ -109,7 +109,6 @@ public class ProductController {
 	@PostMapping("user/favoriteToggle")
 	public ResponseEntity<Void> favoriteToggle(@RequestBody Map<String, Object> requestMap){
 		
-		System.out.println("fffffffffffffffffffffffffffffffffffffffffffff");
 		String username = (String)requestMap.get("username");
 		Integer productIdx = (Integer)requestMap.get("productIdx");
 		
@@ -120,47 +119,47 @@ public class ProductController {
 				
 	}
 	
-	// 구매 목록의 상품 정보
-	@PostMapping("orderListProduct")
-	public ResponseEntity<OrderListResponseDto> orderListProduct(@RequestBody OrderListWrapperDto orderListWrapperDto){
-		
-		try {
-			
-			// 반환할 데이터의 구조
-			// 1. 자재 업체 이름
-			// 2. 배송비
-			// 3. 자재 명
-			// 4. 판매 가격
-			// 5. 리스트 (옵션명, 선택값, 옵션가격 + 판매가격, 개수)
-			
-			// 요청 파라미터에서 꺼내야하는 데이터
-			// 1. 자재 상품 id
-			// 2. 옵션 id
-			// 3. 개수
-			
-			
-			List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
-			OrderListResponseDto orderListResponseDto = productService.getOrderList(orderList);
-			
-			UserDto userInfo = productService.getUserInfo(orderListWrapperDto.getUsername());
-			
-			// 전화번호에서 010이랑 - 잘라주기
-			String phone = userInfo.getPhone();
-			phone = phone.replaceAll("-", "");
-			phone = phone.substring(3);
-			
-			userInfo.setPhone(phone);
-			
-			orderListResponseDto.setUserInfo(userInfo);
-			
-			return ResponseEntity.ok(orderListResponseDto);
-		}catch(Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.badRequest().body(null);
-		}
-		
-	}
-	
+//	// 구매 목록의 상품 정보
+//	@PostMapping("orderListProduct")
+//	public ResponseEntity<OrderListResponseDto> orderListProduct(@RequestBody OrderListWrapperDto orderListWrapperDto){
+//		
+//		try {
+//			
+//			// 반환할 데이터의 구조
+//			// 1. 자재 업체 이름
+//			// 2. 배송비
+//			// 3. 자재 명
+//			// 4. 판매 가격
+//			// 5. 리스트 (옵션명, 선택값, 옵션가격 + 판매가격, 개수)
+//			
+//			// 요청 파라미터에서 꺼내야하는 데이터
+//			// 1. 자재 상품 id
+//			// 2. 옵션 id
+//			// 3. 개수
+//			
+//			
+//			List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
+//			OrderListResponseDto orderListResponseDto = productService.getOrderList(orderList);
+//			
+//			UserDto userInfo = productService.getUserInfo(orderListWrapperDto.getUsername());
+//			
+//			// 전화번호에서 010이랑 - 잘라주기
+//			String phone = userInfo.getPhone();
+//			phone = phone.replaceAll("-", "");
+//			phone = phone.substring(3);
+//			
+//			userInfo.setPhone(phone);
+//			
+//			orderListResponseDto.setUserInfo(userInfo);
+//			
+//			return ResponseEntity.ok(orderListResponseDto);
+//		}catch(Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.badRequest().body(null);
+//		}
+//		
+//	}
+//	
 	
 	
 	
@@ -171,7 +170,7 @@ public class ProductController {
 	
 	
 	// 테스트
-		@PostMapping("orderListProduct2")
+		@PostMapping("user/orderListProduct2")
 		public ResponseEntity<LastOrderResponseDto> orderListProduct2(@RequestBody OrderListWrapperDto orderListWrapperDto){
 			
 			try {

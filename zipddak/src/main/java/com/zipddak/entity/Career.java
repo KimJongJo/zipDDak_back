@@ -56,6 +56,7 @@ public class Career {
     
     public CareerDto toDto() {
     	return CareerDto.builder()
+    			.careerIdx(careerIdx)
     			.expertIdx(expertIdx)
     			.title(title)
     			.startDate(startDate)
