@@ -19,5 +19,7 @@ public class ResponseExpertProfileDto {
 	private List<CategoryDto> categoryList;
 	private ExpertCareerDto careerDto;
 	private List<ExpertPortfolioDto> portFolioDtoList;
+	private ExpertReviewDto expertReviewDto;
+	private Boolean favorite;
 	
 }

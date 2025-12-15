@@ -124,12 +124,7 @@ public class Expert {
 	private Date createdAt;
 	
 	@Column
-    @Enumerated(EnumType.STRING)
-    private ExpertStatus activityStatus; 
-	
-	 public enum ExpertStatus {
-		 ACTIVE, STOPPED
-	    }
+	private String activityStatus; // ACTIVE, STOPPED
 
 	public ExpertDto toDto() {
 		return ExpertDto.builder().expertIdx(expertIdx).username(user.getUsername()).activityName(activityName)
@@ -140,6 +135,6 @@ public class Expert {
 				.providedServiceDesc(providedServiceDesc).certImage1Id(certImage1Id).certImage2Id(certImage2Id)
 				.certImage3Id(certImage3Id).businessLicensePdfId(businessLicensePdfId).questionAnswer1(questionAnswer1)
 				.questionAnswer2(questionAnswer2).questionAnswer3(questionAnswer3).settleBank(settleBank)
-				.settleAccount(settleAccount).settleHost(settleHost).createdAt(createdAt).activityStatus(this.activityStatus.toString()).build();
+				.settleAccount(settleAccount).settleHost(settleHost).createdAt(createdAt).activityStatus(activityStatus).build();
 	}
 }

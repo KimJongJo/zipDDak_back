@@ -93,12 +93,17 @@ public class ProductDslRepository {
 		// cate2는 없음
 
 		// 로그인 했을때 안했을때 구분
-		Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false);
+		Expression<Boolean> isFavoriteExpr =
+			    Expressions.booleanTemplate("false").as("favorite");
 
-		if (username != null && !username.isBlank()) {
-			isFavoriteExpr = new CaseBuilder().when(favorite.productIdx.isNotNull()).then(true).otherwise(false)
-					.as("favorite");
-		}
+			if (username != null && !username.equals("")) {
+			    isFavoriteExpr =
+			        new CaseBuilder()
+			            .when(favorite.productIdx.isNotNull()).then(true)
+			            .otherwise(false)
+			            .as("favorite");
+			}
+
 
 		BooleanBuilder where = new BooleanBuilder();
 
@@ -119,29 +124,32 @@ public class ProductDslRepository {
 			where.and(product.name.contains(keyword));
 		}
 
-		OrderSpecifier<?> order;
+		List<OrderSpecifier<?>> orders = new ArrayList<>();
 
 		switch (sortId) {
 		case 1: // 인기순 (판매량 많은 순)
-			order = orderItem.quantity.sum().coalesce(0).desc();
-			break;
+		    orders.add(orderItem.quantity.sum().coalesce(0).desc());
+		    break;
 
-		case 2: // 최신순 (상품 등록일)
-			order = product.createdAt.desc();
-			break;
+		case 2: // 최신순
+		    orders.add(product.createdAt.desc());
+		    break;
 
 		case 3: // 가격 낮은순
-			order = product.salePrice.asc();
-			break;
+		    orders.add(product.salePrice.asc());
+		    break;
 
-		case 4: // 가격 낮은순
-			order = product.salePrice.desc();
-			break;
+		case 4: // 가격 높은순
+		    orders.add(product.salePrice.desc());
+		    break;
 
 		default: // 평점 높은순
-			order = review.score.avg().coalesce(0.0).desc();
+		    orders.add(review.score.avg().coalesce(0.0).desc());
 		}
 
+		orders.add(product.productIdx.desc());
+		
+		
 		JPQLQuery<ProductCardDto> query = jpaQueryFactory
 		        .select(Projections.bean(ProductCardDto.class,
 		                product.productIdx,
@@ -178,7 +186,7 @@ public class ProductDslRepository {
 				.groupBy(product.productIdx, product.name, product.discount, product.salePrice, product.sellerUsername,
 						productFile.fileRename, productFile.storagePath)
 				// 판매 이력이 없는 상품은 null이 될 수 있음 -> null일경우 판매 횟수 0으로 처리
-				.orderBy(order).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
+				.orderBy(orders.toArray(new OrderSpecifier[0])).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 
 	}
 

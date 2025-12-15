@@ -14,12 +14,18 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.admin.dto.ExpertCardDto;
 import com.zipddak.admin.dto.ExpertProfileDto;
+import com.zipddak.admin.dto.ExpertReviewDetailDto;
+import com.zipddak.admin.dto.ExpertReviewScoreDto;
+import com.zipddak.admin.dto.ResponseReviewListAndHasnext;
 import com.zipddak.entity.QCareer;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QExpert;
 import com.zipddak.entity.QExpertFile;
 import com.zipddak.entity.QMatching;
+import com.zipddak.entity.QProfileFile;
 import com.zipddak.entity.QReviewExpert;
+import com.zipddak.entity.QReviewFile;
+import com.zipddak.entity.QUser;
 
 @Repository
 public class ExpertFindDslRepository {
@@ -209,6 +215,72 @@ public class ExpertFindDslRepository {
 				.leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
 				.where(expert.expertIdx.eq(expertIdx))
 				.fetchOne();
+	}
+
+	// 리뷰 평점
+	public ExpertReviewScoreDto reviewScore(Integer expertIdx) {
+
+		QReviewExpert reviewExpert = QReviewExpert.reviewExpert;
+		
+		return jpaQueryFactory.select(Projections.bean(ExpertReviewScoreDto.class, 
+							Expressions.numberTemplate(
+			                        Double.class,
+			                        "ROUND({0}, 1)",
+			                        reviewExpert.score.avg().coalesce(0.0)
+			                ).as("score"),
+							reviewExpert.count().as("reviewCount")
+				))
+				.from(reviewExpert)
+				.where(reviewExpert.expertIdx.eq(expertIdx))
+				.fetchOne();
+	}
+
+	// 리뷰 내용
+	public ResponseReviewListAndHasnext reviewList(PageRequest pageRequest, Integer expertIdx) {
+		
+		QReviewExpert reviewExpert = QReviewExpert.reviewExpert;
+		QReviewFile file1 = new QReviewFile("file1");
+		QReviewFile file2 = new QReviewFile("file2");
+		QReviewFile file3 = new QReviewFile("file3");
+		QProfileFile profile = QProfileFile.profileFile;
+		QUser user = QUser.user;
+		
+		List<ExpertReviewDetailDto> content =
+		        jpaQueryFactory
+		            .select(Projections.bean(ExpertReviewDetailDto.class,
+		                reviewExpert.reviewExpertIdx.as("reviewIdx"),
+		                file1.storagePath.as("imgStoragePath"),
+		                file1.fileRename.as("image1"),
+		                file2.fileRename.as("image2"),
+		                file3.fileRename.as("image3"),
+		                user.nickname,
+		                profile.storagePath.as("profileImgStoragePath"),
+		                profile.fileRename.as("profileImg"),
+		                reviewExpert.score,
+		                reviewExpert.createdate,
+		                reviewExpert.content
+		            ))
+		            .from(reviewExpert)
+		            .leftJoin(file1).on(reviewExpert.img1.eq(file1.reviewFileIdx))
+		            .leftJoin(file2).on(reviewExpert.img2.eq(file2.reviewFileIdx))
+		            .leftJoin(file3).on(reviewExpert.img3.eq(file3.reviewFileIdx))
+		            .leftJoin(user).on(reviewExpert.writer.eq(user.username))
+		            .leftJoin(profile).on(user.profileImg.eq(profile.profileFileIdx))
+		            .where(reviewExpert.expertIdx.eq(expertIdx))
+		            .offset(pageRequest.getOffset())
+		            // ⭐ 핵심
+		            .limit(pageRequest.getPageSize() + 1)
+		            .fetch();
+		
+		boolean hasNext = content.size() > pageRequest.getPageSize();
+		
+		// 한개 더 가져온거 제거
+		if(hasNext) {
+			content.remove(pageRequest.getPageSize());
+		}
+		
+		return new ResponseReviewListAndHasnext(content, hasNext);
+		
 	}
 	
 	

@@ -44,7 +44,19 @@ public class Estimate {
 
     @Column(nullable = false)
     private Integer largeServiceIdx;
+    
+    @Column
+    private String diagnosisType; // 'VISIT', 'PHOTO'
+    
+    @Column
+    private String repairType; // 'PART', 'ALL', 'CHECK'
+    
+    @Column
+    private String demolitionType; // 'INCLUDED', 'EXTRA', 'NONE'
 
+    @Column
+    private String consultingType; // 'ONLINE', 'VISIT'
+    
     @Enumerated(EnumType.STRING)
     private WorkDurationType workDurationType;  // HOUR, DAY, WEEK, MONTH
 
@@ -77,6 +89,9 @@ public class Estimate {
 
     @Column
     private Integer etcFee;
+    
+    @Column(columnDefinition = "TEXT")
+    private String costDetail;
 
     @CreationTimestamp
     private Date createdAt;

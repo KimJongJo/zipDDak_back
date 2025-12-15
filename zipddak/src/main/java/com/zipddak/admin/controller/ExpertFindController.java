@@ -1,9 +1,12 @@
 package com.zipddak.admin.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,11 +15,15 @@ import com.zipddak.admin.dto.ExpertCardDto;
 import com.zipddak.admin.dto.ExpertCareerDto;
 import com.zipddak.admin.dto.ExpertPortfolioDto;
 import com.zipddak.admin.dto.ExpertProfileDto;
-import com.zipddak.admin.dto.ExpertsMainListsDto;
+import com.zipddak.admin.dto.ExpertReviewDto;
 import com.zipddak.admin.dto.ResponseExpertProfileDto;
+import com.zipddak.admin.dto.ResponseReviewListAndHasnext;
 import com.zipddak.admin.service.CategoryService;
 import com.zipddak.admin.service.ExpertCareerService;
 import com.zipddak.admin.service.ExpertFindService;
+import com.zipddak.admin.service.ExpertReportService;
+import com.zipddak.admin.service.ExpertReviewService;
+import com.zipddak.admin.service.FavoriteExpertService;
 import com.zipddak.admin.service.PortfolioService;
 import com.zipddak.dto.CategoryDto;
 
@@ -31,6 +38,9 @@ public class ExpertFindController {
 	private final CategoryService categoryService;
 	private final ExpertCareerService expertCareerService;
 	private final PortfolioService portFolioService;
+	private final ExpertReviewService expertReviewService;
+	private final ExpertReportService expertReportService;
+	private final FavoriteExpertService favoriteExpertService;
 	
 	@GetMapping("experts")
 	public ResponseEntity<List<ExpertCardDto>> experts(
@@ -72,7 +82,8 @@ public class ExpertFindController {
 	}
 	
 	@GetMapping("expertProfile")
-	public ResponseEntity<ResponseExpertProfileDto> expertInfo(@RequestParam("expertIdx") Integer expertIdx){
+	public ResponseEntity<ResponseExpertProfileDto> expertInfo(@RequestParam("expertIdx") Integer expertIdx,
+																@RequestParam("username") String username){
 		
 		try {
 			ExpertProfileDto expertProfile = expertFindService.expertProfile(expertIdx);
@@ -87,12 +98,74 @@ public class ExpertFindController {
 			// 포트폴리오
 			List<ExpertPortfolioDto> portFolioDtoList = portFolioService.expertPortfolio(expertIdx);
 			
+			ExpertReviewDto expertReviewDto = expertReviewService.expertReviews(expertIdx);
+			
+			Boolean favorite = favoriteExpertService.expertFavoriteUser(expertIdx, username);
+			
 			ResponseExpertProfileDto response = new ResponseExpertProfileDto(expertProfile, 
 																		categoryList,
 																		careerDto,
-																		portFolioDtoList);
+																		portFolioDtoList,
+																		expertReviewDto,
+																		favorite);
 			
 			return ResponseEntity.ok(response);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@GetMapping("expertProfile/moreReview")
+	public ResponseEntity<ResponseReviewListAndHasnext> reviewMore(@RequestParam("page") Integer page,
+																@RequestParam("expertIdx") Integer expertIdx){
+		
+		try {
+			
+			ResponseReviewListAndHasnext reviewList = expertReviewService.reviewMore(page, expertIdx);
+			
+			return ResponseEntity.ok(reviewList);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@PostMapping("user/reportExpert")
+	public ResponseEntity<Boolean> reportExpert (@RequestBody Map<String, Object> map){
+		
+		try {
+			
+			String username = (String)map.get("username");
+			String reason = (String)map.get("reason");
+			Integer expertIdx = Integer.parseInt((String)map.get("expertIdx"));
+			
+			expertReportService.reportExpert(username, expertIdx, reason);
+			
+			return ResponseEntity.ok(true);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@PostMapping("user/favoriteExpert")
+	public ResponseEntity<Boolean> favoriteToggle (@RequestBody Map<String, Object> map){
+		
+		try {
+			
+			String username = (String)map.get("username");
+			Integer expertIdx = Integer.parseInt((String)map.get("expertIdx"));
+			
+			favoriteExpertService.favoriteToggle(username, expertIdx);
+			
+			return ResponseEntity.ok(true);
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);

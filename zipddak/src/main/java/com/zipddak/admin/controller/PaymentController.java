@@ -28,7 +28,7 @@ import com.zipddak.admin.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/user/payment")
 @RequiredArgsConstructor
 public class PaymentController {
 	

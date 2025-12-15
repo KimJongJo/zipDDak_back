@@ -23,7 +23,6 @@ import com.zipddak.entity.ExpertFile;
 import com.zipddak.entity.Seller;
 import com.zipddak.entity.SellerFile;
 import com.zipddak.entity.User;
-import com.zipddak.entity.Expert.ExpertStatus;
 import com.zipddak.entity.User.UserRole;
 import com.zipddak.repository.CategoryRepository;
 import com.zipddak.repository.ExpertFileRepository;
@@ -143,7 +142,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        expert.setBusinessLicensePdfId(expertFileIdx);
 	        expert.setUser(user);
 	        //관리자가 승인...
-	        expert.setActivityStatus(ExpertStatus.STOPPED);
+	        expert.setActivityStatus("STOPPED");
 
 	        signExpertRepository.save(expert);
 	    }
