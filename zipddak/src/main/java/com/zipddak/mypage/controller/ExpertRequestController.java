@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.mypage.dto.PublicRequestDetailDto;
 import com.zipddak.mypage.dto.PublicRequestListDto;
+import com.zipddak.mypage.dto.ReceiveRequestDetailDto;
 import com.zipddak.mypage.dto.ReceiveRequestListDto;
 import com.zipddak.mypage.service.ExpertRequestServiceImpl;
 import com.zipddak.util.PageInfo;
@@ -60,6 +61,17 @@ public class ExpertRequestController {
 			res.put("pageInfo", pageInfo);
 
 			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [전문가]받은 요청서 상세조회
+	@GetMapping("/receive/requestDetail")
+	public ResponseEntity<ReceiveRequestDetailDto> expertReceiveRequestDetail(@RequestParam Integer requestIdx) {
+		try {
+			return ResponseEntity.ok(requestService.getExpertReceiveRequestDetail(requestIdx));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);

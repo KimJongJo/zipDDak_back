@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.zipddak.entity.Expert;
 import com.zipddak.mypage.dto.PublicRequestDetailDto;
 import com.zipddak.mypage.dto.PublicRequestListDto;
+import com.zipddak.mypage.dto.ReceiveRequestDetailDto;
 import com.zipddak.mypage.dto.ReceiveRequestListDto;
 import com.zipddak.mypage.repository.RequestDslRepository;
 import com.zipddak.repository.ExpertRepository;
@@ -34,7 +35,7 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 		return requestDslRepository.selectPublicRequestDetail(requestIdx);
 	}
 
-	// [전문가]받은 요청서 조회
+	// [전문가]받은 요청서 목록 조회
 	@Override
 	public List<ReceiveRequestListDto> getExpertReceiveRequestList(String username, PageInfo pageInfo)
 			throws Exception {
@@ -56,5 +57,11 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 		pageInfo.setEndPage(endPage);
 
 		return requestList;
+	}
+
+	// [전문가]받은 요청서 상세 조회
+	@Override
+	public ReceiveRequestDetailDto getExpertReceiveRequestDetail(Integer requestIdx) throws Exception {
+		return requestDslRepository.selectReceiveRequestDetail(requestIdx);
 	}
 }

@@ -16,6 +16,7 @@ import com.zipddak.entity.QRequest;
 import com.zipddak.entity.QUser;
 import com.zipddak.mypage.dto.PublicRequestDetailDto;
 import com.zipddak.mypage.dto.PublicRequestListDto;
+import com.zipddak.mypage.dto.ReceiveRequestDetailDto;
 import com.zipddak.mypage.dto.ReceiveRequestListDto;
 
 import lombok.RequiredArgsConstructor;
@@ -106,5 +107,27 @@ public class RequestDslRepository {
 
 		return jpaQueryFactory.select(request.count()).from(request)
 				.where(request.expertIdx.eq(expertIdx).and(request.status.eq("RECRUITING"))).fetchOne();
+	}
+
+	// [전문가]받은 요청서 상세
+	public ReceiveRequestDetailDto selectReceiveRequestDetail(Integer requestIdx) throws Exception {
+		QRequest request = QRequest.request;
+		QUser user = QUser.user;
+		QCategory category = QCategory.category;
+		QExpertFile expertFile1 = new QExpertFile("expertFile1");
+		QExpertFile expertFile2 = new QExpertFile("expertFile2");
+		QExpertFile expertFile3 = new QExpertFile("expertFile3");
+
+		return jpaQueryFactory
+				.select(Projections.constructor(ReceiveRequestDetailDto.class, request.requestIdx, request.createdAt,
+						user.name, user.phone, request.largeServiceIdx, category.name, request.location, request.budget,
+						request.preferredDate, request.constructionSize, request.additionalRequest, request.purpose,
+						request.place, expertFile1.fileRename, expertFile2.fileRename, expertFile3.fileRename))
+				.from(request).leftJoin(user).on(user.username.eq(request.userUsername)).leftJoin(category)
+				.on(category.categoryIdx.eq(request.smallServiceIdx)).leftJoin(expertFile1)
+				.on(expertFile1.expertFileIdx.eq(request.image1Idx)).leftJoin(expertFile2)
+				.on(expertFile2.expertFileIdx.eq(request.image2Idx)).leftJoin(expertFile3)
+				.on(expertFile3.expertFileIdx.eq(request.image3Idx)).where(request.requestIdx.eq(requestIdx))
+				.fetchOne();
 	}
 }
