@@ -26,12 +26,15 @@ import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 import com.zipddak.admin.repository.ProductDslRepository;
+import com.zipddak.entity.Matching;
 import com.zipddak.entity.Order;
 import com.zipddak.entity.Payment;
+import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.Product.PostType;
 import com.zipddak.entity.OrderItem;
+import com.zipddak.repository.MatchingRepository;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
 import com.zipddak.repository.PaymentRepository;
@@ -47,6 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final OrderRepository orderRepository;
 	private final OrderItemRepository orderItemRepository;
+	private final MatchingRepository matchingRepository;
 	
 	@Value("${toss-payment-secret-key}")
 	private String tossSecretKey;
@@ -121,7 +125,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	// 결제 최종 승인
 	@Override
-	public void approvePayment(PaymentComplateDto paymentComplateDto) throws Exception {
+	public void approvePayment(PaymentComplateDto paymentComplateDto, String type) throws Exception {
 		
 		// Toss 결제 승인 api url
 		String url = "https://api.tosspayments.com/v1/payments/" + paymentComplateDto.getPaymentKey();
@@ -143,8 +147,6 @@ public class PaymentServiceImpl implements PaymentService {
 		restTemplate.getMessageConverters()
 	    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 		ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-		
-		System.out.println(response);
 		
 		// response에 가져온 데이터를 꺼내야함
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -188,23 +190,37 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			Payment savedPayment = paymentRepository.save(payment);
 			
-			// 주문 데이터에서 결제 완료로 업데이트 그리고 payment_idx도 넣어야함
 			
-			Order order = orderRepository.findByOrderCode(jsonNode.path("orderId").asText());
-			order.setPaymentStatus(PaymentStatus.결제완료);
-			order.setPaymentIdx(savedPayment.getPaymentIdx());
-			
-			orderRepository.save(order);
-			
-			// 각 상품에 대한 주문 상품 정보에서 주문 상태를 상품 준비중으로 업데이트
-			List<OrderItem> orderItems = orderItemRepository.findByOrderIdx(order.getOrderIdx());
-			
-			for(OrderItem orderItem : orderItems) {
-				orderItem.setOrderStatus(OrderStatus.상품준비중);
-				orderItemRepository.save(orderItem);
+			if(type.equals("product")) {
 				
+				// 주문 데이터에서 결제 완료로 업데이트 그리고 payment_idx도 넣어야함
+				
+				Order order = orderRepository.findByOrderCode(jsonNode.path("orderId").asText());
+				order.setPaymentStatus(PaymentStatus.결제완료);
+				order.setPaymentIdx(savedPayment.getPaymentIdx());
+				
+				orderRepository.save(order);
+				
+				// 각 상품에 대한 주문 상품 정보에서 주문 상태를 상품 준비중으로 업데이트
+				List<OrderItem> orderItems = orderItemRepository.findByOrderIdx(order.getOrderIdx());
+				
+				for(OrderItem orderItem : orderItems) {
+					orderItem.setOrderStatus(OrderStatus.상품준비중);
+					orderItemRepository.save(orderItem);
+					
+				}
+				
+			}else if(type.equals("estimate")) {
+				
+				// 매칭 데이터에서 결제 완료로 업데이트 그리고 payment_idx도 넣어야함
+				
+				Matching matching = matchingRepository.findByMatchingCode(jsonNode.path("orderId").asText());
+				
+				matching.setStatus(MatchingStatus.PAYMENT_COMPLETED);
+				matching.setPaymentIdx(savedPayment.getPaymentIdx());
+				
+				matchingRepository.save(matching);
 			}
-			
 			
 		}
 		

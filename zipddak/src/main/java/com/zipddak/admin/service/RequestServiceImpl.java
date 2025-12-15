@@ -10,10 +10,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.zipddak.admin.dto.EstimatePaymentRequestDetailDto;
 import com.zipddak.admin.dto.RequestFormDto;
+import com.zipddak.admin.repository.RequestDetailDslRepository;
+import com.zipddak.dto.RequestDto;
+import com.zipddak.entity.Estimate;
 import com.zipddak.entity.ExpertFile;
 import com.zipddak.entity.Request;
 import com.zipddak.repository.CategoryRepository;
+import com.zipddak.repository.EstimateRepository;
 import com.zipddak.repository.ExpertFileRepository;
 import com.zipddak.repository.RequestRepository;
 
@@ -23,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
 
+	private final RequestDetailDslRepository requestDslRepository;
+	
 	private final RequestRepository requestRepository;
 	private final ExpertFileRepository expertFileRepository;
 	private final CategoryRepository categoryRepository;
@@ -120,6 +127,12 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		requestRepository.save(request);
+	}
+
+	@Override
+	public EstimatePaymentRequestDetailDto detail(Integer estimateIdx, String username) throws Exception {
+		
+		return requestDslRepository.findByEstimateIdx(estimateIdx);
 	}
 
 }
