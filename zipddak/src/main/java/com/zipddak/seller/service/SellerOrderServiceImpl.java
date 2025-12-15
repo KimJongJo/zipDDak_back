@@ -1,26 +1,22 @@
 package com.zipddak.seller.service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
-import com.zipddak.entity.Order;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SearchConditionDto;
-import com.zipddak.seller.repository.SellerCommonRepository;
 import com.zipddak.seller.repository.SellerOrderRepository;
 
 import lombok.RequiredArgsConstructor;

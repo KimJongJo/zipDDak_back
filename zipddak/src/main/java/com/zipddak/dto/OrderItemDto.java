@@ -1,6 +1,7 @@
 package com.zipddak.dto;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +21,13 @@ public class OrderItemDto {
 	private String receiveWay;
 	private String postComp;
 	private String trackingNo; 
-	private Date firstShipDate; // 최초 출고일자
+	private LocalDate firstShipDate; // 최초 출고일자
 	private String orderStatus;
 	private Integer refundIdx;
 	private Integer exchangeIdx;
 	private Integer exchangeNewOptIdx;
 	private Date createdAt;
+	
 
 	//jon용 컬럼 
 	private Integer productIdx;

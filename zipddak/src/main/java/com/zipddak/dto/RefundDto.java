@@ -29,5 +29,6 @@ public class RefundDto {
     private Integer refundItemCount;	//반품요청 상품 개수
     private String orderStatus;      // 주문(처리)상태
     private String username;		//구매자
-    
+    private String customerName;
+    private String customerPhone;
 }

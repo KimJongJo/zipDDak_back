@@ -70,7 +70,7 @@ public class SecurityConfig {
 		.authorizeRequests()
 		.antMatchers("/zipddak/**").authenticated() // 로그인 필요
 		.antMatchers("/expert/**").access("hasRole('ADMIN') or hasRole('EXPERT')")
-		.antMatchers("/seller/**").access("hasRole('ADMIN') or hasRole('APPROVAL_SELLER')")
+		//.antMatchers("/seller/**").access("hasRole('ADMIN') or hasRole('APPROVAL_SELLER')")
 		.antMatchers("/admin/**").access("hasRole('ADMIN')")
 		.anyRequest().permitAll();
 		
