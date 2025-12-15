@@ -29,7 +29,8 @@ public class SellerShippingController {
 										@RequestParam(value="page", required=false, defaultValue="1") Integer page,
 										SearchConditionDto scDto) {
 		
-
+		System.out.println("sellerUsername ; " + sellerUsername);
+		System.out.println("scDto ; " + scDto);
 		try {
 			Map<String, Object> myShipping = shipping_svc.getMyShippingList(sellerUsername, page, scDto);
 			return ResponseEntity.ok(myShipping);

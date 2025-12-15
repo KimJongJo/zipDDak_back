@@ -4,21 +4,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.zipddak.dto.OrderDto;
+import com.zipddak.dto.OrderItemDto;
 import com.zipddak.dto.RefundDto;
 import com.zipddak.entity.OrderItem;
-import com.zipddak.entity.Product;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.repository.OrderItemRepository;
+import com.zipddak.repository.RefundRepository;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SearchConditionDto;
-import com.zipddak.seller.dto.ShippingManageDto;
-import com.zipddak.seller.repository.SellerCommonRepository;
-import com.zipddak.seller.repository.SellerOrderRepository;
 import com.zipddak.seller.repository.SellerRefundRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SellerRefundServiceImpl implements SellerRefundService {
 
+	private final RefundRepository refund_repo;
 	private final OrderItemRepository orderItem_repo;
 	private final SellerRefundRepository sellerRefund_repo;
 
@@ -52,48 +51,71 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 
 		return result;
 	}
+	
+	//반품요청 상세보기
+	@Override
+	public Map<String, Object> getRefundReqDetail(String sellerUsername, Integer refundIdx) throws Exception {
+		// 반품 요청된 주문정보
+		RefundDto refundDto = sellerRefund_repo.findRefundOrderId(sellerUsername, refundIdx);
+		if (refundDto == null) {
+	        throw new Exception("반품 요청 없음");
+	    }
+		
+		// 반품요청된 주문상품정보 
+		List<OrderItemDto> refundOrderItemList = sellerRefund_repo.findRefundOrderItemList(sellerUsername, refundIdx);
+		    if (refundOrderItemList.isEmpty()) {
+		        throw new Exception("해당 주문상품은 이 셀러의 상품이 아님");
+		}
+		    
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("refundOrderData", refundDto);
+	    result.put("refundOrderItemList", refundOrderItemList);
+		
+		return result;
+	}
+	
+	
 
 	// 환불처리
-//	@Override
-//	@Transactional
-//	public SaveResultDto refundItems(List<Integer> itemIdxs) throws Exception {
-//
-//		// 해당 주문의 해당 itemIdx 목록만 조회
-//	    List<OrderItem> Orderitems = orderItem_repo.findOrderItemIdxByOrderIdxAndOrderItemIdxIn(orderIdx, itemIdxs);
-//		Boolean saveResult = false;
-//		Integer idx = 0;
-//		String msg = "";
-//
-//		if (Orderitems.isEmpty()) {
-//			throw new IllegalArgumentException("환불할 상품이 없습니다.");
-//		}
-//
-//		// 전체 리스트 검증 (DB 변경 X)
-//	    for (OrderItem item : Orderitems) {
-//
-//	        // 이미 환불 또는 반품 완료 상태 체크
-//	        if (item.getOrderStatus().equals(OrderStatus.반품완료)) {
-//	        	saveResult = false;
-//				idx = item.getOrderItemIdx();
-//				msg = "이미 반품처리된 상품은 환불 불가. (상품번호: " + item.getOrderItemIdx() + ")";
-//	        }
-//
-//	        // 상태 변경
-//	        item.setOrderStatus(OrderStatus.반품완료);
-//	        item = orderItem_repo.save(item);
-//	        
-//	        //요청한 상품의 개수와 db변경된 개수가 일치할경우(모두 성공)
-//	        if(Orderitems.size() == item.) {
-//	        	saveResult = true;
-//				idx = item.getOrderItemIdx();
-//				msg = "요청한 상품의 환불처리가 완료되었습니다";
-//	        }else {
-//	        	msg = "환불 처리 실패.";
-//	        }
-//	    }
-//
-//	    return new SaveResultDto(saveResult, idx, msg);
-//	   
-//	}
+	@Override
+	@Transactional
+	public SaveResultDto refundItems(Integer orderIdx, List<Integer> itemIdxs) throws Exception {
+
+		// 해당 주문의 해당 itemIdx 목록만 조회
+	    List<OrderItem> Orderitems = orderItem_repo.findOrderItemIdxByOrderIdxAndOrderItemIdxIn(orderIdx, itemIdxs);
+
+	    Integer successCnt = 0;
+	    
+		if (Orderitems.isEmpty()) {
+			throw new IllegalArgumentException("환불할 상품이 없습니다.");
+		}
+
+		// 전체 리스트 검증 (DB 변경 X)
+	    for (OrderItem item : Orderitems) {
+	    	System.out.println(item.getOrderStatus());
+
+	        // 이미 환불 또는 반품 완료 상태 체크
+	        if (item.getOrderStatus().equals(OrderStatus.반품완료)) {
+	        	throw new IllegalStateException("이미 반품처리된 상품은 환불 불가. (상품번호: " + item.getOrderItemIdx() + ")");
+	        }
+
+	        // 상태 변경
+	        item.setOrderStatus(OrderStatus.반품완료);
+	        item = orderItem_repo.save(item);  //db저장
+	        
+	        successCnt++;
+	    }
+
+	  //요청한 상품의 개수와 db변경된 개수가 일치할경우(모두 성공)
+        if(Orderitems.size() == successCnt) {
+        	 return new SaveResultDto(true,null,"요청한 상품의 환불처리가 완료되었습니다");
+        	 
+        }else {
+        	return new SaveResultDto(false,null,"환불 처리 실패");
+        }
+	   
+	}
+
+	
 
 }

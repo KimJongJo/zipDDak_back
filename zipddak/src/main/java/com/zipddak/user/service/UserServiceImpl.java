@@ -8,7 +8,7 @@ import com.zipddak.dto.UserDto;
 import com.zipddak.entity.User;
 import com.zipddak.repository.UserRepository;
 import com.zipddak.user.dto.UserInfoDto;
-import com.zipddak.user.repository.LoginProfileRepository;
+import com.zipddak.user.repository.LoginProfileDsl;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private LoginProfileRepository loginProfileRepository;
+	private LoginProfileDsl loginProfileRepository;
 	
 	@Autowired
 	private ModelMapper modelMapper;

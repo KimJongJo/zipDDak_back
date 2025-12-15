@@ -18,6 +18,7 @@ import com.zipddak.config.jwt.JwtAuthorizationFilter;
 import com.zipddak.config.oauth.OAuth2SuccessHandler;
 import com.zipddak.config.oauth.PrincipalOAuth2UserService;
 import com.zipddak.repository.UserRepository;
+import com.zipddak.user.repository.LoginProfileDsl;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +29,9 @@ public class SecurityConfig {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private LoginProfileDsl profileRepository;	
 	
 	@Autowired
 	private PrincipalOAuth2UserService principalOAuth2UserService;
@@ -53,7 +57,7 @@ public class SecurityConfig {
 		//인증
 		http.formLogin().disable() // 로그인 폼 비활성화
 		.httpBasic().disable() // httpBasic은 header에 username, password를 암호화하지 않은 상태로 주고받는다. 이를 사용하지 않겠다는 의미
-		.addFilterAt(new JwtAuthenticationFilter(authenticationManager, userRepository), UsernamePasswordAuthenticationFilter.class);
+		.addFilterAt(new JwtAuthenticationFilter(authenticationManager, userRepository, profileRepository), UsernamePasswordAuthenticationFilter.class);
 		
 		//소셜 로그인
 		http.oauth2Login()

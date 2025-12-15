@@ -23,8 +23,8 @@ public class Seller {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer sellerIdx;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="username")
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name="username", nullable = false)
     private User user;
 
     @Column(unique = true)

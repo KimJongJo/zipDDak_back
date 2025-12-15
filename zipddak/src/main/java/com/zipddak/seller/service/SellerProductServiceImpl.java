@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -44,9 +45,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 	private final CategoryRepository category_repo;
 	private final ProductRepository product_repo;
 	private final ProductOptionRepository productOpt_repo;
-
 	private final SellerProductRepository sellerProduct_repo;
-
 	private final ModelMapper model_mapper;
 
 	@Autowired
@@ -165,7 +164,6 @@ public class SellerProductServiceImpl implements SellerProductService {
 										            String category,
 										            String keyword,
 										            Integer page) {
-
         PageRequest pr = PageRequest.of(page - 1, 10);
         
         // -> status 문자열을 Boolean 리스트로 변환 
@@ -212,7 +210,14 @@ public class SellerProductServiceImpl implements SellerProductService {
         return result;
     }
 	
-	
+	//상품 디테일 보기 
+	@Override
+	public ProductDto MyProductDetail(String sellerUsername, Integer productIdx) throws Exception {
+		Product productEntity = product_repo.findByProductIdxAndSellerUsername(productIdx, sellerUsername)
+			    									.orElseThrow(() -> new IllegalStateException("상품 정보 없음 또는 권한 없음"));
+		return productEntity.toProductDetailDto();
+		
+	}
 	
 	
 	
@@ -236,5 +241,6 @@ public class SellerProductServiceImpl implements SellerProductService {
 			throw new RuntimeException("파일 인덱스 매핑 실패: " + e.getMessage());
 		}
 	}
+
 
 }
