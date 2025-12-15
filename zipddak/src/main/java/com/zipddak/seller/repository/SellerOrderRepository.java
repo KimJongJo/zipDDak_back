@@ -56,7 +56,7 @@ public class SellerOrderRepository {
 								.join(item).on(item.orderIdx.eq(order.orderIdx))
 								.join(product).on(product.productIdx.eq(item.product.productIdx))
 								.where(product.sellerUsername.eq(sellerUsername),
-										item.orderStatus.ne(OrderItem.OrderStatus.결제대기),
+										item.orderStatus.ne(OrderItem.OrderStatus.결제취소),
 										QPredicate.eq(order.user.username, scDto.getCustomerUsername()),
 										QPredicate.inEnum(item.orderStatus, enumList),
 										QPredicate.anyContains(scDto.getKeyword(), 
