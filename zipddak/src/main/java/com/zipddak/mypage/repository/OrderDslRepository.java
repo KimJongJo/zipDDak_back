@@ -15,6 +15,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.QCancel;
 import com.zipddak.entity.QExchange;
@@ -76,7 +77,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료)));
 
 		// 날짜 조건
 		if (startDate != null) {
@@ -119,7 +120,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료)));
 
 		// 날짜 조건
 		if (startDate != null) {
@@ -164,7 +165,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료) ));
 
 		// 주문 상태 조건
 		builder.and(orderItem.orderStatus.ne(OrderStatus.상품준비중));
@@ -211,7 +212,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료) ));
 
 		// 주문 상태 조건
 		builder.and(orderItem.orderStatus.ne(OrderStatus.상품준비중));
@@ -243,7 +244,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료) ));
 
 		// 날짜 조건
 		builder.and(orderItem.createdAt.between(sixMonthsAgoDate, todayDate));
