@@ -45,20 +45,22 @@ public class SellerShippingRepository {
 		QProduct product = QProduct.product;
 
 		 return jpaQueryFactory.select(Projections.fields(ShippingManageDto.class,
-				 						order.orderIdx.as("orderIdx"),
-					                    order.orderCode.as("orderCode"),
-					                    product.name.as("productName"),
-//					                    item.firstShipDate.as("firstShipDate"),     
-					                    item.trackingNo.as("trackingNo"),
-					                    item.postComp.as("postComp"),					                 
+				 						order.orderIdx,
+					                    order.orderCode,
 					                    order.createdAt.as("orderDate"),
+					                    item.firstShipDate,     
+					                    item.postComp,					                 
+					                    item.trackingNo,
 					                    item.orderStatus.stringValue().min().as("orderStatus"),	// 대표 주문 상태
-					                    item.countDistinct().as("itemCount"),  // 주문 상품 개수 추가))
+					                    item.count().as("itemCount"),  //배송중인 상품 개수 
 										product.name.min().as("shippingProductName")))	// 대표 상품명
 					            .from(item)
 					            .join(order).on(order.orderIdx.eq(item.orderIdx))
 					            .join(product).on(product.productIdx.eq(item.product.productIdx))
-					            //.where(item.orderStatus.in(shippingStatuses))
+					            .where(product.sellerUsername.eq(sellerUsername),
+					            		item.trackingNo.isNotNull(),
+					            		item.orderStatus.in(shippingStatuses))
+					            .groupBy(item.trackingNo, item.postComp)
 					            .orderBy(item.createdAt.desc())
 					            .offset(pageRequest.getOffset())
 					            .limit(pageRequest.getPageSize())
@@ -73,11 +75,18 @@ public class SellerShippingRepository {
 		QOrderItem item = QOrderItem.orderItem;
 		QProduct product = QProduct.product;
 
-		 return jpaQueryFactory
-		            .select(item.count())
-		            .from(item)
-		            .where(item.orderStatus.in(shippingStatuses))
-		            .fetchOne();
+		 return (long) jpaQueryFactory.select(item.trackingNo, item.postComp)
+							            .from(item)
+							            .join(order).on(order.orderIdx.eq(item.orderIdx))
+							            .join(product).on(product.productIdx.eq(item.product.productIdx))
+							            .where(
+							                    product.sellerUsername.eq(sellerUsername),
+							                    item.trackingNo.isNotNull(),
+							                    item.orderStatus.in(shippingStatuses)
+							            )
+							            .groupBy(item.trackingNo, item.postComp)   // ★ 리스트와 동일한 기준
+							            .fetch()
+							            .size();
 	}
 
 }

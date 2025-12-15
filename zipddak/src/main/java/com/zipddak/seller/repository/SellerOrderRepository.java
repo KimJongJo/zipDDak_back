@@ -1,5 +1,6 @@
 package com.zipddak.seller.repository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,6 +28,9 @@ import lombok.RequiredArgsConstructor;
 public class SellerOrderRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
+	
+
+
 
 	// ============================
 	// 주문 리스트 조회
@@ -52,6 +56,7 @@ public class SellerOrderRepository {
 								.join(item).on(item.orderIdx.eq(order.orderIdx))
 								.join(product).on(product.productIdx.eq(item.product.productIdx))
 								.where(product.sellerUsername.eq(sellerUsername),
+										item.orderStatus.ne(OrderItem.OrderStatus.결제대기),
 										QPredicate.eq(order.user.username, scDto.getCustomerUsername()),
 										QPredicate.inEnum(item.orderStatus, enumList),
 										QPredicate.anyContains(scDto.getKeyword(), 
@@ -95,7 +100,7 @@ public class SellerOrderRepository {
 	
 
 	// ============================
-	// 주문 상세보기 
+	// 주문 상세보기 (주문정보 + 주문아이템 정보 ) 
 	// ============================
 	//주문 정보 
 	public OrderDto findByOrderId(Integer orderIdx) {

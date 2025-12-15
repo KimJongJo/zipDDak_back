@@ -39,26 +39,40 @@ public class SellerRefundController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+
+	// 반품요청건 내역 상세보기
+	@GetMapping("/refundReqDetail")
+	public ResponseEntity<?> refundReqDetail(@RequestParam("sellerId") String sellerUsername,
+												@RequestParam("num") Integer refundIdx) {
+		try {
+			Map<String, Object> refundReqDetail = refund_svc.getRefundReqDetail(sellerUsername, refundIdx);
+			return ResponseEntity.ok(refundReqDetail);
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 
 	
 	//환불처리 
-//	@PostMapping("/refundItems")
-//    public ResponseEntity<?> refundItems(@RequestBody OrderItemActionRequest reqItems) {
-//		
-//        try {
-//        	SaveResultDto result = refund_svc.refundItems(reqItems.getItemIdxs());
-//
-//			 if (!result.isSuccess()) { //환불처리 실패한 경우 
-//		            return ResponseEntity.badRequest().body(result);
-//		        }
-//		        return ResponseEntity.ok(result);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//		}
-//    }
+	@PostMapping("/refundItems")
+    public ResponseEntity<?> refundItems(@RequestBody OrderItemActionRequest reqItems) {
+		System.out.println("reqItems : " + reqItems);
+        try {
+        	SaveResultDto result = refund_svc.refundItems(reqItems.getOrderIdx(),reqItems.getItemIdxs());
+
+			 if (!result.isSuccess()) { //환불처리 실패한 경우 
+		            return ResponseEntity.badRequest().body(result);
+		        }
+		        return ResponseEntity.ok(result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+    }
 }

@@ -11,6 +11,7 @@ public class SellerController {
 
 	@ExceptionHandler(IllegalStateException.class)
 	public ResponseEntity<SaveResultDto> handleIllegalState(IllegalStateException ise) {
+		System.out.println("sssss");
 		return ResponseEntity.badRequest().body(new SaveResultDto(false, null, ise.getMessage()));
 	}
 

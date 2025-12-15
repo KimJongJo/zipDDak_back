@@ -28,8 +28,9 @@ public class SellerOrderController {
 	// 주문 리스트
 	@GetMapping("/myOrderList")
 	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername,
-			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-			SearchConditionDto scDto) {
+										@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+										SearchConditionDto scDto) {
+		System.out.println("AAA");
 		try {
 			Map<String, Object> myOrder = order_svc.getMyOrderList(sellerUsername, page, scDto);
 			return ResponseEntity.ok(myOrder);
@@ -42,8 +43,7 @@ public class SellerOrderController {
 
 	// 주문 내역 상세보기
 	@GetMapping("/myOrderDetail")
-	public ResponseEntity<?> orderDetail(@RequestParam("sellerId") String sellerUsername,
-			@RequestParam("num") Integer orderIdx) {
+	public ResponseEntity<?> orderDetail(@RequestParam("sellerId") String sellerUsername,@RequestParam("num") Integer orderIdx) {
 		try {
 			Map<String, Object> myOrderDetail = order_svc.getMyOrderDetail(sellerUsername, orderIdx);
 			return ResponseEntity.ok(myOrderDetail);
@@ -68,7 +68,7 @@ public class SellerOrderController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 

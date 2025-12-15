@@ -51,7 +51,7 @@ public class SellerProductController {
 //		System.out.println(optionsJson);
 		
         try {
-        	product_dto.setSellerUsername("test");
+        	product_dto.setSellerUsername("ss123");
         	SaveResultDto result = product_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);
 
             if (!result.isSuccess()) { //상품 등록 실패한 경우 
@@ -88,7 +88,7 @@ public class SellerProductController {
 								            @RequestParam(value="category", required = false) String category,
 								            @RequestParam(value="keyword", required = false) String keyword,
 								            @RequestParam(value="page", required=false, defaultValue="1") Integer page) {
-		System.out.println("sellerUsername : " + sellerUsername);
+		System.out.println("sellerUsernamesss : " + sellerUsername);
 		System.out.println("status : " + status);
 		System.out.println("category : " + category);
 		System.out.println("keyword : " + keyword);
@@ -99,7 +99,29 @@ public class SellerProductController {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+        
+    }
+	
+	//상품 상세보기
+	@GetMapping("/myProductDetail")
+	public ResponseEntity<?> getProductDetail(@RequestParam("sellerId") String sellerUsername,
+											@RequestParam(value="num") Integer productIdx) {
+		//@GetMapping("/myProductDetail/{productIdx}")
+		// @AuthenticationPrincipal CustomUserDetails user,
+	    //@PathVariable Integer productIdx
+		System.out.println("sellerUsernameggg : " + sellerUsername);
+		System.out.println("num : " + productIdx);
+		try {
+			ProductDto MyProductDetail = product_svc.MyProductDetail(sellerUsername, productIdx);
+			System.out.println("MyProductDetail : " + MyProductDetail);
+			
+			return ResponseEntity.ok(MyProductDetail);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
         
     }
