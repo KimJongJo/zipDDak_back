@@ -48,7 +48,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		System.out.println(uri);
 		
 		// 로그인(인증) 필요없는 요청은 토큰 체크하지 않는다
-		if(!(uri.contains("/zipddak") || uri.contains("/admin") || uri.contains("/manager"))) {
+		if(!(uri.contains("/zipddak") || uri.contains("/admin") || uri.contains("/seller"))) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -168,10 +168,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
 				return;
 			}
-			
-			
-			
-			
 			
 			
 		}catch(Exception e) {

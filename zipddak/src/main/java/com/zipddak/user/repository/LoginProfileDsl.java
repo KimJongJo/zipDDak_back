@@ -13,7 +13,7 @@ import com.zipddak.entity.QUser;
 import com.zipddak.entity.User.UserRole;
 
 @Repository
-public class LoginProfileRepository {
+public class LoginProfileDsl {
 	
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;

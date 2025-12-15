@@ -3,6 +3,8 @@ package com.zipddak.dto;
 import java.sql.Date;
 import java.sql.Time;
 
+import com.zipddak.entity.Expert.ExpertStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,4 +44,6 @@ public class ExpertDto {
     private String settleAccount;
     private String settleHost;
     private Date createdAt;
+    
+    private String activityStatus; 
 }

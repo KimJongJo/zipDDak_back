@@ -5,6 +5,8 @@ import java.sql.Time;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import com.zipddak.dto.ExpertDto;
+import com.zipddak.entity.User.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -119,6 +122,14 @@ public class Expert {
 
 	@CreationTimestamp
 	private Date createdAt;
+	
+	@Column
+    @Enumerated(EnumType.STRING)
+    private ExpertStatus activityStatus; 
+	
+	 public enum ExpertStatus {
+		 ACTIVE, STOPPED
+	    }
 
 	public ExpertDto toDto() {
 		return ExpertDto.builder().expertIdx(expertIdx).username(user.getUsername()).activityName(activityName)
@@ -129,6 +140,6 @@ public class Expert {
 				.providedServiceDesc(providedServiceDesc).certImage1Id(certImage1Id).certImage2Id(certImage2Id)
 				.certImage3Id(certImage3Id).businessLicensePdfId(businessLicensePdfId).questionAnswer1(questionAnswer1)
 				.questionAnswer2(questionAnswer2).questionAnswer3(questionAnswer3).settleBank(settleBank)
-				.settleAccount(settleAccount).settleHost(settleHost).createdAt(createdAt).build();
+				.settleAccount(settleAccount).settleHost(settleHost).createdAt(createdAt).activityStatus(this.activityStatus.toString()).build();
 	}
 }
