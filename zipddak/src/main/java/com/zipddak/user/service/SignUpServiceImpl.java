@@ -141,6 +141,8 @@ public class SignUpServiceImpl implements SignUpService {
 	        Expert expert = expertDto.toEntity();
 	        expert.setBusinessLicensePdfId(expertFileIdx);
 	        expert.setUser(user);
+	        //관리자가 승인...
+	        expert.setActivityStatus("STOPPED");
 
 	        signExpertRepository.save(expert);
 	    }
