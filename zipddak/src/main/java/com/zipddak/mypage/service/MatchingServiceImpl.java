@@ -59,8 +59,22 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<MatchingListDto> getUserMatchingList(String username, PageInfo pageInfo, Date startDate, Date endDate)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 10);
+
+		List<MatchingListDto> matchingList = matchingDslRepository.selectUserMatchingList(username, pageRequest,
+				startDate, endDate);
+
+		Long cnt = matchingDslRepository.selectUserMatchingCount(username, startDate, endDate);
+
+		Integer allPage = (int) (Math.ceil(cnt.doubleValue() / pageRequest.getPageSize()));
+		Integer startPage = (pageInfo.getCurPage() - 1) / 10 * 10 + 1;
+		Integer endPage = Math.min(startPage + 10 - 1, allPage);
+
+		pageInfo.setAllPage(allPage);
+		pageInfo.setStartPage(startPage);
+		pageInfo.setEndPage(endPage);
+
+		return matchingList;
 	}
 
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.mypage.dto.MatchingListDto;
 import com.zipddak.mypage.dto.MatchingStatusSummaryDto;
-import com.zipddak.mypage.dto.OrderStatusSummaryDto;
 import com.zipddak.mypage.service.MatchingServiceImpl;
 import com.zipddak.util.PageInfo;
 
@@ -60,6 +59,32 @@ public class ExpertMatchingController {
 
 			Map<String, Object> res = new HashMap<>();
 			res.put("matchingStatusSummary", matchingStatusSummary);
+
+			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [일반사용자]매칭 목록 조회
+	@GetMapping("/matching/userList")
+	public ResponseEntity<Map<String, Object>> userMatchingList(@RequestParam("username") String username,
+			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+			@RequestParam(value = "startDate", required = false) String startDate,
+			@RequestParam(value = "endDate", required = false) String endDate) {
+		try {
+			Date start = parseDate(startDate);
+			Date end = parseDate(endDate);
+
+			PageInfo pageInfo = new PageInfo(page);
+
+			List<MatchingListDto> matchingListDtoList = matchingService.getUserMatchingList(username, pageInfo, start,
+					end);
+
+			Map<String, Object> res = new HashMap<>();
+			res.put("matchingList", matchingListDtoList);
+			res.put("pageInfo", pageInfo);
 
 			return ResponseEntity.ok(res);
 		} catch (Exception e) {

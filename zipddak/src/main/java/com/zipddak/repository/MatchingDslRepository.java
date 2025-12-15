@@ -106,4 +106,59 @@ public class MatchingDslRepository {
 				.from(matching).where(matching.expertIdx.eq(expertIdx)).fetchOne();
 	}
 
+	// [일반사용자]매칭 목록 조회
+	public List<MatchingListDto> selectUserMatchingList(String username, PageRequest pageRequest, Date startDate,
+			Date endDate) throws Exception {
+		QMatching matching = QMatching.matching;
+		QRequest request = QRequest.request;
+		QExpert expert = QExpert.expert;
+		QUser user = QUser.user;
+		QCategory category = QCategory.category;
+		QPayment payment = QPayment.payment;
+
+		BooleanBuilder builder = new BooleanBuilder();
+
+		// 사용자 아이디 조건
+		builder.and(matching.userUsername.eq(username));
+
+		// 날짜 조건
+		if (startDate != null) {
+			builder.and(matching.createdAt.goe(startDate));
+		}
+		if (endDate != null) {
+			builder.and(matching.createdAt.loe(endDate));
+		}
+
+		return jpaQueryFactory
+				.select(Projections.constructor(MatchingListDto.class, matching.matchingIdx, matching.matchingCode,
+						matching.createdAt, matching.workStartDate, matching.workEndDate, matching.status,
+						payment.totalAmount, user.name, expert.activityName, request.largeServiceIdx, category.name,
+						request.location, request.budget, request.preferredDate))
+				.from(matching).leftJoin(request).on(request.requestIdx.eq(matching.requestIdx)).leftJoin(expert)
+				.on(expert.expertIdx.eq(matching.expertIdx)).leftJoin(user).on(user.username.eq(matching.userUsername))
+				.leftJoin(category).on(category.categoryIdx.eq(request.smallServiceIdx)).leftJoin(payment)
+				.on(payment.paymentIdx.eq(matching.paymentIdx)).where(builder).offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize()).fetch();
+	}
+
+	// [일반사용자]매칭 목록 개수
+	public Long selectUserMatchingCount(String username, Date startDate, Date endDate) throws Exception {
+		QMatching matching = QMatching.matching;
+
+		BooleanBuilder builder = new BooleanBuilder();
+
+		// 사용자 아이디 조건
+		builder.and(matching.userUsername.eq(username));
+
+		// 날짜 조건
+		if (startDate != null) {
+			builder.and(matching.createdAt.goe(startDate));
+		}
+		if (endDate != null) {
+			builder.and(matching.createdAt.loe(endDate));
+		}
+
+		return jpaQueryFactory.select(matching.count()).from(matching).where(builder).fetchOne();
+	}
+
 }
