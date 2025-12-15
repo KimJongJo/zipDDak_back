@@ -51,6 +51,17 @@ public class ExpertMatchingController {
 		}
 	}
 
+	// [전문가]매칭 상세 조회
+	@GetMapping("/matching/expertDetail")
+	public ResponseEntity<Map<String, Object>> expertMatchingDetail(@RequestParam("matchingIdx") Integer matchingIdx) {
+		try {
+			return ResponseEntity.ok(matchingService.getExpertMatchingDetail(matchingIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
 	// [전문가]매칭현황 요약
 	@GetMapping("/matchingStatusSummary")
 	public ResponseEntity<Map<String, Object>> matchingStatusSummary(@RequestParam("username") String username) {

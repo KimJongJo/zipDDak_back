@@ -1,7 +1,9 @@
 package com.zipddak.mypage.service;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import com.zipddak.entity.Expert;
 import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.mypage.dto.MatchingListDto;
 import com.zipddak.mypage.dto.MatchingStatusSummaryDto;
+import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
+import com.zipddak.mypage.dto.ExpertMatchingDetailDto;
 import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.MatchingDslRepository;
 import com.zipddak.util.PageInfo;
@@ -47,6 +51,19 @@ public class MatchingServiceImpl implements MatchingService {
 		return matchingList;
 	}
 
+	// [전문가]매칭 상세 조회
+	@Override
+	public Map<String, Object> getExpertMatchingDetail(Integer matchingIdx) throws Exception {
+		ExpertMatchingDetailDto matchingDetail = matchingDslRepository.selectExpertMatchingDetail(matchingIdx);
+		List<EstimateCostListDto> matchingCostList = matchingDslRepository.selectExpertMatchingCostList(matchingIdx);
+
+		Map<String, Object> res = new HashMap<>();
+		res.put("matchingDetail", matchingDetail);
+		res.put("matchingCostList", matchingCostList);
+
+		return res;
+	}
+
 	// [전문가]매칭현황 요약
 	@Override
 	public MatchingStatusSummaryDto getMatchingStatusSummary(String username) throws Exception {
@@ -76,5 +93,4 @@ public class MatchingServiceImpl implements MatchingService {
 
 		return matchingList;
 	}
-
 }
