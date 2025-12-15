@@ -21,6 +21,7 @@ import com.zipddak.entity.QRequest;
 import com.zipddak.entity.QUser;
 import com.zipddak.mypage.dto.MatchingListDto;
 import com.zipddak.mypage.dto.MatchingStatusSummaryDto;
+import com.zipddak.mypage.dto.UserMatchingDetailDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
 import com.zipddak.mypage.dto.ExpertMatchingDetailDto;
 
@@ -138,7 +139,7 @@ public class MatchingDslRepository {
 				.fetchOne();
 	}
 
-	// [전문가]매칭 상세 조회 - 견적 금액
+	// 매칭 상세 조회 - 견적 금액
 	public List<EstimateCostListDto> selectExpertMatchingCostList(Integer matchingIdx) throws Exception {
 		QMatching matching = QMatching.matching;
 		QEstimateCost estimateCost = QEstimateCost.estimateCost;
@@ -216,6 +217,43 @@ public class MatchingDslRepository {
 		}
 
 		return jpaQueryFactory.select(matching.count()).from(matching).where(builder).fetchOne();
+	}
+
+	// [일반사용자]매칭 상세 조회
+	public UserMatchingDetailDto selectUserMatchingDetail(Integer matchingIdx) throws Exception {
+		QMatching matching = QMatching.matching;
+		QPayment payment = QPayment.payment;
+		QEstimate estimate = QEstimate.estimate;
+		QRequest request = QRequest.request;
+		QCategory category1 = new QCategory("category1");
+		QCategory category2 = new QCategory("category2");
+		QCategory category3 = new QCategory("category3");
+		QExpertFile expertFile1 = new QExpertFile("expertFile1");
+		QExpertFile expertFile2 = new QExpertFile("expertFile2");
+		QExpertFile expertFile3 = new QExpertFile("expertFile3");
+
+		return jpaQueryFactory
+				.select(Projections.constructor(UserMatchingDetailDto.class, matching.matchingIdx,
+						matching.matchingCode, payment.totalAmount, payment.method, matching.workStartDate,
+						matching.workEndDate, matching.status, matching.createdAt, estimate.estimateIdx,
+						estimate.workDurationType, estimate.workDurationValue, estimate.workScope, estimate.workDetail,
+						estimate.disposalCost, estimate.demolitionCost, estimate.etcFee, estimate.costDetail,
+						estimate.diagnosisType, estimate.repairType, estimate.demolitionType, estimate.consultingType,
+						estimate.consultingLaborCost, estimate.stylingDesignCost, estimate.threeDImageCost,
+						estimate.reportProductionCost, request.requestIdx, request.createdAt, category1.name,
+						category2.name, category3.name, request.budget, request.preferredDate, request.location,
+						request.constructionSize, request.purpose, request.place, request.additionalRequest,
+						request.status, expertFile1.fileRename, expertFile2.fileRename, expertFile3.fileRename))
+				.from(matching).leftJoin(estimate).on(estimate.estimateIdx.eq(matching.estimateIdx)).leftJoin(request)
+				.on(request.requestIdx.eq(estimate.requestIdx)).leftJoin(payment)
+				.on(payment.paymentIdx.eq(matching.paymentIdx)).leftJoin(category1)
+				.on(request.largeServiceIdx.eq(category1.categoryIdx)).leftJoin(category2)
+				.on(request.midServiceIdx.eq(category2.categoryIdx)).leftJoin(category3)
+				.on(request.smallServiceIdx.eq(category3.categoryIdx)).leftJoin(expertFile1)
+				.on(expertFile1.expertFileIdx.eq(request.image1Idx)).leftJoin(expertFile2)
+				.on(expertFile2.expertFileIdx.eq(request.image2Idx)).leftJoin(expertFile3)
+				.on(expertFile3.expertFileIdx.eq(request.image3Idx)).where(matching.matchingIdx.eq(matchingIdx))
+				.fetchOne();
 	}
 
 }

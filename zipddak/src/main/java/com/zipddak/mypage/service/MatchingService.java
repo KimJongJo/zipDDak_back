@@ -19,4 +19,6 @@ public interface MatchingService {
 	
 	public List<MatchingListDto> getUserMatchingList(String username, PageInfo pageInfo, Date startDate, Date endDate)
 			throws Exception;
+	
+	public Map<String, Object> getUserMatchingDetail(Integer matchingIdx) throws Exception;
 }

@@ -12,6 +12,7 @@ import com.zipddak.entity.Expert;
 import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.mypage.dto.MatchingListDto;
 import com.zipddak.mypage.dto.MatchingStatusSummaryDto;
+import com.zipddak.mypage.dto.UserMatchingDetailDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
 import com.zipddak.mypage.dto.ExpertMatchingDetailDto;
 import com.zipddak.repository.ExpertRepository;
@@ -92,5 +93,18 @@ public class MatchingServiceImpl implements MatchingService {
 		pageInfo.setEndPage(endPage);
 
 		return matchingList;
+	}
+
+	// [일반사용자]매칭 상세 조회
+	@Override
+	public Map<String, Object> getUserMatchingDetail(Integer matchingIdx) throws Exception {
+		UserMatchingDetailDto matchingDetail = matchingDslRepository.selectUserMatchingDetail(matchingIdx);
+		List<EstimateCostListDto> matchingCostList = matchingDslRepository.selectExpertMatchingCostList(matchingIdx);
+
+		Map<String, Object> res = new HashMap<>();
+		res.put("matchingDetail", matchingDetail);
+		res.put("matchingCostList", matchingCostList);
+
+		return res;
 	}
 }

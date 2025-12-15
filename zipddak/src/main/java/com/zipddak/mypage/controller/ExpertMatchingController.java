@@ -104,6 +104,17 @@ public class ExpertMatchingController {
 		}
 	}
 
+	// [일반사용자]매칭 상세 조회
+	@GetMapping("/matching/userDetail")
+	public ResponseEntity<Map<String, Object>> userMatchingDetail(@RequestParam("matchingIdx") Integer matchingIdx) {
+		try {
+			return ResponseEntity.ok(matchingService.getUserMatchingDetail(matchingIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
 	private Date parseDate(String value) {
 		if (value == null || value.isEmpty() || value.equals("null"))
 			return null;
