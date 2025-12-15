@@ -6,4 +6,6 @@ import com.zipddak.entity.CommunityFile;
 
 public interface CommunityFileRepository extends JpaRepository<CommunityFile, Integer>{
 
+	CommunityFile findByFileRename(String imgName);
+
 }

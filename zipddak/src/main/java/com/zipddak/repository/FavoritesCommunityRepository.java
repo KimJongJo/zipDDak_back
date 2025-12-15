@@ -9,4 +9,6 @@ import com.zipddak.entity.FavoritesCommunity;
 public interface FavoritesCommunityRepository extends JpaRepository<FavoritesCommunity, Integer> {
 
 	Optional<FavoritesCommunity> findByUserUsernameAndCommunityIdx(String username, Integer communityIdx);
+	
+	long countByCommunityIdx(Integer communityIdx);
 }
