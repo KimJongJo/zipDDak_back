@@ -24,18 +24,16 @@ import com.zipddak.util.FileSaveService;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	
-	@Autowired
+	//전역변수로 쓰기위해 필요 
 	private UserRepository userRepository;
-	
-	@Autowired
 	private LoginProfileDsl profileRepository;	
 	
 	JwtToken jwtToken = new JwtToken();
 	
-	public JwtAuthenticationFilter (AuthenticationManager authenticationManager, UserRepository userRepository) {
+	public JwtAuthenticationFilter (AuthenticationManager authenticationManager, UserRepository userRepository, LoginProfileDsl profileRepository) {
 		super(authenticationManager);
 		this.userRepository = userRepository;
-		
+		this.profileRepository = profileRepository;
 	}
 	
 	// super의 attemptAuthentication 메소드가 실행되고 성공하면 successfulAuthentication가 호출된다.
@@ -45,7 +43,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			Authentication authResult) throws IOException, ServletException {
 		PrincipalDetails principalDetails = (PrincipalDetails)authResult.getPrincipal();
 		String username = principalDetails.getUsername();
-		
+
 		String accessToken = jwtToken.makeAccessToken(username);
 		String refreshToken = jwtToken.makeRefreshToken(username);
 		
@@ -62,7 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		
 		
 		User user = principalDetails.getUser();
-		
+
 		String profile = 
 				profileRepository.profileFileRename(username, user.getRole().toString(), false);
 				
