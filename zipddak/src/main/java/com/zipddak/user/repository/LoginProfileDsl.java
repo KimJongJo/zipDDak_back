@@ -10,7 +10,6 @@ import com.zipddak.entity.QProfileFile;
 import com.zipddak.entity.QSeller;
 import com.zipddak.entity.QSellerFile;
 import com.zipddak.entity.QUser;
-import com.zipddak.entity.User.UserRole;
 
 @Repository
 public class LoginProfileDsl {

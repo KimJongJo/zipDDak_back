@@ -64,7 +64,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		
 		// json 형태의 문자열을 map으로 변환
 		ObjectMapper objectMapper = new ObjectMapper();
-		Map<String, String> token =  objectMapper.readValue(authentication, Map.class);
+		Map<String, String> token = objectMapper.readValue(authentication, Map.class);
 		System.out.println(token);
 
 		// access_token : header로부터 accessToken 가져와 bearer 체크

@@ -5,9 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zipddak.admin.dto.ExpertCardDto;
 import com.zipddak.admin.dto.ProductCardDto;
-import com.zipddak.user.dto.ToolCardDto;
+import com.zipddak.user.dto.ExpertCardsDto;
+import com.zipddak.user.dto.ProductCardsDto;
+import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.repository.ExpertCardDsl;
 import com.zipddak.user.repository.ProductCardDsl;
 import com.zipddak.user.repository.ToolCardDsl;
@@ -25,17 +26,17 @@ public class MainServiceImpl implements MainService {
 	private ProductCardDsl productCardDsl;
 
 	@Override
-	public List<ExpertCardDto> expertCardMain(Integer categoryNo, String keyword) throws Exception {
+	public ExpertCardsDto expertCardMain(Integer categoryNo, String keyword) throws Exception {
 		return expertCardDsl.expertsMain(categoryNo, keyword);
 	}
 
 	@Override
-	public List<ToolCardDto> toolCardMain(Integer categoryNo, String keyword, String username) throws Exception {
+	public ToolCardsDto toolCardMain(Integer categoryNo, String keyword, String username) throws Exception {
 		return toolCardDsl.toolsMain(categoryNo, keyword, username);
 	}
 
 	@Override
-	public List<ProductCardDto> productCardMain(Integer categoryNo, String keyword, String username) throws Exception {
+	public ProductCardsDto productCardMain(Integer categoryNo, String keyword, String username) throws Exception {
 		return productCardDsl.productsMain(categoryNo, keyword, username);
 	}
 
