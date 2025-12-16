@@ -1,6 +1,7 @@
 package com.zipddak.admin.repository;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,17 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.admin.dto.AdminExpertListDto;
 import com.zipddak.admin.dto.AdminRentalListDto;
+import com.zipddak.admin.dto.AdminSaleListDto;
 import com.zipddak.admin.dto.AdminSellerListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
+import com.zipddak.dto.AdminPaymentListDto;
+import com.zipddak.entity.Order.PaymentStatus;
+import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QExpert;
+import com.zipddak.entity.QOrder;
+import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QRental;
 import com.zipddak.entity.QReportExpert;
 import com.zipddak.entity.QReportSeller;
@@ -322,8 +329,8 @@ public class AdminDslRepository {
 
 	
 	
-	public ResponseAdminListDto rentalList(Integer column, Integer state, String keyword, Integer page, Date startDate,
-			Date endDate) {
+	public ResponseAdminListDto rentalList(Integer column, Integer state, String keyword, Integer page, String startDate,
+			String endDate) {
 		
 		
 		int itemsPerPage = 15; 
@@ -338,16 +345,17 @@ public class AdminDslRepository {
 		
 		RentalStatus stringState = null;
 		switch(state) {
-		case 2 : stringState = RentalStatus.PRE; break;
-		case 3 : stringState = RentalStatus.PAYED; break;
-		case 4 : stringState = RentalStatus.DELIVERY; break;
-		case 5 : stringState = RentalStatus.RENTAL; break;
-		case 6 : stringState = RentalStatus.RETURN; break;
+		case 1 : stringState = RentalStatus.PRE; break;
+		case 2 : stringState = RentalStatus.PAYED; break;
+		case 3 : stringState = RentalStatus.DELIVERY; break;
+		case 4 : stringState = RentalStatus.RENTAL; break;
+		case 5 : stringState = RentalStatus.RETURN; break;
 		}
 		
 		if(stringState != null) {
 			where.and(rental.satus.eq(stringState));
 		}
+		
 		
 		// 2️⃣ 검색 조건
 		if (keyword != null && !keyword.isBlank()) {
@@ -372,11 +380,34 @@ public class AdminDslRepository {
 		    }
 		}
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+		if (startDate != null && !startDate.isBlank()) {
+		    try {
+		        Date start = Date.valueOf(startDate); // 문자열 → java.sql.Date
+		        where.and(rental.startDate.goe(start)); // startDate 이후
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+
+		if (endDate != null && !endDate.isBlank()) {
+		    try {
+		        Date end = Date.valueOf(endDate); // 문자열 → java.sql.Date
+		        where.and(rental.endDate.loe(end)); // endDate 이전
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+		
 		// 3️⃣ count 쿼리
 		JPAQuery<Long> rentalQuery = jpaQueryFactory
-		    .select(rental.count())
-		    .from(rental)
-		    .where(where);
+			    .select(rental.count())
+			    .from(rental)
+			    .leftJoin(tool).on(rental.tool.toolIdx.eq(tool.toolIdx))
+			    .leftJoin(owner).on(rental.owner.eq(owner.username))
+			    .leftJoin(borrower).on(rental.borrower.eq(borrower.username))
+			    .where(where);
 				
 		Long totalCount = rentalQuery.fetchOne();
 		
@@ -393,18 +424,211 @@ public class AdminDslRepository {
 	    pageInfo.setStartPage(startPage);
 	    pageInfo.setEndPage(endPage);
 	    
-//	    List<AdminRentalListDto> rentalList = jpaQueryFactory.select(Projections.bean(AdminRentalListDto.class, 
-//	    			rental.rentalIdx,
-//	    			tool.name.as("toolName"),
-//	    			owner.name.as("owner"),
-//	    			borrower.name.as("borrower"),
-//	    			rental.startDate,
-//	    			rental.endDate,
-//	    			rental.satus.as("state")
-//	    		)) 
+	    List<AdminRentalListDto> rentalList = jpaQueryFactory.select(Projections.bean(AdminRentalListDto.class, 
+	    			rental.rentalIdx,
+	    			tool.name.as("toolName"),
+	    			owner.name.as("owner"),
+	    			borrower.name.as("borrower"),
+	    			rental.startDate,
+	    			rental.endDate,
+	    			rental.satus.as("state")
+	    		)) 
+	    		.from(rental)
+	    		.leftJoin(tool).on(rental.tool.toolIdx.eq(tool.toolIdx))
+	    		.leftJoin(owner).on(rental.owner.eq(owner.username))
+	    		.leftJoin(borrower).on(rental.borrower.eq(borrower.username))
+	    		.where(where)
+	    		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+		
+		return new ResponseAdminListDto(rentalList, pageInfo);
+	}
+
+	
+	public ResponseAdminListDto saleList(Integer column, Integer state, String keyword, Integer page, String startDate,
+			String endDate) {
+	
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
+		
+		QOrder order = QOrder.order;
+		QUser buyer = new QUser("buyer");
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		PaymentStatus stringState = null;
+		switch(state) {
+		case 1 : stringState = PaymentStatus.결제완료; break;
+		case 2 : stringState = PaymentStatus.결제취소; break;
+		}
+		
+		if(stringState != null) {
+			where.and(order.paymentStatus.eq(stringState));
+		}
 		
 		
-		return null;
+		// 2️⃣ 검색 조건
+		if (keyword != null && !keyword.isBlank()) {
+		    switch (column) {
+		        case 2: // 주문ID
+		            where.and(order.orderIdx.stringValue().contains(keyword));
+		            break;
+		        case 3: // 주문코드
+		            where.and(order.orderCode.contains(keyword));
+		            break;
+		        case 4: // 구매자
+		            where.and(buyer.name.contains(keyword));
+		            break;
+		        default:
+		            // all 검색
+		            where.and(
+		            		order.orderIdx.stringValue().contains(keyword)
+		                    .or(order.orderCode.contains(keyword))
+		                    .or(buyer.name.contains(keyword))
+		            );
+		            break;
+		    }
+		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+		if (startDate != null && !startDate.isBlank()) {
+		    try {
+		        Date start = Date.valueOf(startDate); // 문자열 → java.sql.Date
+		        where.and(order.createdAt.goe(start)); // startDate 이후
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+
+		if (endDate != null && !endDate.isBlank()) {
+		    try {
+		        Date end = Date.valueOf(endDate); // 문자열 → java.sql.Date
+		        where.and(order.createdAt.loe(end)); // endDate 이전
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+		
+		// 3️⃣ count 쿼리
+		JPAQuery<Long> orderQuery = jpaQueryFactory
+			    .select(order.count())
+			    .from(order)
+			    .leftJoin(buyer).on(order.user.username.eq(buyer.username))
+			    .where(where);
+				
+		Long totalCount = orderQuery.fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+
+	    // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+	    
+	    List<AdminSaleListDto> saleList = jpaQueryFactory.select(Projections.bean(AdminSaleListDto.class, 
+	    			order.orderIdx,
+	    			order.orderCode,
+	    			buyer.name.as("buyer"),
+	    			order.postRecipient.as("recv"),
+	    			order.totalAmount.as("amount"),
+	    			order.createdAt,
+	    			order.paymentStatus.as("state")
+	    		))
+	    		.from(order)
+	    		.leftJoin(buyer).on(order.user.username.eq(buyer.username))
+	    		.where(where)
+	    		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+	    
+		return new ResponseAdminListDto(saleList, pageInfo);
+	}
+
+	public ResponseAdminListDto paymentList(Integer type, Integer state, String keyword, Integer page) {
+	
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
+		
+		QPayment payment = QPayment.payment;
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		PaymentType paymentType = null;
+		
+		switch(type) {
+		case 2 : paymentType = PaymentType.RENTAL; break;
+		case 3 : paymentType = PaymentType.MATCHING; break;
+		case 4 : paymentType = PaymentType.ORDER; break;
+		case 5 : paymentType = PaymentType.MEMBERSHIP; break;
+		}
+		
+		if(paymentType != null) {
+			where.and(payment.paymentType.eq(paymentType));
+		}
+		
+		String stringState = null;
+		switch(state) {
+		case 1 : stringState = "DONE"; break;
+		case 2 : stringState = "CANCELED"; break;
+		}
+		
+		 where.and(payment.status.eq(stringState));
+		
+		// 2️⃣ 검색 조건
+		if (keyword != null && !keyword.isBlank()) {
+			where.and(
+                payment.paymentIdx.stringValue().contains(keyword)
+                    .or(payment.orderId.contains(keyword))
+                    .or(payment.orderName.contains(keyword))
+            );
+		}
+		
+		// 3️⃣ count 쿼리
+		JPAQuery<Long> paymentQuery = jpaQueryFactory
+		    .select(payment.count())
+		    .from(payment)
+		    .where(where);
+				
+		Long totalCount = paymentQuery.fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+
+	    // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+		
+	    List<AdminPaymentListDto> paymentList = jpaQueryFactory.select(Projections.bean(AdminPaymentListDto.class, 
+	    			payment.paymentIdx,
+	    			payment.orderId,
+	    			payment.orderName,
+	    			payment.approvedAt,
+	    			payment.method,
+	    			payment.totalAmount.as("amount"),
+	    			payment.status.as("state")
+	    		))
+	    		.from(payment)
+	    		.where(where)
+	    		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+	    
+		return new ResponseAdminListDto(paymentList, pageInfo);
 	}
 	
 }
+

@@ -39,10 +39,24 @@ public class AdminServiceImpl implements AdminService{
 	}
 
 	@Override
-	public ResponseAdminListDto rentalList(Integer column, Integer state, String keyword, Integer page, Date startDate,
-			Date endDate) throws Exception {
+	public ResponseAdminListDto rentalList(Integer column, Integer state, String keyword, Integer page, String startDate,
+			String endDate) throws Exception {
 		
 		return adminDslRepository.rentalList(column, state, keyword, page, startDate, endDate);
+	}
+
+	@Override
+	public ResponseAdminListDto saleList(Integer column, Integer state, String keyword, Integer page, String startDate,
+			String endDate) throws Exception {
+		
+		return adminDslRepository.saleList(column, state, keyword, page, startDate, endDate);
+	}
+
+	@Override
+	public ResponseAdminListDto paymentList(Integer type, Integer state, String keyword, Integer page)
+			throws Exception {
+		
+		return adminDslRepository.paymentList(type, state, keyword, page);
 	}
 
 }

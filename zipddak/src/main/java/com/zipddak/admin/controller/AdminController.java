@@ -86,8 +86,8 @@ public class AdminController {
 									@RequestParam Integer state,
 									@RequestParam String keyword,
 									@RequestParam Integer page,
-									@RequestParam Date startDate,
-									@RequestParam Date endDate){
+									@RequestParam(value = "startDate", required = false) String startDate,
+									@RequestParam(value = "endDate", required = false) String endDate){
 		
 		
 		try {
@@ -95,6 +95,47 @@ public class AdminController {
 			ResponseAdminListDto rentalList = adminService.rentalList(column, state, keyword, page, startDate, endDate);
 			
 			return ResponseEntity.ok(rentalList);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@GetMapping("/sales")
+	public ResponseEntity<ResponseAdminListDto> sales(@RequestParam Integer column,
+									@RequestParam Integer state,
+									@RequestParam String keyword,
+									@RequestParam Integer page,
+									@RequestParam(value = "startDate", required = false) String startDate,
+									@RequestParam(value = "endDate", required = false) String endDate){
+		
+		
+		try {
+			
+			ResponseAdminListDto rentalList = adminService.saleList(column, state, keyword, page, startDate, endDate);
+			
+			return ResponseEntity.ok(rentalList);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@GetMapping("/payments")
+	public ResponseEntity<ResponseAdminListDto> payments(@RequestParam Integer type,
+									@RequestParam Integer state,
+									@RequestParam String keyword,
+									@RequestParam Integer page){
+		
+		try {
+			
+			ResponseAdminListDto paymentList = adminService.paymentList(type, state, keyword, page);
+			
+			return ResponseEntity.ok(paymentList);
 			
 		}catch(Exception e) {
 			e.printStackTrace();

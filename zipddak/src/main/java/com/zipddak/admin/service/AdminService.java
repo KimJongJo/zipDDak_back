@@ -14,7 +14,12 @@ public interface AdminService {
 
 	ResponseAdminListDto sellerList(Integer productCode, Integer state, String keyword, Integer page) throws Exception;
 
-	ResponseAdminListDto rentalList(Integer column, Integer state, String keyword, Integer page, Date startDate,
-			Date endDate) throws Exception;
+	ResponseAdminListDto rentalList(Integer column, Integer state, String keyword, Integer page, String startDate,
+			String endDate) throws Exception;
+
+	ResponseAdminListDto saleList(Integer column, Integer state, String keyword, Integer page, String startDate,
+			String endDate) throws Exception;
+
+	ResponseAdminListDto paymentList(Integer type, Integer state, String keyword, Integer page) throws Exception;
 
 }
