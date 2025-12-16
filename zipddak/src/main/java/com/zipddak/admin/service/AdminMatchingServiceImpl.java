@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MatchingServiceImpl implements MatchingService{
+public class AdminMatchingServiceImpl implements MatchingService{
 
 	private final MatchingRepository matchingRepository;
 	private final RequestRepository requestRepository;
