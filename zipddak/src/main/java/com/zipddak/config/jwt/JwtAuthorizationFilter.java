@@ -65,7 +65,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		// json 형태의 문자열을 map으로 변환
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<String, String> token = objectMapper.readValue(authentication, Map.class);
-		System.out.println(token);
 
 		// access_token : header로부터 accessToken 가져와 bearer 체크
 		String accessToken = token.get("access_token");
@@ -85,7 +84,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 									.verify(accessToken) // 만료 시간 체크
 									.getClaim("sub") // 페이로드에 있는 항목중 sub
 									.asString();
-			System.out.println(username);
 			if(username == null || username.isEmpty()) {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
 				System.out.println("액세스토큰은 유효한데 username이 비어있을 경우");
@@ -115,6 +113,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 			e.printStackTrace();
 			// 1. refresh token 유효할 경우
 			String refreshToken = token.get("refresh_token");
+			System.out.println("==================");
+			System.out.println(refreshToken);
 			if(!refreshToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
 				return;
@@ -122,7 +122,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 			
 			// refresh token에서 Bearer 삭제
 			refreshToken = refreshToken.replace(JwtProperties.TOKEN_PREFIX, "");
-			
 			try {
 				String username = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
 						.build()
@@ -135,6 +134,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 				}
 				
 				Optional<User> ouser = userRepository.findById(username);
+				System.out.println(ouser.get());
 				if(ouser.isEmpty()) {
 					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
 					return;
@@ -150,7 +150,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 				mToken.put("refresh_token", JwtProperties.TOKEN_PREFIX + nRefreshToken);
 				
 				String nToken = objectMapper.writeValueAsString(mToken);
-				
 				// response header에 새로 만든 토큰을 넣어준다.
 				response.addHeader(JwtProperties.HEADER_STRING, nToken);
 				

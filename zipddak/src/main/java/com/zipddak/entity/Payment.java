@@ -5,6 +5,9 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 import org.hibernate.annotations.DynamicInsert;
+
+import com.zipddak.entity.Order.PaymentStatus;
+
 import lombok.*;
 
 @Getter
@@ -82,6 +85,14 @@ public class Payment {
 
     @Column
     private Integer easypayAmount;
+    
+	@Enumerated(EnumType.STRING)
+	@Column
+	private PaymentType paymentType;
+	
+	public enum PaymentType {
+		RENTAL, MATCHING, ORDER, MEMBERSHIP
+	}
 
 
 }

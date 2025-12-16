@@ -67,6 +67,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role; // USER, ADMIN, APPROVAL_SELLER
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserState state;
+    
     @Column
     private Boolean expert; // 전문가 전환 여부
     
@@ -84,5 +88,9 @@ public class User {
 
     public enum UserRole {
         USER, ADMIN, EXPERT, APPROVAL_SELLER
+    }
+    
+    public enum UserState {
+    	ACTIVE, SUSPENDED, WITHDRAWN
     }
 }
