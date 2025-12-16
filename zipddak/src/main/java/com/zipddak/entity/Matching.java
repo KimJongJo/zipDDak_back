@@ -47,7 +47,7 @@ public class Matching {
 	@Column(nullable = false)
 	private Integer estimateIdx;
 
-	@Column(nullable = false)
+	@Column
 	private Integer paymentIdx;
 
 	@Column(nullable = false)

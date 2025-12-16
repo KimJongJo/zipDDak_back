@@ -1,6 +1,7 @@
 package com.zipddak.mypage.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.zipddak.mypage.dto.EstimateWriteDto;
 import com.zipddak.mypage.dto.SentEstimateListDto;
@@ -10,4 +11,6 @@ public interface EstimateService {
 	void writeEstimate(EstimateWriteDto estimateWriteDto) throws Exception;
 	
 	List<SentEstimateListDto> getExpertSentEstimateList(String username, PageInfo pageInfo, String status) throws Exception;
+	
+	Map<String, Object> getExpertSentEstimateDetail(Integer estimateIdx) throws Exception;
 }

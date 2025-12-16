@@ -4,13 +4,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.zipddak.entity.Estimate;
 import com.zipddak.entity.EstimateCost;
 import com.zipddak.entity.Expert;
 import com.zipddak.mypage.dto.EstimateWriteDto;
+import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
+import com.zipddak.mypage.dto.SentEstimateDetailDto;
 import com.zipddak.mypage.dto.SentEstimateListDto;
 import com.zipddak.mypage.repository.EstimateDslRepository;
 import com.zipddak.repository.EstimateCostRepository;
@@ -66,7 +70,7 @@ public class EstimateServiceImpl implements EstimateService {
 
 	}
 
-	// [전문가]보낸 견적서 조회
+	// [전문가]보낸 견적서 목록 조회
 	@Override
 	public List<SentEstimateListDto> getExpertSentEstimateList(String username, PageInfo pageInfo, String status)
 			throws Exception {
@@ -96,5 +100,18 @@ public class EstimateServiceImpl implements EstimateService {
 
 		return estimateList;
 
+	}
+
+	// [전문가]보낸 견적서 상세 조회
+	@Override
+	public Map<String, Object> getExpertSentEstimateDetail(Integer estimateIdx) throws Exception {
+		SentEstimateDetailDto sentEstimateDetail = estimateDslRepository.selectSentEstimateDetail(estimateIdx);
+		List<EstimateCostListDto> estimateCostList = estimateDslRepository.selectEstimateCostList(estimateIdx);
+		
+		Map<String, Object> res = new HashMap<>();
+		res.put("sentEstimateDetail", sentEstimateDetail);
+		res.put("estimateCostList", estimateCostList);
+		
+		return res;
 	}
 }

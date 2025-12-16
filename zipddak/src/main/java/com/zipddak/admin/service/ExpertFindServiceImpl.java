@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.zipddak.admin.dto.EstimatePaymentExpertDto;
 import com.zipddak.admin.dto.ExpertCardDto;
 import com.zipddak.admin.dto.ExpertProfileDto;
 import com.zipddak.admin.repository.ExpertFindDslRepository;
@@ -39,6 +40,12 @@ public class ExpertFindServiceImpl implements ExpertFindService{
 	public ExpertProfileDto expertProfile(Integer expertIdx) throws Exception {
 		
 		return expertFindDslRepository.expertProfile(expertIdx); 
+	}
+
+	@Override
+	public EstimatePaymentExpertDto expertDetail(Integer estimateIdx) throws Exception {
+		
+		return expertFindDslRepository.expertDetail(estimateIdx);
 	}
 
 

@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.admin.dto.BrandDto;
+import com.zipddak.admin.dto.EstimatePaymentCostDto;
+import com.zipddak.admin.dto.EstimatePaymentStep1Dto;
 import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 import com.zipddak.admin.dto.PaymentInfoDto;
 import com.zipddak.admin.dto.RecvUserDto;
 import com.zipddak.admin.dto.productPaymentStep1Dto;
+import com.zipddak.admin.service.EstimateDetailService;
+import com.zipddak.admin.service.MatchingService;
 import com.zipddak.admin.service.OrderService;
 import com.zipddak.admin.service.PaymentService;
 
@@ -34,6 +38,8 @@ public class PaymentController {
 	
 	private final PaymentService paymentService;
 	private final OrderService paymentOrderService;
+	private final EstimateDetailService estimateDetailService;
+	private final MatchingService matchingService;
 
 	
 	@Value("${react-server.uri}")
@@ -79,16 +85,92 @@ public class PaymentController {
 		
 	}
 	
+	@PostMapping("/estimate")
+	public ResponseEntity<PaymentInfoDto> estimatePayment(@RequestBody EstimatePaymentStep1Dto paymentDto){
+		
+		try {
+			
+			// orderId 생성
+			String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+	                + "-" + (int)(Math.random() * 9000 + 1000);
+			
+			// 총 결제 가격 계산
+			EstimatePaymentCostDto costDto = estimateDetailService.detail(paymentDto.getEstimateIdx());
+			
+			Integer amount = 0;
+			
+			// 컨설팅 이라면
+			if(costDto.getLargeServiceIdx() == 74) {
+				amount += costDto.getConsultingLaborCost()
+						+ costDto.getStylingDesignCost()
+						+ costDto.getThreeDImageCost()
+						+ costDto.getReportProductionCost()
+						+ costDto.getEtcFee();
+			}else {
+				amount += costDto.getBuildCostSum()
+						+costDto.getMaterialCostSum();
+			}
+			
+			// 상품 이름 + 옵션 개수 string 생성
+			
+			String orderName;
+			if(costDto.getLargeServiceIdx() == 74) {
+				orderName = "시공견적 컨설팅 비용";
+			}else if(costDto.getLargeServiceIdx() == 23) {
+				orderName = "수리 견적비용";
+			}else {
+				orderName = "인테리어 견적비용";
+			}
+				
+			// 매칭 테이블 저장
+			matchingService.createMatching(paymentDto, orderId);
+			
+			PaymentInfoDto paymentInfo = PaymentInfoDto.builder()
+				.orderId(orderId)
+				.amount(amount)
+				.orderName(orderName)
+				.build();
+			
+			return ResponseEntity.ok(paymentInfo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	
+	
 	// 서버에서 토스 최종 결제를 승인해야함
 	@GetMapping("/complate")
 	public ResponseEntity<?> paymentComplate(PaymentComplateDto paymentComplateDto){
 		
 		try {
 			
-			paymentService.approvePayment(paymentComplateDto);
+			paymentService.approvePayment(paymentComplateDto, "product");
 			
 			 // 클라이언트로 리다이렉트할 때 주문 ID 포함
 		    String redirectUrl = reactServer + "zipddak/productOrderComplate?orderCode=" + paymentComplateDto.getOrderId();
+			
+			return ResponseEntity.status(HttpStatus.FOUND)
+					.location(URI.create(redirectUrl))
+					.build();
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	// 서버에서 토스 최종 결제를 승인해야함
+	@GetMapping("/estimate/complate")
+	public ResponseEntity<?> paymentEstimateComplate(PaymentComplateDto paymentComplateDto){
+		
+		try {
+			
+			paymentService.approvePayment(paymentComplateDto, "estimate");
+			
+		    String redirectUrl = reactServer + "zipddak/mypage/expert/requests/active";
 			
 			return ResponseEntity.status(HttpStatus.FOUND)
 					.location(URI.create(redirectUrl))

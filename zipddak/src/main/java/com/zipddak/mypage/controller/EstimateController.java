@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.mypage.dto.EstimateWriteDto;
+import com.zipddak.mypage.dto.SentEstimateDetailDto;
 import com.zipddak.mypage.dto.SentEstimateListDto;
 import com.zipddak.mypage.service.EstimateServiceImpl;
 import com.zipddak.util.PageInfo;
@@ -36,7 +37,7 @@ public class EstimateController {
 		}
 	}
 
-	// [전문가]보낸 견적서 조회 - 진행중인 견적요청
+	// [전문가]보낸 견적서 목록 조회
 	@GetMapping("/sent/estimateList")
 	public ResponseEntity<Map<String, Object>> expertSentEstimateList(@RequestParam("username") String username,
 			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -44,13 +45,26 @@ public class EstimateController {
 		try {
 			PageInfo pageInfo = new PageInfo(page);
 
-			List<SentEstimateListDto> estimateList = estimateService.getExpertSentEstimateList(username, pageInfo, status);
+			List<SentEstimateListDto> estimateList = estimateService.getExpertSentEstimateList(username, pageInfo,
+					status);
 
 			Map<String, Object> res = new HashMap<>();
 			res.put("estimateList", estimateList);
 			res.put("pageInfo", pageInfo);
 
 			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [전문가]보낸 견적서 상세 조회
+	@GetMapping("/sent/estimateDetail")
+	public ResponseEntity<Map<String, Object>> expertSentEstimateDetail(
+			@RequestParam("estimateIdx") Integer estimateIdx) {
+		try {
+			return ResponseEntity.ok(estimateService.getExpertSentEstimateDetail(estimateIdx));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);

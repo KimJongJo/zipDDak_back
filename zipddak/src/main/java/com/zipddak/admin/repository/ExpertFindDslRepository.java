@@ -12,6 +12,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zipddak.admin.dto.EstimatePaymentExpertDto;
 import com.zipddak.admin.dto.ExpertCardDto;
 import com.zipddak.admin.dto.ExpertProfileDto;
 import com.zipddak.admin.dto.ExpertReviewDetailDto;
@@ -19,6 +20,7 @@ import com.zipddak.admin.dto.ExpertReviewScoreDto;
 import com.zipddak.admin.dto.ResponseReviewListAndHasnext;
 import com.zipddak.entity.QCareer;
 import com.zipddak.entity.QCategory;
+import com.zipddak.entity.QEstimate;
 import com.zipddak.entity.QExpert;
 import com.zipddak.entity.QExpertFile;
 import com.zipddak.entity.QMatching;
@@ -281,6 +283,37 @@ public class ExpertFindDslRepository {
 		
 		return new ResponseReviewListAndHasnext(content, hasNext);
 		
+	}
+
+	public EstimatePaymentExpertDto expertDetail(Integer estimateIdx) {
+		
+		QExpert expert = QExpert.expert;
+		QExpertFile file = QExpertFile.expertFile;
+		QCategory category = QCategory.category;
+		QReviewExpert review = QReviewExpert.reviewExpert;
+		QEstimate estimate = QEstimate.estimate;
+		
+		return jpaQueryFactory.select(Projections.bean(EstimatePaymentExpertDto.class, 
+					expert.expertIdx,
+					file.fileRename.as("imgName"),
+					file.storagePath.as("imgStoragePath"),
+					expert.activityName,
+					category.name.as("cateName"),
+					Expressions.numberTemplate(
+	                        Double.class,
+	                        "ROUND({0}, 1)",
+	                        review.score.avg().coalesce(0.0)
+	                ).as("score"),
+					expert.contactStartTime,
+					expert.contactEndTime
+				))
+				.from(expert)
+				.leftJoin(file).on(expert.profileImageIdx.eq(file.expertFileIdx))
+				.leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
+				.leftJoin(review).on(expert.expertIdx.eq(review.expertIdx))
+				.leftJoin(estimate).on(expert.expertIdx.eq(estimate.expert.expertIdx))
+				.where(estimate.estimateIdx.eq(estimateIdx))
+				.fetchOne();
 	}
 	
 	

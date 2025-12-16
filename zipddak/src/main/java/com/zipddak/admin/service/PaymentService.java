@@ -13,6 +13,6 @@ public interface PaymentService {
 
 	String getOrderName(List<BrandDto> brandList);
 
-	void approvePayment(PaymentComplateDto paymentComplateDto) throws Exception;
+	void approvePayment(PaymentComplateDto paymentComplateDto, String type) throws Exception;
 
 }
