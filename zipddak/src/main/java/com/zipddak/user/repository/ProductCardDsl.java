@@ -21,6 +21,7 @@ import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QReviewProduct;
 import com.zipddak.entity.QSeller;
+import com.zipddak.user.dto.ProductCardsDto;
 
 @Repository
 public class ProductCardDsl {
@@ -30,7 +31,7 @@ public class ProductCardDsl {
 	
 	// ProductCardDto 타입으로 반환
 		// 자재 상품 목록 조회
-		public List<ProductCardDto> productsMain(Integer categoryNo,String keyword,String username) throws Exception {
+		public ProductCardsDto productsMain(Integer categoryNo,String keyword,String username) throws Exception {
 
 			// 자재 상품
 			QProduct product = QProduct.product;
@@ -49,8 +50,8 @@ public class ProductCardDsl {
 			
 
 			// 로그인 했을때 안했을때 구분
-			Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false);
-
+			Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false).as("favorite");
+			
 			if (username != null && !username.isBlank()) {
 				isFavoriteExpr = new CaseBuilder().when(favorite.productIdx.isNotNull()).then(true).otherwise(false)
 						.as("favorite");
@@ -58,7 +59,7 @@ public class ProductCardDsl {
 
 			BooleanBuilder where = new BooleanBuilder();
 
-			// 상품 공개 유무가 1인 상품만
+//			// 상품 공개 유무가 1인 상품만
 			where.and(product.visibleYn.eq(true));
 
 			// 카테고리
@@ -97,19 +98,29 @@ public class ProductCardDsl {
 			        .from(product)
 			        .leftJoin(review).on(review.productIdx.eq(product.productIdx))
 			        .leftJoin(productFile).on(productFile.productFileIdx.eq(product.thumbnailFileIdx))
-			        .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
-			        .leftJoin(category).on(category.categoryIdx.eq(product.subCategoryIdx));
+			        .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername));
+//			        .leftJoin(category).on(category.categoryIdx.eq(product.subCategoryIdx));
 			
 			if(username != null && !username.isBlank()) {
 				query.leftJoin(favorite)
 						.on(favorite.productIdx.eq(product.productIdx).and(favorite.userUsername.eq(username)));
 			}
-
-			return query.where(where)
-					.groupBy(product.productIdx, product.name, product.discount, product.salePrice, product.sellerUsername,
-							productFile.fileRename, productFile.storagePath, seller.brandName)
-					// 판매 이력이 없는 상품은 null이 될 수 있음 -> null일경우 판매 횟수 0으로 처리
-					.orderBy(order).limit(limit).fetch();
+		 
+		 List<ProductCardDto> cards = query
+		            .where(where)
+		            .groupBy(product.productIdx)
+		            .orderBy(order)
+		            .limit(limit)
+		            .offset(0)
+		            .fetch();
+		 
+		 Long totalCount = jpaQueryFactory
+		            .select(product.productIdx.countDistinct())
+		            .from(product)
+		            .where(where)
+		            .fetchOne();
+		 
+		 return new ProductCardsDto(cards, totalCount);
 
 		}
 		
@@ -128,12 +139,10 @@ public class ProductCardDsl {
 			QProductFile productFile = QProductFile.productFile;
 			// 상품 판매 업체
 			QSeller seller = QSeller.seller;
-			// 상품 카테고리
-			QCategory category = QCategory.category;
 
 
 			// 로그인 했을때 안했을때 구분
-			Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false);
+			Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false).as("favorite");
 
 			if (username != null && !username.isBlank()) {
 				isFavoriteExpr = new CaseBuilder().when(favorite.productIdx.isNotNull()).then(true).otherwise(false)
@@ -174,7 +183,7 @@ public class ProductCardDsl {
 			        .leftJoin(review).on(review.productIdx.eq(product.productIdx))
 			        .leftJoin(productFile).on(productFile.productFileIdx.eq(product.thumbnailFileIdx))
 			        .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
-			        .leftJoin(category).on(category.categoryIdx.eq(product.subCategoryIdx))
+//			        .leftJoin(category).on(category.categoryIdx.eq(product.subCategoryIdx))
 			        .leftJoin(orderItem).on(orderItem.product.productIdx.eq(product.productIdx));
 			
 			if(username != null && !username.isBlank()) {
@@ -183,8 +192,9 @@ public class ProductCardDsl {
 			}
 
 			return query.where(where)
-					.groupBy(product.productIdx, product.name, product.discount, product.salePrice, product.sellerUsername,
-							productFile.fileRename, productFile.storagePath)
+//					.groupBy(product.productIdx, product.name, product.discount, product.salePrice, product.sellerUsername,
+//							productFile.fileRename, productFile.storagePath)
+					.groupBy(product.productIdx)
 					// 판매 이력이 없는 상품은 null이 될 수 있음 -> null일경우 판매 횟수 0으로 처리
 					.orderBy(order).limit(100).fetch();
 
