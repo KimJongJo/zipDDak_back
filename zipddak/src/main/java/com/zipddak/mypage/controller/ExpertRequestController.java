@@ -13,6 +13,9 @@ import com.zipddak.mypage.dto.PublicRequestDetailDto;
 import com.zipddak.mypage.dto.PublicRequestListDto;
 import com.zipddak.mypage.dto.ReceiveRequestDetailDto;
 import com.zipddak.mypage.dto.ReceiveRequestListDto;
+import com.zipddak.mypage.dto.RequestActiveDetailDto;
+import com.zipddak.mypage.dto.RequestActiveExpertListDto;
+import com.zipddak.mypage.dto.RequestHistoryListDto;
 import com.zipddak.mypage.service.ExpertRequestServiceImpl;
 import com.zipddak.util.PageInfo;
 
@@ -72,6 +75,58 @@ public class ExpertRequestController {
 	public ResponseEntity<ReceiveRequestDetailDto> expertReceiveRequestDetail(@RequestParam Integer requestIdx) {
 		try {
 			return ResponseEntity.ok(requestService.getExpertReceiveRequestDetail(requestIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [일반사용자]지난 요청서 조회
+	@GetMapping("/history/requestList")
+	public ResponseEntity<Map<String, Object>> userRequestHistoryList(@RequestParam("username") String username,
+			@RequestParam("status") String status,
+			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page) {
+		try {
+			PageInfo pageInfo = new PageInfo(page);
+
+			List<RequestHistoryListDto> requestList = requestService.getUserRequestHistoryList(username, status,
+					pageInfo);
+
+			Map<String, Object> res = new HashMap<>();
+			res.put("requestList", requestList);
+			res.put("pageInfo", pageInfo);
+
+			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [일반사용자]진행중인 요청서 조회
+	@GetMapping("/active/requestDetail")
+	public ResponseEntity<Map<String, Object>> userActiveRequestDetail(@RequestParam("username") String username) {
+		try {
+			RequestActiveDetailDto requestDetail = requestService.getUserRequestActiveDetail(username);
+			List<RequestActiveExpertListDto> expertList = requestService.getRequestActiveExpertList(username);
+
+			Map<String, Object> res = new HashMap<>();
+			res.put("requestDetail", requestDetail);
+			res.put("expertList", expertList);
+
+			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [일반사용자]진행중인 요청서 견적 상세조회
+	@GetMapping("/active/estimateDetail")
+	public ResponseEntity<Map<String, Object>> userActiveEstimateDetail(
+			@RequestParam("estimateIdx") Integer estimateIdx) {
+		try {
+			return ResponseEntity.ok(requestService.getUserEstimateActiveDetail(estimateIdx));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);

@@ -103,6 +103,7 @@ public class RequestServiceImpl implements RequestService {
 							.additionalRequest(requestForm.getAdditionalRequest())
 							.purpose(requestForm.getPurpose())
 							.place(requestForm.getPlace())
+							.status("RECRUITING")
 							.build();
 		
 		if(cate1 != 74) {
