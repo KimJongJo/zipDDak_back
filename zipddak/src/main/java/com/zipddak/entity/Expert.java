@@ -124,7 +124,7 @@ public class Expert {
 	private Date createdAt;
 	
 	@Column
-	private String activityStatus; // ACTIVE, WAITING, STOPPED
+	private String activityStatus; // ACTIVE, WAITING, STOPPED, REJECT
 
 	public ExpertDto toDto() {
 		return ExpertDto.builder().expertIdx(expertIdx).username(user.getUsername()).activityName(activityName)

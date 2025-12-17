@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import com.zipddak.admin.dto.AdminUserListDto;
+import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
 
 public interface AdminService {
@@ -21,5 +22,13 @@ public interface AdminService {
 			String endDate) throws Exception;
 
 	ResponseAdminListDto paymentList(Integer type, Integer state, String keyword, Integer page) throws Exception;
+
+	ResponseAdminListDto membershipList(Integer state, String keyword, Integer page) throws Exception;
+
+	ResponseAdminListDto requestExpertList(Integer state, Integer column, String keyword, Integer page) throws Exception;
+
+	ResponseAdminListDto requestSellerList(Integer state, Integer column, String keyword, Integer page) throws Exception;
+
+	RequestExpertInfoDto requestExpertInfo(Integer expertIdx) throws Exception;
 
 }

@@ -142,7 +142,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        expert.setBusinessLicensePdfId(expertFileIdx);
 	        expert.setUser(user);
 	        //관리자가 승인...
-	        expert.setActivityStatus("STOPPED");
+	        expert.setActivityStatus("WAITING");
 
 	        signExpertRepository.save(expert);
 	    }
@@ -210,13 +210,14 @@ public class SignUpServiceImpl implements SignUpService {
 		    //User테이블 등록
 	        User user = sellerDto.toUserEntity();
 	        user.setNickname(sellerDto.getBrandName());
-
+	        user.setRole(UserRole.SELLER);
 	        userRepository.save(user);
 	        
 	        //Seller테이블 등록
 	        Seller seller = sellerDto.toSellerEntity(user);
 	        seller.setOnlinesalesFileIdx(SellerImgFileIdx);
 	        seller.setCompFileIdx(sellerFileIdx);
+	        seller.setActivityStatus("WAITING");
 	        signSellerRepository.save(seller);
 		
 	}
