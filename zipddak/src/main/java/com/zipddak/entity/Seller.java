@@ -110,4 +110,7 @@ public class Seller {
 
     @UpdateTimestamp
     private Date updatedAt;
+    
+	@Column
+	private String activityStatus; // ACTIVE, WAITING, STOPPED
 }

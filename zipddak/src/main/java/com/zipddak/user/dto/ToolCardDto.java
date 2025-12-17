@@ -1,6 +1,7 @@
 package com.zipddak.user.dto;
 
 import com.google.auto.value.AutoValue.Builder;
+import com.zipddak.entity.Tool.ToolStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class ToolCardDto {
 	 private String name;
 	 private Long rentalPrice;
 	 private String addr1;
-	 private String satus;
+	 private ToolStatus satus;
 	 
 	 private String fileRename; // 썸네일 파일 이름
 	 private String storagePath; // 사진 저장 경로

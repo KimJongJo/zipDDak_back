@@ -101,14 +101,20 @@ public class RequestServiceImpl implements RequestService {
 			cate3 = categoryRepository.findByName(requestForm.getCate3()).getCategoryIdx();
 		}
 
-		Request request = Request.builder().userUsername(requestForm.getUserUsername()).largeServiceIdx(cate1)
-				.budget(requestForm.getBudget()).preferredDate(requestForm.getPreferredDate())
+		Request request = Request.builder()
+				.userUsername(requestForm.getUserUsername())
+				.largeServiceIdx(cate1)
+				.budget(requestForm.getBudget())
+				.preferredDate(requestForm.getPreferredDate())
 				.location(requestForm.getAddr1() + " " + requestForm.getAddr2())
 				.constructionSize(requestForm.getConstructionSize())
-				.additionalRequest(requestForm.getAdditionalRequest()).purpose(requestForm.getPurpose())
-				.place(requestForm.getPlace()).build();
-
-		if (cate1 != 74) {
+				.additionalRequest(requestForm.getAdditionalRequest())
+				.purpose(requestForm.getPurpose())
+				.place(requestForm.getPlace())
+				.status("RECRUITING")
+				.build();
+		
+		if(cate1 != 74) {
 			request.setMidServiceIdx(cate2);
 			request.setSmallServiceIdx(cate3);
 		}

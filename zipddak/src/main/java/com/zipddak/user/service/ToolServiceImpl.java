@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.user.dto.ToolCardsDto;
+import com.zipddak.user.dto.ToolCardsMoreDto;
 import com.zipddak.user.repository.ToolCardDsl;
 
 @Service
@@ -14,10 +15,13 @@ public class ToolServiceImpl implements ToolService {
 
 	//공구 메인
 	@Override
-	public ToolCardsDto toolCardsToolMain(String categoryNo, String keyword, String username, Integer wayNo,
-			Integer orderNo, Boolean rentalState) throws Exception {
+	public ToolCardsMoreDto toolCardsToolMain(String categoryNo, String keyword, String username, Integer wayNo,
+			Integer orderNo, Boolean rentalState, Integer offset, Integer size) throws Exception {
+		ToolCardsDto toolCards = toolCardDsl.toolsToolMain(categoryNo, keyword, username, wayNo, orderNo, rentalState, offset,size);
+
+		boolean hasNext = (offset + 1) * size < toolCards.getTotalCount();
 		
-		return toolCardDsl.toolsToolMain(categoryNo, keyword, username, wayNo, orderNo, rentalState);
+		return new ToolCardsMoreDto(toolCards.getCards(),toolCards.getTotalCount(),hasNext);
 	}
 
 }
