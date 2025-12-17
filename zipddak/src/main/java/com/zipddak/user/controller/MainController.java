@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.admin.dto.ProductCardDto;
+import com.zipddak.user.dto.CommunityCardsDto;
 import com.zipddak.user.dto.ExpertCardsDto;
 import com.zipddak.user.dto.ProductCardsDto;
 import com.zipddak.user.dto.ToolCardsDto;
@@ -70,6 +71,20 @@ public class MainController {
 		}
 		
 	//커뮤니티 리스트
+		@GetMapping(value="/main/community")
+		ResponseEntity<CommunityCardsDto> mainCommunityList (
+				@RequestParam(value="keyword", required=false, defaultValue = "") String keyword,
+				@RequestParam("categoryNo") Integer categoryNo) {
+			
+			try {
+				CommunityCardsDto communityMain = mainService.communityCardMain(categoryNo, keyword);
+				return ResponseEntity.ok(communityMain);
+			}catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(null);
+			}
+			
+		}
 		
 	//상품 베스트100
 		@GetMapping(value="/main/best")

@@ -15,6 +15,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QFavoritesTool;
@@ -76,6 +77,7 @@ public class ToolCardDsl {
 				
 				)).from(tool)
 				.leftJoin(toolFile).on(toolFile.toolFileIdx.eq(tool.thunbnail))
+				.leftJoin(review).on(review.toolIdx.eq(tool.toolIdx))
 				.leftJoin(category).on(category.categoryIdx.eq(tool.category));
 		
 		if(username != null && !username.isBlank()) {
@@ -83,12 +85,15 @@ public class ToolCardDsl {
 					.on(favorite.toolIdx.eq(tool.toolIdx).and(favorite.userUsername.eq(username)));
 		}
 		 
-			List<ToolCardDto> cards = query.where(where)
-					.groupBy(tool.toolIdx, tool.name, tool.rentalPrice,tool.addr1,tool.satus,
-							toolFile.fileRename, toolFile.storagePath)
+			List<ToolCardDto> cards = query
+					.where(where)
+					.groupBy(tool.toolIdx)
 					.orderBy(order).limit(6).fetch();
 
-			Long totalCount = jpaQueryFactory.select(tool.toolIdx.countDistinct()).from(tool).where(where)
+			Long totalCount = jpaQueryFactory
+					.select(tool.toolIdx.countDistinct())
+					.from(tool)
+					.where(where)
 					.fetchOne();
 
 			return new ToolCardsDto(cards, totalCount); 
@@ -97,14 +102,15 @@ public class ToolCardDsl {
 	
 	
 	public ToolCardsDto toolsToolMain (String categoryNo, String keyword, String username,
-			Integer wayNo, Integer orderNo, Boolean rentalState) {
+			Integer wayNo, Integer orderNo, Boolean rentalState,Integer offset, Integer size) {
 
 		QCategory category = QCategory.category;
 		QTool tool = QTool.tool;
 		QToolFile toolFile = QToolFile.toolFile;
 		QFavoritesTool favorite = QFavoritesTool.favoritesTool;
 		QReviewTool review = QReviewTool.reviewTool;
-		// 문의수가 matching인가...?
+		
+		
 
 		// 로그인 했을때 안했을때 구분
 		Expression<Boolean> isFavoriteTool = Expressions.asBoolean(false).as("favorite");				
@@ -165,6 +171,7 @@ public class ToolCardDsl {
 
 		orders.add(tool.toolIdx.desc());
 		
+		
 		JPQLQuery<ToolCardDto> query = jpaQueryFactory.select(Projections.bean(ToolCardDto.class,
 				tool.toolIdx,
 				tool.name,
@@ -177,6 +184,7 @@ public class ToolCardDsl {
 				
 				)).from(tool)
 				.leftJoin(toolFile).on(toolFile.toolFileIdx.eq(tool.thunbnail))
+				.leftJoin(review).on(review.toolIdx.eq(tool.toolIdx))
 				.leftJoin(category).on(category.categoryIdx.eq(tool.category));
 		
 		if(username != null && !username.isBlank()) {
@@ -188,21 +196,24 @@ public class ToolCardDsl {
 		    query.orderBy(orders.toArray(new OrderSpecifier[0]));
 		}
 		
+		int limit = (size != null) ? size : 5;
+		long realOffset = (offset != null) ? offset : 0;
+		
 		
 			List<ToolCardDto> cards = query.where(where)
-					.groupBy(tool.toolIdx, tool.name, tool.rentalPrice,tool.addr1,tool.satus,
-							toolFile.fileRename, toolFile.storagePath)
-					.limit(4).offset(0).fetch();
-			
+					.groupBy(tool.toolIdx)
+//					.distinct()
+					.limit(limit)
+				    .offset(realOffset)
+				    .fetch();
 			
 
 			Long totalCount = jpaQueryFactory
 				    .select(tool.toolIdx.countDistinct())
 				    .from(tool)
-				    .leftJoin(toolFile).on(toolFile.toolFileIdx.eq(tool.thunbnail))
-				    .leftJoin(category).on(category.categoryIdx.eq(tool.category))
 				    .where(where)
 				    .fetchOne();
+		
 
 			return new ToolCardsDto(cards, totalCount); 
 

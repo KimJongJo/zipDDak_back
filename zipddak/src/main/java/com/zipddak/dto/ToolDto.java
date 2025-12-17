@@ -2,7 +2,12 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
-import lombok.*;
+import com.zipddak.entity.Tool.ToolStatus;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.ProductCardDto;
+import com.zipddak.user.dto.CommunityCardsDto;
 import com.zipddak.user.dto.ExpertCardsDto;
 import com.zipddak.user.dto.ProductCardsDto;
 import com.zipddak.user.dto.ToolCardsDto;
+import com.zipddak.user.repository.CommunityCardDsl;
 import com.zipddak.user.repository.ExpertCardDsl;
 import com.zipddak.user.repository.ProductCardDsl;
 import com.zipddak.user.repository.ToolCardDsl;
@@ -24,6 +26,9 @@ public class MainServiceImpl implements MainService {
 	
 	@Autowired
 	private ProductCardDsl productCardDsl;
+	
+	@Autowired
+	private CommunityCardDsl communityCardDsl;
 
 	@Override
 	public ExpertCardsDto expertCardMain(Integer categoryNo, String keyword) throws Exception {
@@ -40,13 +45,16 @@ public class MainServiceImpl implements MainService {
 		return productCardDsl.productsMain(categoryNo, keyword, username);
 	}
 
-	
-	
-	
+	@Override
+	public CommunityCardsDto communityCardMain(Integer categoryNo, String keyword) throws Exception {
+		return communityCardDsl.communityMain(categoryNo, keyword);
+	}
 	
 	@Override
 	public List<ProductCardDto> products100(String username) throws Exception {
 		return productCardDsl.Bestproducts(username);
 	}
+
+	
 
 }
