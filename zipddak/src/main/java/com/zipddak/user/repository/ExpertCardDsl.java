@@ -55,39 +55,58 @@ public class ExpertCardDsl {
 			builder.and(expert.mainServiceIdx.eq(74));
 			break;
 		}
-
-		// where절 만들기
-		if (keyword != null && !keyword.isEmpty()) {
-			BooleanBuilder keywordBuilder = new BooleanBuilder();
-			keywordBuilder.or(expert.activityName.contains(keyword));
-			keywordBuilder.or(category.name.contains(keyword));
-			keywordBuilder.or(expert.introduction.contains(keyword));
-
-			builder.and(keywordBuilder); // 모든 OR 조건을 AND로 묶음
-		}
+		
+		
 
 		// 멤버십 종료일도 넣기
 //		builder.and(builder)
 
 		JPQLQuery<ExpertCardDto> query = jpaQueryFactory
-				.select(Projections.bean(ExpertCardDto.class, expert.expertIdx, expert.addr1, expert.addr2,
-						file.fileRename, file.storagePath, expert.activityName, expert.mainServiceIdx,
+				.select(Projections.bean(ExpertCardDto.class, 
+						expert.expertIdx, 
+						expert.addr1, 
+						expert.addr2,
+						file.fileRename, 
+						file.storagePath, 
+						expert.activityName, 
+						expert.mainServiceIdx,
 						category.name.as("mainServiceName"),
 						Expressions.numberTemplate(Double.class, "COALESCE(ROUND({0}, 1), 0)", // null이면 0으로 대체
 								review.score.avg()).as("avgRating"),
-						review.reviewExpertIdx.countDistinct().as("reviewCount"), expert.introduction,
-						matching.matchingIdx.countDistinct().as("matchingCount"), careerSumExpr.as("career")))
-				.from(expert).leftJoin(file).on(expert.profileImageIdx.eq(file.expertFileIdx)).leftJoin(category)
-				.on(expert.mainServiceIdx.eq(category.categoryIdx)).leftJoin(matching)
-				.on(expert.expertIdx.eq(matching.expertIdx)).leftJoin(review).on(expert.expertIdx.eq(review.expertIdx))
+						review.reviewExpertIdx.countDistinct().as("reviewCount"), 
+						expert.introduction,
+						matching.matchingIdx.countDistinct().as("matchingCount"), 
+						careerSumExpr.as("career")))
+				
+				
+				.from(expert).leftJoin(file).on(expert.profileImageIdx.eq(file.expertFileIdx))
+				.leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
+				.leftJoin(matching).on(expert.expertIdx.eq(matching.expertIdx))
+				.leftJoin(review).on(expert.expertIdx.eq(review.expertIdx))
 				.leftJoin(career).on(expert.expertIdx.eq(career.expertIdx));
+		
+		//키워드
+				if (keyword != null && !keyword.isEmpty()) {
+					BooleanBuilder keywordBuilder = new BooleanBuilder();
+					keywordBuilder.or(expert.activityName.contains(keyword));
+					keywordBuilder.or(category.name.contains(keyword));
+					keywordBuilder.or(expert.introduction.contains(keyword));
+
+					builder.and(keywordBuilder); // 모든 OR 조건을 AND로 묶음
+				}
+		
+		
 
 		List<ExpertCardDto> cards = query.where(builder)
 				.groupBy(expert.expertIdx, expert.addr1, expert.addr2, file.fileRename, file.storagePath,
 						expert.activityName, expert.mainServiceIdx, category.name, expert.introduction)
-				.orderBy(Expressions.numberTemplate(Double.class, "RAND()").asc()).limit(4).offset(0).fetch();
+				.orderBy(Expressions.numberTemplate(Double.class, "RAND()").asc())
+				.limit(4).offset(0).fetch();
 
-		Long totalCount = jpaQueryFactory.select(expert.expertIdx.countDistinct()).from(expert).where(builder)
+		Long totalCount = jpaQueryFactory
+				.select(expert.expertIdx.countDistinct()).from(expert)
+				.leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
+				.where(builder)
 				.fetchOne();
 
 		return new ExpertCardsDto(cards, totalCount);
