@@ -60,6 +60,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		
 		
 		User user = principalDetails.getUser();
+		
+		String fcmToken = request.getParameter("fcmToken");
+		user.setFcmToken(fcmToken);
+		userRepository.save(user);
 
 		String profile = 
 				profileRepository.profileFileRename(username, user.getRole().toString(), false);

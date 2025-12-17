@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.zipddak.dto.NotificationDto;
 import com.zipddak.dto.ReviewExpertDto;
 import com.zipddak.dto.ReviewProductDto;
 import com.zipddak.dto.ReviewToolDto;
@@ -15,6 +16,10 @@ import com.zipddak.entity.ReviewExpert;
 import com.zipddak.entity.ReviewFile;
 import com.zipddak.entity.ReviewProduct;
 import com.zipddak.entity.ReviewTool;
+import com.zipddak.entity.Tool;
+import com.zipddak.entity.User;
+import com.zipddak.entity.Expert;
+import com.zipddak.entity.Notification.NotificationType;
 import com.zipddak.mypage.dto.BeforeExpertReviewDto;
 import com.zipddak.mypage.dto.BeforeProductReviewDto;
 import com.zipddak.mypage.dto.BeforeToolReviewDto;
@@ -22,10 +27,13 @@ import com.zipddak.mypage.dto.MyExpertReviewDto;
 import com.zipddak.mypage.dto.MyProductReviewDto;
 import com.zipddak.mypage.dto.MyToolReviewDto;
 import com.zipddak.mypage.repository.ReviewDslRepository;
+import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.ReviewExpertRepository;
 import com.zipddak.repository.ReviewFileRepository;
 import com.zipddak.repository.ReviewProductRepository;
 import com.zipddak.repository.ReviewToolRepository;
+import com.zipddak.repository.ToolRepository;
+import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +46,10 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewProductRepository reviewProductRepository;
 	private final ReviewExpertRepository reviewExpertRepository;
 	private final ReviewFileRepository reviewFileRepository;
+	private final NotificationServiceImpl notificationService;
+	private final UserRepository userRepository;
+	private final ToolRepository toolRepository;
+	private final ExpertRepository expertRepository;
 
 	@Override
 	public List<BeforeToolReviewDto> beforeToolReviewList(String username) throws Exception {
@@ -99,7 +111,21 @@ public class ReviewServiceImpl implements ReviewService {
 				.rentalIdx(reviewTooldto.getRentalIdx()).img1(reviewFileIdxArr[0]).img2(reviewFileIdxArr[1])
 				.img3(reviewFileIdxArr[2]).build();
 
-		reviewToolRepository.save(reviewTool);
+		ReviewTool saveReviewTool = reviewToolRepository.save(reviewTool);
+
+		// 사용자 조회
+		User user = userRepository.findById(reviewTooldto.getWriter()).get();
+
+		// 공구 조회
+		Tool tool = toolRepository.findById(reviewTooldto.getToolIdx()).get();
+
+		// 알림 전송
+		NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.REVIEW).title("새로운 리뷰 도착")
+				.content(user.getName() + "님이 리뷰를 작성했습니다.").recvUsername(tool.getOwner())
+				.sendUsername(reviewTooldto.getWriter()).reviewType("TOOL").reviewIdx(saveReviewTool.getReviewToolIdx())
+				.build();
+
+		notificationService.sendNotification(notificationDto);
 	}
 
 	@Override
@@ -147,7 +173,21 @@ public class ReviewServiceImpl implements ReviewService {
 				.expertIdx(reviewExpertdto.getExpertIdx()).matchingIdx(reviewExpertdto.getMatchingIdx())
 				.img1(reviewFileIdxArr[0]).img2(reviewFileIdxArr[1]).img3(reviewFileIdxArr[2]).build();
 
-		reviewExpertRepository.save(reviewExpert);
+		ReviewExpert saveReviewExpert = reviewExpertRepository.save(reviewExpert);
+
+		// 사용자 조회
+		User user = userRepository.findById(reviewExpertdto.getWriter()).get();
+
+		// 전문가 조회
+		Expert expert = expertRepository.findById(reviewExpertdto.getExpertIdx()).get();
+
+		// 알림 전송
+		NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.REVIEW).title("새로운 리뷰 도착")
+				.content(user.getName() + "님이 리뷰를 작성했습니다.").recvUsername(expert.getUser().getUsername())
+				.sendUsername(reviewExpertdto.getWriter()).reviewType("EXPERT")
+				.reviewIdx(saveReviewExpert.getReviewExpertIdx()).build();
+
+		notificationService.sendNotification(notificationDto);
 	}
 
 	@Override
