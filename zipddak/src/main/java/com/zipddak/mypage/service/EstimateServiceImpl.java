@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.zipddak.dto.NotificationDto;
 import com.zipddak.entity.Estimate;
 import com.zipddak.entity.EstimateCost;
 import com.zipddak.entity.Expert;
+import com.zipddak.entity.Notification.NotificationType;
+import com.zipddak.entity.Request;
 import com.zipddak.mypage.dto.EstimateWriteDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
 import com.zipddak.mypage.dto.SentEstimateDetailDto;
@@ -20,6 +23,7 @@ import com.zipddak.mypage.repository.EstimateDslRepository;
 import com.zipddak.repository.EstimateCostRepository;
 import com.zipddak.repository.EstimateRepository;
 import com.zipddak.repository.ExpertRepository;
+import com.zipddak.repository.RequestRepository;
 import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +36,8 @@ public class EstimateServiceImpl implements EstimateService {
 	private final ExpertRepository expertRepository;
 	private final EstimateCostRepository estimateCostRepository;
 	private final EstimateDslRepository estimateDslRepository;
+	private final RequestRepository requestRepository;
+	private final NotificationServiceImpl notificationService;
 
 	// [전문가]견적서 보내기
 	@Override
@@ -67,7 +73,18 @@ public class EstimateServiceImpl implements EstimateService {
 
 			estimateCostRepository.saveAll(costEntities);
 		}
-
+		
+		// 요청서 조회
+		Request request = requestRepository.findById(estimateWriteDto.getRequestIdx()).get();
+		
+		// 알림 전송
+		NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.ESTIMATE)
+				.title("새로운 견적 도착").content(expert.getActivityName() + "님이 견적서를 보냈습니다.")
+				.recvUsername(request.getUserUsername())
+				.sendUsername(estimateWriteDto.getUsername())
+				.estimateIdx(saveEstimate.getEstimateIdx()).build();
+		
+		notificationService.sendNotification(notificationDto);
 	}
 
 	// [전문가]보낸 견적서 목록 조회
