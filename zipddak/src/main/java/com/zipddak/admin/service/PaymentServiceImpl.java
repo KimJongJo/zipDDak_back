@@ -32,6 +32,7 @@ import com.zipddak.entity.Payment;
 import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.OrderItem.OrderStatus;
+import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Product.PostType;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.repository.MatchingRepository;
@@ -163,6 +164,14 @@ public class PaymentServiceImpl implements PaymentService {
 			Timestamp requestedAt = Timestamp.from(requestedAtOdt.toInstant());
 			Timestamp approvedAt = Timestamp.from(approvedAtOdt.toInstant());
 			
+			PaymentType paymentType = null;
+			
+			if(type.equals("product")) {
+				paymentType = PaymentType.ORDER;
+			}else if(type.equals("estimate")) {
+				paymentType = PaymentType.MATCHING;
+			}
+			
 			// 결제 데이터 (결제 테이블)
 			Payment payment = Payment.builder()
 									.paymentKey(jsonNode.path("paymentKey").asText())
@@ -186,7 +195,10 @@ public class PaymentServiceImpl implements PaymentService {
 									.cardInstallmentPlanMonths(jsonNode.path("card").path("installmentPlanMonths").asInt())
 									.easypayProvider(jsonNode.path("easyPay").path("provider").asText())
 									.easypayAmount(jsonNode.path("easyPay").path("amount").asInt())
+									.username(paymentComplateDto.getUsername())
+									.paymentType(paymentType)
 									.build();
+			
 			
 			Payment savedPayment = paymentRepository.save(payment);
 			

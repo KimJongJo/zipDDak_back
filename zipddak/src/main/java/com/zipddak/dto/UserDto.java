@@ -2,6 +2,8 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
+import com.zipddak.entity.User.UserState;
+
 import lombok.*;
 
 @Data
@@ -27,4 +29,5 @@ public class UserDto {
     private Boolean expert;
     private Date createdate;
     private Integer profileImg;
+    private UserState state;
 }

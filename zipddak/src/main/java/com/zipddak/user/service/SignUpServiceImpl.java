@@ -24,6 +24,7 @@ import com.zipddak.entity.Seller;
 import com.zipddak.entity.SellerFile;
 import com.zipddak.entity.User;
 import com.zipddak.entity.User.UserRole;
+import com.zipddak.entity.User.UserState;
 import com.zipddak.repository.CategoryRepository;
 import com.zipddak.repository.ExpertFileRepository;
 import com.zipddak.repository.SellerFileRepository;
@@ -70,6 +71,7 @@ public class SignUpServiceImpl implements SignUpService {
 		if(userDto.getNickname() == null || userDto.getNickname().trim().isEmpty()) {
 			userDto.setNickname(userDto.getName());
 		}
+		userDto.setState(UserState.ACTIVE);
 		User user = modelMapper.map(userDto, User.class);
 		userRepository.save(user);
 	}

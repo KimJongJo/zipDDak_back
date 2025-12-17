@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
+import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
 
 public interface AdminService {
@@ -30,5 +31,13 @@ public interface AdminService {
 	ResponseAdminListDto requestSellerList(Integer state, Integer column, String keyword, Integer page) throws Exception;
 
 	RequestExpertInfoDto requestExpertInfo(Integer expertIdx) throws Exception;
+
+	void switchExpert(Integer expertIdx, Integer expertResult) throws Exception;
+
+	RequestSellerInfoDto requestSellerInfo(Integer sellerIdx) throws Exception;
+
+	void switchSeller(Integer sellerIdx, Integer sellerResult) throws Exception;
+
+	void settlement(Integer month, Integer page, Integer column, Integer state) throws Exception;
 
 }

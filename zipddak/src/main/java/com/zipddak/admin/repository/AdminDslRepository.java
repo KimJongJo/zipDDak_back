@@ -21,6 +21,7 @@ import com.zipddak.admin.dto.AdminSaleListDto;
 import com.zipddak.admin.dto.AdminSellerListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
+import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
 import com.zipddak.dto.AdminPaymentListDto;
 import com.zipddak.entity.Order.PaymentStatus;
@@ -924,6 +925,28 @@ public class AdminDslRepository {
 				.where(category.categoryIdx.eq(categoryIdx))
 				.fetchOne();
 	}
+
+	public RequestSellerInfoDto sellerInfo(Integer sellerIdx) {
+
+		QSeller seller = QSeller.seller;
+		
+		return jpaQueryFactory.select(Projections.bean(RequestSellerInfoDto.class, 
+					seller.compName,
+					seller.brandName,
+					seller.ceoName,
+					seller.managerTel.as("phone"),
+					seller.compBno.as("businessLicense"),
+					seller.settleAccount.as("account"),
+					seller.settleBank.as("bank"),
+					seller.settleHost.as("host"),
+					seller.handleItemCateIdx.as("itemIdxs")
+				))
+				.from(seller)
+				.where(seller.sellerIdx.eq(sellerIdx))
+				.fetchOne();
+				
+	}
+
 	
 }
 

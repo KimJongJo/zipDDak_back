@@ -10,8 +10,13 @@ import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
+import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
 import com.zipddak.admin.repository.AdminDslRepository;
+import com.zipddak.entity.Expert;
+import com.zipddak.entity.Seller;
+import com.zipddak.repository.ExpertRepository;
+import com.zipddak.repository.SellerRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService{
 	
 	private final AdminDslRepository adminDslRepository;
+	private final ExpertRepository expertRepository;
+	private final SellerRepository sellerRepository;
 	
 	// 회원 목록
 	@Override
@@ -115,6 +122,70 @@ public class AdminServiceImpl implements AdminService{
 		expertInfo.setService(service);
 		
 		return expertInfo;
+	}
+
+	@Override
+	public void switchExpert(Integer expertIdx, Integer expertResult) throws Exception {
+
+		Expert expert = expertRepository.findById(expertIdx).orElseThrow(() -> new Exception("전문가 전환 중 오류"));
+		
+		// 승인
+		if(expertResult == 1) {
+			expert.setActivityStatus("ACTIVE");
+		}else { // 거부
+			expert.setActivityStatus("REJECT");
+		}
+		
+		expertRepository.save(expert);
+		
+	}
+
+	@Override
+	public RequestSellerInfoDto requestSellerInfo(Integer sellerIdx) throws Exception {
+		
+		RequestSellerInfoDto sellerInfo = adminDslRepository.sellerInfo(sellerIdx);
+		
+		// 서비스 idx가 , 기준으로 나열되어있음
+		String serviceString = sellerInfo.getItemIdxs();
+		
+		List<Integer> itemIdxs = Arrays.stream(serviceString.split(","))
+									.map(Integer::parseInt)
+									.collect(Collectors.toList());
+		
+		List<String> items = new ArrayList<>();
+		
+		for(Integer categoryIdx : itemIdxs) {
+			
+			items.add(adminDslRepository.expertService(categoryIdx));
+			
+		}
+		
+		sellerInfo.setItems(items);
+		
+		return sellerInfo;
+	}
+
+	@Override
+	public void switchSeller(Integer sellerIdx, Integer sellerResult) throws Exception {
+		
+		Seller seller = sellerRepository.findById(sellerIdx).orElseThrow(() -> new Exception("업체 승인 중 오류"));
+		
+		// 승인
+		if(sellerResult == 1) {
+			seller.setActivityStatus("ACTIVE");
+		}else { // 거부
+			seller.setActivityStatus("REJECT");
+		}
+		
+		sellerRepository.save(seller);
+		
+	}
+
+	@Override
+	public void settlement(Integer month, Integer page, Integer column, Integer state) throws Exception {
+
+		
+		
 	}
 
 }

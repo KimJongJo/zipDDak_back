@@ -147,6 +147,7 @@ public class PaymentController {
 		
 		try {
 			
+			
 			paymentService.approvePayment(paymentComplateDto, "product");
 			
 			 // 클라이언트로 리다이렉트할 때 주문 ID 포함
@@ -167,6 +168,7 @@ public class PaymentController {
 	public ResponseEntity<?> paymentEstimateComplate(PaymentComplateDto paymentComplateDto){
 		
 		try {
+			
 			
 			paymentService.approvePayment(paymentComplateDto, "estimate");
 			

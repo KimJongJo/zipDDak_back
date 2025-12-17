@@ -1,16 +1,17 @@
 package com.zipddak.admin.controller;
 
-import java.sql.Date;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
+import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
 import com.zipddak.admin.service.AdminService;
 
@@ -239,12 +240,13 @@ public class AdminController {
 
 	
 	@GetMapping("requestSellerInfo")
-	public ResponseEntity<?> sellerInfo(@RequestParam Integer sellerIdx) {
-		
+	public ResponseEntity<RequestSellerInfoDto> sellerInfo(@RequestParam Integer sellerIdx) {
 		
 		try {
 			
-			return ResponseEntity.ok(null);
+			RequestSellerInfoDto sellefIndo = adminService.requestSellerInfo(sellerIdx);
+			
+			return ResponseEntity.ok(sellefIndo);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);
@@ -252,5 +254,58 @@ public class AdminController {
 	}
 	
 	
+	@PostMapping("switchExpert")
+	public ResponseEntity<Boolean> switchExpert(@RequestBody Map<String, Integer> map){
+		
+		try {
+			
+			Integer expertIdx = map.get("expertIdx");
+			Integer expertResult = map.get("expertResult");
+			
+			adminService.switchExpert(expertIdx, expertResult);
+			
+			return ResponseEntity.ok(true);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@PostMapping("switchSeller")
+	public ResponseEntity<Boolean> switchSeller(@RequestBody Map<String, Integer> map){
+		
+		try {
+			
+			Integer sellerIdx = map.get("sellerIdx");
+			Integer sellerResult = map.get("sellerResult");
+			
+			adminService.switchSeller(sellerIdx, sellerResult);
+			
+			return ResponseEntity.ok(true);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@GetMapping("settlement")
+	public ResponseEntity<?> settlement(
+				@RequestParam(required = false) Integer month,
+				@RequestParam Integer page,
+				@RequestParam Integer column,
+				@RequestParam Integer state
+			){
+		try {
+			
+			adminService.settlement(month, page, column, state);
+			
+			return ResponseEntity.ok(null);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
 	
 }
