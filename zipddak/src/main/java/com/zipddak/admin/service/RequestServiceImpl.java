@@ -13,14 +13,21 @@ import org.springframework.web.multipart.MultipartFile;
 import com.zipddak.admin.dto.EstimatePaymentRequestDetailDto;
 import com.zipddak.admin.dto.RequestFormDto;
 import com.zipddak.admin.repository.RequestDetailDslRepository;
+import com.zipddak.dto.NotificationDto;
 import com.zipddak.dto.RequestDto;
 import com.zipddak.entity.Estimate;
+import com.zipddak.entity.Expert;
 import com.zipddak.entity.ExpertFile;
 import com.zipddak.entity.Request;
+import com.zipddak.entity.User;
+import com.zipddak.entity.Notification.NotificationType;
+import com.zipddak.mypage.service.NotificationServiceImpl;
 import com.zipddak.repository.CategoryRepository;
 import com.zipddak.repository.EstimateRepository;
 import com.zipddak.repository.ExpertFileRepository;
+import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.RequestRepository;
+import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,10 +36,13 @@ import lombok.RequiredArgsConstructor;
 public class RequestServiceImpl implements RequestService {
 
 	private final RequestDetailDslRepository requestDslRepository;
-	
+
 	private final RequestRepository requestRepository;
 	private final ExpertFileRepository expertFileRepository;
 	private final CategoryRepository categoryRepository;
+	private final NotificationServiceImpl notificationService;
+	private final UserRepository userRepository;
+	private final ExpertRepository expertRepository;
 
 	@Value("${expertFile.path}")
 	private String expertFilePath;
@@ -90,22 +100,15 @@ public class RequestServiceImpl implements RequestService {
 			cate2 = categoryRepository.findByName(requestForm.getCate2()).getCategoryIdx();
 			cate3 = categoryRepository.findByName(requestForm.getCate3()).getCategoryIdx();
 		}
-		
-		
-		
-		Request request = Request.builder()
-							.userUsername(requestForm.getUserUsername())
-							.largeServiceIdx(cate1)
-							.budget(requestForm.getBudget())
-							.preferredDate(requestForm.getPreferredDate())
-							.location(requestForm.getAddr1() + " " + requestForm.getAddr2())
-							.constructionSize(requestForm.getConstructionSize())
-							.additionalRequest(requestForm.getAdditionalRequest())
-							.purpose(requestForm.getPurpose())
-							.place(requestForm.getPlace())
-							.build();
-		
-		if(cate1 != 74) {
+
+		Request request = Request.builder().userUsername(requestForm.getUserUsername()).largeServiceIdx(cate1)
+				.budget(requestForm.getBudget()).preferredDate(requestForm.getPreferredDate())
+				.location(requestForm.getAddr1() + " " + requestForm.getAddr2())
+				.constructionSize(requestForm.getConstructionSize())
+				.additionalRequest(requestForm.getAdditionalRequest()).purpose(requestForm.getPurpose())
+				.place(requestForm.getPlace()).build();
+
+		if (cate1 != 74) {
 			request.setMidServiceIdx(cate2);
 			request.setSmallServiceIdx(cate3);
 		}
@@ -121,17 +124,34 @@ public class RequestServiceImpl implements RequestService {
 		if (fileIdxList.size() > 2) {
 			request.setImage3Idx(fileIdxList.get(2));
 		}
-		
-		if(!requestForm.getExpertIdx().equals("null")) {
-			request.setExpertIdx(Integer.parseInt(requestForm.getExpertIdx()));
+
+		Request saveRequest = requestRepository.save(request);
+
+		if (!requestForm.getExpertIdx().equals("null")) {
+			saveRequest.setExpertIdx(Integer.parseInt(requestForm.getExpertIdx()));
+
+			// 사용자 검색
+			User user = userRepository.findById(requestForm.getUserUsername()).get();
+
+			// 전문가 검색
+			Expert expert = expertRepository.findById(Integer.valueOf(requestForm.getExpertIdx())).get();
+
+			// 알림 전송
+			NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.REQUEST)
+					.title("새로운 요청 도착").content(user.getName() + "님이 요청서를 보냈습니다.")
+					.recvUsername(expert.getUser().getUsername()).sendUsername(requestForm.getUserUsername())
+					.requestIdx(saveRequest.getRequestIdx()).build();
+
+			notificationService.sendNotification(notificationDto);
+
+			requestRepository.save(request);
 		}
 
-		requestRepository.save(request);
 	}
 
 	@Override
 	public EstimatePaymentRequestDetailDto detail(Integer estimateIdx, String username) throws Exception {
-		
+
 		return requestDslRepository.findByEstimateIdx(estimateIdx);
 	}
 
