@@ -338,4 +338,18 @@ public class AdminController {
 			return ResponseEntity.badRequest().body(null);
 		}
 	}
+	
+	@GetMapping("/dashboard")
+	public ResponseEntity<Map<String, Object>> dashboard(){
+		
+		try {
+			Map<String, Object> response = adminService.dashboard();
+			
+			return ResponseEntity.ok(response);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
 }

@@ -2,6 +2,7 @@ package com.zipddak.admin.service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
@@ -44,5 +45,7 @@ public interface AdminService {
 	AdminSettlementListDto settlementDetail(Integer settlementIdx) throws Exception;
 
 	void settlementComplate(Integer settlementIdx, String comment) throws Exception;
+
+	Map<String, Object> dashboard() throws Exception;
 
 }
