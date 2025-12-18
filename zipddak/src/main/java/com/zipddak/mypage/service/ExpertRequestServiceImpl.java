@@ -120,6 +120,8 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 	public Map<String, Object> getUserEstimateActiveDetail(Integer estimateIdx) throws Exception {
 
 		Estimate estimate = estimateRepository.findById(estimateIdx).get();
+		
+		Expert expert = expertRepository.findById(estimate.getExpert().getExpertIdx()).get();
 
 		EstimateDto estimateDto = EstimateDto.builder().estimateIdx(estimate.getEstimateIdx())
 				.requestIdx(estimate.getRequestIdx()).largeServiceIdx(estimate.getLargeServiceIdx())
@@ -131,13 +133,18 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 				.consultingLaborCost(estimate.getConsultingLaborCost())
 				.stylingDesignCost(estimate.getStylingDesignCost()).threeDImageCost(estimate.getThreeDImageCost())
 				.reportProductionCost(estimate.getReportProductionCost()).etcFee(estimate.getEtcFee())
-				.costDetail(estimate.getCostDetail()).createdAt(estimate.getCreatedAt()).build();
+				.costDetail(estimate.getCostDetail()).createdAt(estimate.getCreatedAt())
+				.expertIdx(estimate.getExpert().getExpertIdx()).activityName(estimate.getExpert().getActivityName())
+				.build();
 
 		List<EstimateCostListDto> costList = estimateDslRepository.selectEstimateCostList(estimateIdx);
+		
+		String expertUsername = expert.getUser().getUsername();
 
 		Map<String, Object> res = new HashMap<>();
 		res.put("estimateDetail", estimateDto);
 		res.put("costList", costList);
+		res.put("expertUsername", expertUsername);
 
 		return res;
 	}

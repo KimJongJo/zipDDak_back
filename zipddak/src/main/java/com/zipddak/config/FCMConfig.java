@@ -17,7 +17,7 @@ public class FCMConfig {
 	
 	@Bean
 	FirebaseMessaging firebaseMessaging() throws Exception {
-		ClassPathResource resource = new ClassPathResource("firebase/kosta-2025-764a0-firebase-adminsdk-fbsvc-298422f072.json");
+		ClassPathResource resource = new ClassPathResource("firebase/kosta-2025-764a0-firebase-adminsdk-fbsvc-1b57041012.json");
 		InputStream inStream = resource.getInputStream();
 		FirebaseApp firebaseApp = null;
 		List<FirebaseApp> firebaseAppList = FirebaseApp.getApps();
