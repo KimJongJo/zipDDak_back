@@ -19,5 +19,6 @@ public class PaymentComplateDto {
 	private String productId;
 	private String orderName;
 	private String username;
+	private Integer expertIdx;
 	
 }

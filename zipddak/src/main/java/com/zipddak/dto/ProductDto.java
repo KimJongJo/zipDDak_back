@@ -5,7 +5,9 @@ import java.util.List;
 
 import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -35,7 +37,22 @@ public class ProductDto {
     private String pickupAddr1;	//픽업주소지 도로명주소 
     private String pickupAddr2; //픽업주소지 상세주소
     private Boolean visibleYn;	//상품공개여부 
+    private Boolean deletedYn;	//상품 삭제 여부 
     private Date createdAt;
     private Date updatedAt;
+    
+    //join용컬럼
+    private String thumbnailFileRename;
+    private String image1FileRename;
+    private String image2FileRename;
+    private String image3FileRename;
+    private String image4FileRename;
+    private String image5FileRename;
+    private String detail1FileRename;
+    private String detail2FileRename;
+    
+    private List<ProductOptionDto> pdOptions;
+
+    
     
 }

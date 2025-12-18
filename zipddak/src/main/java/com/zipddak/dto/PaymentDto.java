@@ -2,6 +2,8 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
+import com.zipddak.entity.Payment.PaymentType;
+
 import lombok.*;
 
 @Data
@@ -31,4 +33,6 @@ public class PaymentDto {
     private Integer cardInstallmentPlanMonths;
     private String easypayProvider;
     private Integer easypayAmount;
+    private PaymentType paymentType;
+    private String username;
 }

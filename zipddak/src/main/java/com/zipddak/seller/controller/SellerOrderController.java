@@ -19,7 +19,7 @@ import com.zipddak.seller.service.SellerOrderService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/seller/order")
+@RequestMapping("/order")
 @RequiredArgsConstructor
 public class SellerOrderController {
 

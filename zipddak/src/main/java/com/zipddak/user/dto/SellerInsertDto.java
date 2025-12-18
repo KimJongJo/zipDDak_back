@@ -77,7 +77,6 @@ public class SellerInsertDto {
             .managerEmail(managerEmail)
             .handleItemCateIdx(handleItemCateIdx)
             .introduction(introduction)
-            .approvalYn(approvalYn)
             .build();
     }
 

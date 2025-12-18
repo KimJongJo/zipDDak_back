@@ -102,9 +102,6 @@ public class Seller {
     @Column
     private Long freeChargeAmount;
 
-    @Column(nullable = false)
-    private Boolean approvalYn;
-
     @CreationTimestamp
     private Date createdAt;
 
@@ -112,5 +109,5 @@ public class Seller {
     private Date updatedAt;
     
 	@Column
-	private String activityStatus; // ACTIVE, WAITING, STOPPED
+	private String activityStatus; // ACTIVE, WAITING, STOPPED, REJECT
 }

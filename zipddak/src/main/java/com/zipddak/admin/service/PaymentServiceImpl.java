@@ -26,18 +26,23 @@ import com.zipddak.admin.dto.OptionListDto;
 import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 import com.zipddak.admin.repository.ProductDslRepository;
+import com.zipddak.entity.Expert;
 import com.zipddak.entity.Matching;
 import com.zipddak.entity.Order;
 import com.zipddak.entity.Payment;
 import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.OrderItem.OrderStatus;
+import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Product.PostType;
+import com.zipddak.entity.User;
 import com.zipddak.entity.OrderItem;
+import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.MatchingRepository;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
 import com.zipddak.repository.PaymentRepository;
+import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,6 +56,8 @@ public class PaymentServiceImpl implements PaymentService {
 	private final OrderRepository orderRepository;
 	private final OrderItemRepository orderItemRepository;
 	private final MatchingRepository matchingRepository;
+	private final ExpertRepository expertRepository;
+	private final UserRepository userRepository;
 	
 	@Value("${toss-payment-secret-key}")
 	private String tossSecretKey;
@@ -163,6 +170,14 @@ public class PaymentServiceImpl implements PaymentService {
 			Timestamp requestedAt = Timestamp.from(requestedAtOdt.toInstant());
 			Timestamp approvedAt = Timestamp.from(approvedAtOdt.toInstant());
 			
+			PaymentType paymentType = null;
+			
+			if(type.equals("product")) {
+				paymentType = PaymentType.ORDER;
+			}else if(type.equals("estimate")) {
+				paymentType = PaymentType.MATCHING;
+			}
+			
 			// 결제 데이터 (결제 테이블)
 			Payment payment = Payment.builder()
 									.paymentKey(jsonNode.path("paymentKey").asText())
@@ -186,7 +201,24 @@ public class PaymentServiceImpl implements PaymentService {
 									.cardInstallmentPlanMonths(jsonNode.path("card").path("installmentPlanMonths").asInt())
 									.easypayProvider(jsonNode.path("easyPay").path("provider").asText())
 									.easypayAmount(jsonNode.path("easyPay").path("amount").asInt())
+									.username(paymentComplateDto.getUsername())
+									.paymentType(paymentType)
 									.build();
+			
+			
+			if(paymentComplateDto.getExpertIdx() != null) {
+//				payment.set
+				Expert expert = expertRepository.findById(paymentComplateDto.getExpertIdx()).orElseThrow(() -> new Exception("전문가 아이디 조회 오류"));
+				User user = userRepository.findById(expert.getUser().getUsername()).orElseThrow(() -> new Exception("전문가 정보로 사용자 아이디 조회 오류"));
+				
+				payment.setSellUsername(user.getUsername());
+				
+				if(type.equals("product")) {
+					payment.setSellUserType("SELLER");
+				}else if(type.equals("estimate")) {
+					payment.setSellUserType("EXPERT");
+				}
+			}
 			
 			Payment savedPayment = paymentRepository.save(payment);
 			
