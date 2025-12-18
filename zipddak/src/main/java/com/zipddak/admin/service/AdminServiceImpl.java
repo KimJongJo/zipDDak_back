@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.RequestSellerInfoDto;
@@ -15,8 +16,11 @@ import com.zipddak.admin.dto.ResponseAdminListDto;
 import com.zipddak.admin.repository.AdminDslRepository;
 import com.zipddak.entity.Expert;
 import com.zipddak.entity.Seller;
+import com.zipddak.entity.Settlement;
+import com.zipddak.entity.Settlement.SettlementState;
 import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.SellerRepository;
+import com.zipddak.repository.SettlementRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +31,7 @@ public class AdminServiceImpl implements AdminService{
 	private final AdminDslRepository adminDslRepository;
 	private final ExpertRepository expertRepository;
 	private final SellerRepository sellerRepository;
+	private final SettlementRepository settlementRepository;
 	
 	// 회원 목록
 	@Override
@@ -183,9 +188,32 @@ public class AdminServiceImpl implements AdminService{
 
 	// 정산 페이지 들어올때 결제 테이블에서 추출한 데이터 리스트 반환
 	@Override
-	public ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) throws Exception {
+	public ResponseAdminListDto settlement(Integer type, String month, Integer state, Integer page) throws Exception {
 
-		return adminDslRepository.settlement(month, page, column, state);
+		return adminDslRepository.settlementList(type, month, state, page);
+		
+	}
+
+	@Override
+	public AdminSettlementListDto settlementDetail(Integer settlementIdx) throws Exception {
+		
+		return adminDslRepository.settlementDetail(settlementIdx);
+	}
+
+	
+	@Override
+	public void settlementComplate(Integer settlementIdx, String comment) throws Exception {
+		
+		Settlement settlement = settlementRepository.findById(settlementIdx).orElseThrow(() -> new Exception("정산 데이터 찾다가 오류"));
+		
+		settlement.setState(SettlementState.COMPLETED);
+		
+		if(comment != null) {
+			settlement.setComment(comment);
+		}
+		
+		
+		settlementRepository.save(settlement);
 		
 	}
 
