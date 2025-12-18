@@ -44,6 +44,7 @@ public class ImageViewController {
 	@GetMapping("imageView")
 	public void imageView(@RequestParam("type") String type, @RequestParam("filename") String fileName,
 			HttpServletResponse response) {
+		
 		try {
 			// 1. 타입별 디렉토리 매핑
 			String basePath = null;
@@ -91,13 +92,15 @@ public class ImageViewController {
 			// 2. 파일 객체 생성
 			File file = new File(basePath, fileName);
 			
+			//파일이 없는경우
 			if (!file.exists()) {
-				file = new File(basePath, "no-image.png");
+				file = new File(basePath, "no_img.svg");
 			}
 
 			// 3. Stream 출력
 			FileInputStream fis = new FileInputStream(file);
 			FileCopyUtils.copy(fis, response.getOutputStream());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

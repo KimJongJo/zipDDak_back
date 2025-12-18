@@ -21,7 +21,7 @@ import com.zipddak.seller.service.SellerProductService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/seller/product")
+@RequestMapping("/product")
 @RequiredArgsConstructor
 public class SellerProductController {
 	
@@ -62,7 +62,7 @@ public class SellerProductController {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
     }
 	
@@ -77,7 +77,7 @@ public class SellerProductController {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 	
@@ -88,10 +88,10 @@ public class SellerProductController {
 								            @RequestParam(value="category", required = false) String category,
 								            @RequestParam(value="keyword", required = false) String keyword,
 								            @RequestParam(value="page", required=false, defaultValue="1") Integer page) {
-		System.out.println("sellerUsernamesss : " + sellerUsername);
-		System.out.println("status : " + status);
-		System.out.println("category : " + category);
-		System.out.println("keyword : " + keyword);
+//		System.out.println("sellerUsernamesss : " + sellerUsername);
+//		System.out.println("status : " + status);
+//		System.out.println("category : " + category);
+//		System.out.println("keyword : " + keyword);
 		
 		try {
 			Map<String, Object> sellerProductList = product_svc.searchMyProductList(sellerUsername, status, category, keyword, page);
@@ -111,13 +111,10 @@ public class SellerProductController {
 		//@GetMapping("/myProductDetail/{productIdx}")
 		// @AuthenticationPrincipal CustomUserDetails user,
 	    //@PathVariable Integer productIdx
-		System.out.println("sellerUsernameggg : " + sellerUsername);
-		System.out.println("num : " + productIdx);
 		try {
-			ProductDto MyProductDetail = product_svc.MyProductDetail(sellerUsername, productIdx);
-			System.out.println("MyProductDetail : " + MyProductDetail);
+			ProductDto myProductDetail = product_svc.MyProductDetail(sellerUsername, productIdx);
 			
-			return ResponseEntity.ok(MyProductDetail);
+			return ResponseEntity.ok(myProductDetail);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,6 +122,80 @@ public class SellerProductController {
 		}
         
     }
+	
+	
+	//상품 수정하기
+	@PostMapping("/myProductModify")
+	public ResponseEntity<?> productModify(ProductDto product_dto, 
+											@RequestParam("sellerId") String sellerUsername,
+											@RequestParam(value="num") Integer productIdx,
+											@RequestParam(value="thumbnailFile", required=false) MultipartFile thumbnail, 
+											@RequestParam(value="addImageFiles", required=false) MultipartFile[] addImageFiles, 
+											@RequestParam(value="detailImageFiles", required=false) MultipartFile[] detailImageFiles,
+											@RequestParam(value="deleteThumbIdx", required = false) Integer deleteThumbIdx,
+											@RequestParam(value="deleteAddIdxList", required = false) Integer[] deleteAddIdxList,
+											@RequestParam(value="deleteDetailIdxList", required = false) Integer[] deleteDetailIdxList,
+											@RequestParam(value = "options", required = false) String optionsJson) {
+//		System.out.println("ProductDto : " + product_dto);
+//		System.out.println("sellerId : " + sellerUsername);
+//		System.out.println("num : " + productIdx);
+//		System.out.println("thumbnailFile : " + thumbnail);
+//		System.out.println("addImageFiles : " + addImageFiles);
+//		System.out.println("detailImageFiles : " + detailImageFiles);
+//		System.out.println("deleteThumbIdx : " + deleteThumbIdx);
+//		System.out.println("deleteAddIdxList : " + deleteAddIdxList);
+//		System.out.println("deleteDetailIdxList : " + deleteDetailIdxList);
+//		System.out.println(optionsJson);
+		
+		try {
+			SaveResultDto result = product_svc.productModify(product_dto, sellerUsername, productIdx, thumbnail, addImageFiles, detailImageFiles, 
+																	deleteThumbIdx, deleteAddIdxList, deleteDetailIdxList, optionsJson);
+		
+		if (!result.isSuccess()) { //상품 수정실패한 경우 
+			return ResponseEntity.badRequest().body(result);
+		}
+		
+		return ResponseEntity.ok(result);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+    }
+	
+	
+	
+	//상품 삭제하기
+	@PostMapping("/myProductDelete")
+	public ResponseEntity<?> myProductDelete(ProductDto product_dto, 
+											@RequestParam("sellerId") String sellerUsername,
+											@RequestParam(value="num") Integer productIdx) {
+			System.out.println("ProductDto : " + product_dto);
+			System.out.println("sellerId : " + sellerUsername);
+			System.out.println("num : " + productIdx);
+		
+		try {
+			SaveResultDto result = product_svc.productDelete(product_dto, sellerUsername, productIdx);
+		
+		if (!result.isSuccess()) { //상품 삭제 실패한 경우 
+			return ResponseEntity.badRequest().body(result);
+		}
+		
+		return ResponseEntity.ok(result);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+    }
+	
+	
+	
+
+
+	
+	
+	
 	
 	
 

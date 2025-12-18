@@ -14,5 +14,12 @@ public class SellerController {
 		System.out.println("sssss");
 		return ResponseEntity.badRequest().body(new SaveResultDto(false, null, ise.getMessage()));
 	}
+	
+	
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handle(Exception e) {
+	    return ResponseEntity.badRequest().body(e.getMessage());
+	}
 
 }
