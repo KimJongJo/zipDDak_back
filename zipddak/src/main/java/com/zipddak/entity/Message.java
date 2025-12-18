@@ -1,15 +1,14 @@
 package com.zipddak.entity;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -31,39 +30,26 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer messageIdx;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MessageType type; // TOOL, EXPERT
+    
+    @Column
+    private Integer messageRoomIdx;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)
-    private String receiverUsername;
-
-    @Column
-    private String receiverName;
+    private String recvUsername;
 
     @Column(nullable = false)
-    private String senderUsername;
-
-    @Column
-    private String senderName;
-
-    @Column
-    private Integer toolIdx;
-
-    @Column
-    private Integer estimateIdx;
+    private String sendUsername;
 
     @Column
     private Boolean sendButton;
+    
+    @ColumnDefault("false")
+	private Boolean confirm;
 
     @CreationTimestamp
-    private Date createdAt;
+    private Timestamp createdAt;
 
-    public enum MessageType {
-        TOOL, EXPERT
-    }
 }
