@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.entity.Membership;
 import com.zipddak.entity.Payment;
+import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.mypage.dto.MembershipListDto;
 import com.zipddak.mypage.repository.MembershipDslRepository;
 import com.zipddak.repository.MembershipRepository;
@@ -98,7 +99,8 @@ public class MembershipServiceImpl implements MembershipService {
 					.cardNumber(jsonNode.path("card").path("number").asText())
 					.cardInstallmentPlanMonths(jsonNode.path("card").path("installmentPlanMonths").asInt())
 					.easypayProvider(jsonNode.path("easyPay").path("provider").asText())
-					.easypayAmount(jsonNode.path("easyPay").path("amount").asInt()).build();
+					.easypayAmount(jsonNode.path("easyPay").path("amount").asInt())
+					.username(username).paymentType(PaymentType.MEMBERSHIP).build();
 
 			Payment savedPayment = paymentRepository.save(payment);
 
