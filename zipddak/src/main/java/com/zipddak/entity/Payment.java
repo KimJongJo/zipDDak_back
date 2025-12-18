@@ -97,5 +97,10 @@ public class Payment {
 	@Column
 	private String username;
 
-
+	@Column
+	private String sellUsername;
+	
+	@Column
+	private String sellUserType;
+	
 }

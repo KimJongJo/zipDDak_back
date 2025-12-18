@@ -169,7 +169,6 @@ public class PaymentController {
 		
 		try {
 			
-			
 			paymentService.approvePayment(paymentComplateDto, "estimate");
 			
 		    String redirectUrl = reactServer + "zipddak/mypage/expert/requests/active";

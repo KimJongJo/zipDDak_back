@@ -291,7 +291,7 @@ public class AdminController {
 	}
 	
 	@GetMapping("settlement")
-	public ResponseEntity<?> settlement(
+	public ResponseEntity<ResponseAdminListDto> settlement(
 				@RequestParam(required = false) Integer month,
 				@RequestParam Integer page,
 				@RequestParam Integer column,
@@ -299,7 +299,7 @@ public class AdminController {
 			){
 		try {
 			
-			adminService.settlement(month, page, column, state);
+			ResponseAdminListDto settlementList = adminService.settlement(month, page, column, state);
 			
 			return ResponseEntity.ok(null);
 		}catch(Exception e) {

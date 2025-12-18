@@ -181,10 +181,11 @@ public class AdminServiceImpl implements AdminService{
 		
 	}
 
+	// 정산 페이지 들어올때 결제 테이블에서 추출한 데이터 리스트 반환
 	@Override
-	public void settlement(Integer month, Integer page, Integer column, Integer state) throws Exception {
+	public ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) throws Exception {
 
-		
+		return adminDslRepository.settlement(month, page, column, state);
 		
 	}
 

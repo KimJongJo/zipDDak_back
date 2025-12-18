@@ -947,6 +947,11 @@ public class AdminDslRepository {
 				
 	}
 
+	public ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }
 

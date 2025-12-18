@@ -38,6 +38,6 @@ public interface AdminService {
 
 	void switchSeller(Integer sellerIdx, Integer sellerResult) throws Exception;
 
-	void settlement(Integer month, Integer page, Integer column, Integer state) throws Exception;
+	ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) throws Exception;
 
 }
