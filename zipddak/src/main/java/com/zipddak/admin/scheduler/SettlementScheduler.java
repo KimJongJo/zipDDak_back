@@ -16,9 +16,9 @@ public class SettlementScheduler {
 	private final SettlementService settlementService;
 	
 	// 매월 1일 00:10 에 시작
-//	@Scheduled(cron = "0 10 0 1 * ?")
-//	테스트용 1분
-	@Scheduled(cron = "0 */1 * * * ?")
+	@Scheduled(cron = "0 10 0 1 * ?")
+//	테스트용 10초
+//	@Scheduled(cron = "*/10 * * * * ?")
 	public void createMonthlySettlement() {
 		
 		try {

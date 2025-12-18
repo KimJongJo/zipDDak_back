@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
@@ -290,22 +291,51 @@ public class AdminController {
 		
 	}
 	
-	@GetMapping("settlement")
+	@GetMapping("/settlement")
 	public ResponseEntity<ResponseAdminListDto> settlement(
-				@RequestParam(required = false) Integer month,
-				@RequestParam Integer page,
-				@RequestParam Integer column,
-				@RequestParam Integer state
+				@RequestParam Integer type,
+				@RequestParam String month,
+				@RequestParam Integer state,
+				@RequestParam Integer page
 			){
 		try {
 			
-			ResponseAdminListDto settlementList = adminService.settlement(month, page, column, state);
+			ResponseAdminListDto settlementList = adminService.settlement(type, month, state, page);
 			
-			return ResponseEntity.ok(null);
+			return ResponseEntity.ok(settlementList);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(null);
 		}
 	}
 	
+	@GetMapping("/settlementDetail")
+	public ResponseEntity<AdminSettlementListDto> settlementDetail(@RequestParam Integer settlementIdx) {
+		
+		try {	
+			AdminSettlementListDto settlementDetail = adminService.settlementDetail(settlementIdx);
+			
+			return ResponseEntity.ok(settlementDetail);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	@PostMapping("/settlementComplate")
+	public ResponseEntity<Boolean> settlementComplate(@RequestBody Map<String, Object> map){
+		try {
+			
+			String comment = (String)map.get("comment");
+			Integer settlementIdx = (Integer)map.get("settlementIdx");
+			
+			adminService.settlementComplate(settlementIdx, comment);
+			
+			return ResponseEntity.ok(true);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
 }

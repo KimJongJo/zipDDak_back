@@ -42,6 +42,8 @@ public class EstimateServiceImpl implements EstimateService {
 	// [전문가]견적서 보내기
 	@Override
 	public void writeEstimate(EstimateWriteDto estimateWriteDto) throws Exception {
+		
+		System.out.println(estimateWriteDto);
 		// 전문가 조회
 		Expert expert = expertRepository.findByUser_Username(estimateWriteDto.getUsername()).get();
 
