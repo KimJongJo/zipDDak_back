@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class SaveResultDto {
 	
 	private boolean success; //성공여부
-//	private Integer productIdx;	//product 등록시 productIdx
 	private Integer idx;	
 	private String message;	//메세지 
 

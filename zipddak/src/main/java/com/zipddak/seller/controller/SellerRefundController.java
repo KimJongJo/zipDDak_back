@@ -20,7 +20,7 @@ import com.zipddak.seller.service.SellerRefundService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/seller/refund")
+@RequestMapping("/refund")
 @RequiredArgsConstructor
 public class SellerRefundController {
 	

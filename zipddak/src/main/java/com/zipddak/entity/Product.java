@@ -4,6 +4,7 @@ import java.sql.Date;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -95,7 +96,10 @@ public class Product {
     private String pickupAddr2;
 
     @Column(nullable = false)
-    private Boolean visibleYn;
+    private Boolean visibleYn; 
+    
+    @Column(nullable = false)
+    private Boolean deletedYn = false;  //기본값 지정 
 
     @CreationTimestamp
     private Date createdAt;
@@ -106,6 +110,15 @@ public class Product {
     public enum PostType {
         bundle, single
     }
+    
+
+    
+    //상품 삭제시 작동 메소드 
+    public void delete() {
+        this.deletedYn = true;
+    }
+    
+
     
     public ProductDto toProductDetailDto() {
         return ProductDto.builder()
@@ -144,10 +157,37 @@ public class Product {
                 .pickupAddr2(pickupAddr2)
 
                 .visibleYn(visibleYn)
+                .deletedYn(deletedYn)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
 
                 .build();
     }
+    
+    
+    public void updateFromDto(ProductDto dto) {
+        this.name = dto.getName();
+		this.categoryIdx = dto.getCategoryIdx();
+		this.subCategoryIdx = dto.getSubCategoryIdx();
+        this.price = dto.getPrice();
+        this.salePrice = dto.getSalePrice();
+        this.discount = dto.getDiscount();
+        this.optionYn = dto.getOptionYn();
+		this.postYn = dto.getPostYn();
+		this.postType = dto.getPostType() != null ? PostType.valueOf(dto.getPostType()) : null;
+        this.postCharge = dto.getPostCharge();
+        this.pickupYn = dto.getPickupYn();
+		this.zonecode = dto.getZonecode();
+		this.pickupAddr1 = dto.getPickupAddr1();
+		this.pickupAddr2 = dto.getPickupAddr2();
+		this.visibleYn = dto.getVisibleYn();
+		this.updatedAt = dto.getUpdatedAt();
+    }
+    
+    
+
+    
+    
+    
 
 }

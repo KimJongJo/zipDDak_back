@@ -1,26 +1,27 @@
 package com.zipddak.seller.service;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zipddak.dto.CategoryDto;
 import com.zipddak.dto.ProductDto;
+import com.zipddak.dto.ProductOptionDto;
 import com.zipddak.entity.Category;
 import com.zipddak.entity.Product;
 import com.zipddak.entity.ProductOption;
@@ -136,25 +137,12 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 		// db저장
 		productEntity = product_repo.save(productEntity);
-
-		Boolean saveResult = false;
-		Integer idx = 0;
-		String msg = "";
-		if (productEntity != null) {
-			saveResult = true;
-			idx = productEntity.getProductIdx();
-			msg = "상품 등록이 완료되었습니다.";
-
-		} else {
-			msg = "상품 등록 실패.";
-		}
-
-		return new SaveResultDto(saveResult, idx, msg);
+		return new SaveResultDto(true, productEntity.getProductIdx(), "상품 등록이 완료되었습니다.");
 	}
 
 	// 셀러가 등록한 상품의 카테고리만 조회
 	@Override
-	public List<CategoryDto> getSellerCategories(String sellerUsername) throws Exception {
+	public List<CategoryDto> getSellerCategories(String sellerUsername){
 		return sellerProduct_repo.findSellerCategories(sellerUsername);
 	}
 
@@ -187,7 +175,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 
         SearchConditionDto scDto = SearchConditionDto.builder()
                 .sellerUsername(sellerUsername)
-                .visibleList(visibleList)
+//                .visibleList(visibleList)
                 .categoryList(categoryList)
                 .keyword(keyword)
                 .build();
@@ -213,15 +201,152 @@ public class SellerProductServiceImpl implements SellerProductService {
 	//상품 디테일 보기 
 	@Override
 	public ProductDto MyProductDetail(String sellerUsername, Integer productIdx) throws Exception {
-		Product productEntity = product_repo.findByProductIdxAndSellerUsername(productIdx, sellerUsername)
-			    									.orElseThrow(() -> new IllegalStateException("상품 정보 없음 또는 권한 없음"));
-		return productEntity.toProductDetailDto();
+//		Product productEntity = product_repo.findByProductIdxAndSellerUsername(productIdx, sellerUsername)
+//			    									.orElseThrow(() -> new IllegalStateException("상품 정보 없음 또는 권한 없음"));
+		//상품 정보(옵션 제외)
+		ProductDto ProductDto = sellerProduct_repo.findByProductIdxAndSellerId(sellerUsername,productIdx);
+		if (ProductDto == null) {
+	        throw new Exception("상품 정보 없음 또는 권한 없음");
+	    }
+		
+		//위 상품의 옵션 리스트 
+		if (ProductDto.getOptionYn()) {
+		    List<ProductOptionDto> pdOptions = sellerProduct_repo.findByProductOptions(productIdx);
+
+		    if (pdOptions == null || pdOptions.isEmpty()) {
+		        throw new IllegalStateException("옵션 상품인데 옵션 데이터가 없음");
+		    }
+		    ProductDto.setPdOptions(pdOptions);
+		    
+		}else {
+		    ProductDto.setPdOptions(Collections.emptyList());
+		}
+		
+		return ProductDto;
 		
 	}
 	
+	//상품 수정 
+	@Override
+	@Transactional
+	public SaveResultDto productModify(ProductDto product_dto, String sellerUsername, Integer productIdx,
+										MultipartFile thumbnail, MultipartFile[] addImageFiles, MultipartFile[] detailImageFiles,
+										Integer deleteThumbIdx, Integer[] deleteAddIdxList, Integer[] deleteDetailIdxList, String optionsJson) throws Exception {
+
+		//기존 상품 조회
+		Product productEntity = product_repo.findByProductIdxAndSellerUsername(productIdx, sellerUsername).orElseThrow(() -> new Exception("상품 없음 또는 권한 없음"));
+		
+	    // 썸네일 처리 (새 파일 없으면 기존 유지 (아무것도 안 함))
+	    if (thumbnail != null && !thumbnail.isEmpty()) {
+	        // 기존 썸네일 삭제 (실제경로 + DB) 
+	        if (deleteThumbIdx != null) {
+	            fileSave_svc.deleteRealFile(deleteThumbIdx, productFileUploadPath, "product");
+	        }
+
+	        // 새 썸네일 저장
+	        Integer newThumbIdx = fileSave_svc.uploadFile(thumbnail, productFileUploadPath, "product");
+	        productEntity.setThumbnailFileIdx(newThumbIdx);
+	    }
+
+	    // 추가 이미지 처리 (최대 5)
+	    // 1. 기존 이미지 수집
+	    List<Integer> addIdxList = new ArrayList<>();
+	    addIfNotNull(addIdxList, productEntity.getImage1FileIdx());
+	    addIfNotNull(addIdxList, productEntity.getImage2FileIdx());
+	    addIfNotNull(addIdxList, productEntity.getImage3FileIdx());
+	    addIfNotNull(addIdxList, productEntity.getImage4FileIdx());
+	    addIfNotNull(addIdxList, productEntity.getImage5FileIdx());
+
+	    // 2. 삭제 요청 반영 + 실제 파일 삭제
+	    if (deleteAddIdxList != null) {
+	        for (Integer idx : deleteAddIdxList) {
+	            fileSave_svc.deleteRealFile(idx, productFileUploadPath, "product");
+	            addIdxList.remove(idx);
+	        }
+	    }
+
+	    // 3. 최종 추가 이미지 목록 구성
+	    if (addImageFiles != null) {
+	        for (MultipartFile f : addImageFiles) {
+	            if (!f.isEmpty() && addIdxList.size() < 5) {
+	                addIdxList.add(
+	                        fileSave_svc.uploadFile(f, productFileUploadPath, "product")
+	                );
+	            }
+	        }
+	    }
+	    setAddImageIdx(productEntity, addIdxList);
+	    
+
+	    // 상세 이미지 처리 (최대 2)
+	    List<Integer> detailIdxList = new ArrayList<>();
+	    addIfNotNull(detailIdxList, productEntity.getDetail1FileIdx());
+	    addIfNotNull(detailIdxList, productEntity.getDetail2FileIdx());
+
+	    if (deleteDetailIdxList != null) {
+	        for (Integer idx : deleteDetailIdxList) {
+	            fileSave_svc.deleteRealFile(idx, productFileUploadPath, "product");
+	            detailIdxList.remove(idx);
+	        }
+	    }
+	    if (detailImageFiles != null) {
+	        for (MultipartFile f : detailImageFiles) {
+	            if (!f.isEmpty() && detailIdxList.size() < 2) {
+	                detailIdxList.add(
+	                        fileSave_svc.uploadFile(f, productFileUploadPath, "product")
+	                );
+	            }
+	        }
+	    }
+	    setDetailImageIdx(productEntity, detailIdxList);
+		
+		
+	    // 옵션 처리 (전부 갈아끼우기)
+	    productOpt_repo.deleteByProduct(productEntity);
+
+	    if (Boolean.TRUE.equals(product_dto.getOptionYn()) && optionsJson != null) {
+
+	        ObjectMapper mapper = new ObjectMapper();
+	        List<OptionGroupDto> optionGroups = mapper.readValue(optionsJson, new TypeReference<>() {});
+
+	        for (OptionGroupDto group : optionGroups) {
+	            for (OptionValueDto value : group.getValues()) {
+
+	                productOpt_repo.save(
+	                        ProductOption.builder()
+	                                .product(productEntity)
+	                                .name(group.getOptionName())
+	                                .value(value.getValue())
+	                                .price(value.getPrice())
+	                                .build()
+	                );
+	            }
+	        }
+	    }
+		
+	    // 나머지 상품 정보 업데이트
+	    productEntity.updateFromDto(product_dto);
+	    product_repo.save(productEntity);
+
+	    return new SaveResultDto(true, null, "상품 수정이 완료되었습니다.");
+	}
 	
-	
-	
+	//상품 삭제 
+	@Override
+	@Transactional
+	public SaveResultDto productDelete(ProductDto product_dto, String sellerUsername, Integer productIdx)throws Exception {
+		//상품 조회 
+		Product productEntity = product_repo.findByProductIdxAndSellerUsername(productIdx, sellerUsername).orElseThrow(() -> new Exception("상품 없음 또는 권한 없음"));
+		
+		//삭제처리 ( deletedYn = true)
+		productEntity.setVisibleYn(false);	//판매중 -> 비공개 전환 (마켓 상품리스트 노출 방지) 
+		productEntity.delete();
+		
+		//상품에 등록된 이미지는 지금 삭제 안함 
+//		deleteProductImages(productEntity);
+		
+		return new SaveResultDto(true, null, "상품 삭제가 완료되었습니다.");
+	}
 	
 
 	// 엔터티 파일컬럼에 자동 매핑 메소드
@@ -241,6 +366,50 @@ public class SellerProductServiceImpl implements SellerProductService {
 			throw new RuntimeException("파일 인덱스 매핑 실패: " + e.getMessage());
 		}
 	}
+
+	//상품 수정,삭제시 이미지 처리 메소드 
+	private void addIfNotNull(List<Integer> list, Integer value) {
+	    if (value != null) list.add(value);
+	}
+	private void setAddImageIdx(Product p, List<Integer> list) {
+	    p.setImage1FileIdx(list.size() > 0 ? list.get(0) : null);
+	    p.setImage2FileIdx(list.size() > 1 ? list.get(1) : null);
+	    p.setImage3FileIdx(list.size() > 2 ? list.get(2) : null);
+	    p.setImage4FileIdx(list.size() > 3 ? list.get(3) : null);
+	    p.setImage5FileIdx(list.size() > 4 ? list.get(4) : null);
+	}
+	private void setDetailImageIdx(Product p, List<Integer> list) {
+	    p.setDetail1FileIdx(list.size() > 0 ? list.get(0) : null);
+	    p.setDetail2FileIdx(list.size() > 1 ? list.get(1) : null);
+	}
+
+	//상품삭제시 이미지 처리 메소드 
+	@Override
+    public void deleteProductImages(Product productEntity) {
+        // 현재는 정책상 이미지 물리 삭제 안 함
+        // 추후 배치/정책 도입 시 구현 예정
+		try {
+			List<Integer> imgFileIdxList = new ArrayList<>(); 
+			addIfNotNull(imgFileIdxList, productEntity.getThumbnailFileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getImage1FileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getImage2FileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getImage3FileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getImage4FileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getImage5FileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getDetail1FileIdx()); 
+			addIfNotNull(imgFileIdxList, productEntity.getDetail2FileIdx());
+			
+			// 상품에 등록된 이미지 삭제 
+			if (imgFileIdxList != null) { 
+				for (Integer idx : imgFileIdxList) { 
+					fileSave_svc.deleteRealFile(idx, productFileUploadPath, "product");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+	}
+	
 
 
 }
