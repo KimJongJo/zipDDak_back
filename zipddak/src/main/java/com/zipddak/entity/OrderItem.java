@@ -82,7 +82,7 @@ public class OrderItem {
 	
 	@Column
 	private Integer cancelIdx;
-
+	
 	@CreationTimestamp
 	private Date createdAt;
 

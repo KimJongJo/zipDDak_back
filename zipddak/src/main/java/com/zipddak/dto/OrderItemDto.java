@@ -26,11 +26,12 @@ public class OrderItemDto {
 	private Integer refundIdx;
 	private Integer exchangeIdx;
 	private Integer exchangeNewOptIdx;
+	private Integer cancelIdx;
 	private Date createdAt;
+	private Integer productIdx;
 	
 
 	//jon용 컬럼 
-	private Integer productIdx;
 	private String name;
 	private String sellerUsername;
 	private String customerUsername;
@@ -40,4 +41,5 @@ public class OrderItemDto {
 	private String optionName;	//옵션명
 	private String optionValue;	//옵션선택값
 	private Long optionPrice;	//옵션추가금액 
+	private String thumbnailFileRename;
 }

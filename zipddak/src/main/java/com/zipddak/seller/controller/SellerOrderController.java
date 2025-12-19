@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zipddak.seller.dto.OrderItemActionRequest;
+import com.zipddak.seller.dto.OrderItemActionRequestDto;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.service.SellerOrderService;
@@ -56,7 +56,7 @@ public class SellerOrderController {
 
 	// 주문 상품 운송장 등록
 	@PostMapping("/registerTrackingNo")
-	public ResponseEntity<?> registerTrackingNo(@RequestBody OrderItemActionRequest reqItems) {
+	public ResponseEntity<?> registerTrackingNo(@RequestBody OrderItemActionRequestDto reqItems) {
 		System.out.println("reqItems : "  + reqItems);
 		try {
 			SaveResultDto result = order_svc.registerTrackingNo(reqItems.getOrderIdx(), reqItems.getItemIdxs(), reqItems.getPostComp(), reqItems.getTrackingNumber());

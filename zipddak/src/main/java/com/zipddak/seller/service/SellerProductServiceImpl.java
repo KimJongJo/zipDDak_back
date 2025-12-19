@@ -34,6 +34,7 @@ import com.zipddak.seller.dto.OptionValueDto;
 import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.dto.SubCategoryResponseDto;
+import com.zipddak.seller.exception.NotFoundException;
 import com.zipddak.seller.repository.SellerProductRepository;
 import com.zipddak.util.FileSaveService;
 
@@ -200,15 +201,14 @@ public class SellerProductServiceImpl implements SellerProductService {
 	
 	//상품 디테일 보기 
 	@Override
-	public ProductDto MyProductDetail(String sellerUsername, Integer productIdx) throws Exception {
+	public ProductDto MyProductDetail(String sellerUsername, Integer productIdx) {
 //		Product productEntity = product_repo.findByProductIdxAndSellerUsername(productIdx, sellerUsername)
 //			    									.orElseThrow(() -> new IllegalStateException("상품 정보 없음 또는 권한 없음"));
 		//상품 정보(옵션 제외)
 		ProductDto ProductDto = sellerProduct_repo.findByProductIdxAndSellerId(sellerUsername,productIdx);
 		if (ProductDto == null) {
-	        throw new Exception("상품 정보 없음 또는 권한 없음");
+			throw new NotFoundException("상품 정보 없음 또는 권한 없음");
 	    }
-		
 		//위 상품의 옵션 리스트 
 		if (ProductDto.getOptionYn()) {
 		    List<ProductOptionDto> pdOptions = sellerProduct_repo.findByProductOptions(productIdx);

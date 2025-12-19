@@ -21,7 +21,7 @@ public interface SellerProductService {
 	//상품 리스트 
 	Map<String, Object> searchMyProductList(String sellerUsername, String status, String category, String keyword, Integer page) throws Exception;
 	//상품 상세보기
-	ProductDto MyProductDetail(String sellerUsername, Integer productIdx) throws Exception;
+	ProductDto MyProductDetail(String sellerUsername, Integer productIdx);
 	//상품 수정 
 	SaveResultDto productModify(ProductDto product_dto, String sellerUsername, Integer productIdx,
 			MultipartFile thumbnail, MultipartFile[] addImageFiles, MultipartFile[] detailImageFiles,
