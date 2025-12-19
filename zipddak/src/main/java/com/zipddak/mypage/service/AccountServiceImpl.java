@@ -67,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
 
 				// 1-3. 리네임 파일명 생성 (UUID)
 				String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
-				String rename = UUID.randomUUID().toString() + ext;
+				String rename = UUID.randomUUID().toString();
 
 				// 1-4. 실제 파일 저장
 				File saveFile = new File(profileFilePath + rename);
