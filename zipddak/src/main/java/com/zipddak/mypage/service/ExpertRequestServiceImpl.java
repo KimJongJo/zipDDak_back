@@ -3,6 +3,7 @@ package com.zipddak.mypage.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -105,9 +106,13 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 	// [일반사용자]진행중인 요청서 조회 - 전문가 목록
 	@Override
 	public List<RequestActiveExpertListDto> getRequestActiveExpertList(String username) throws Exception {
-		Request request = requestRepository.findByUserUsernameAndStatus(username, "RECRUITING").get();
-
-		return requestDslRepository.getRequestActiveExpertList(request.getRequestIdx());
+		Optional<Request> request = requestRepository.findByUserUsernameAndStatus(username, "RECRUITING");
+		
+		if(request.isPresent()) {
+			return requestDslRepository.getRequestActiveExpertList(request.get().getRequestIdx());
+		} else {
+			return null;
+		}
 	}
 
 	// [일반사용자]진행중인 요청서 조회
