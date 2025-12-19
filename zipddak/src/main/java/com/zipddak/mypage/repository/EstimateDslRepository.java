@@ -120,7 +120,7 @@ public class EstimateDslRepository {
 						estimate.workDurationType, estimate.workDurationValue, estimate.workScope, estimate.workDetail, estimate.disposalCost, estimate.demolitionCost, estimate.etcFee, estimate.costDetail,
 						estimate.diagnosisType, estimate.repairType, estimate.demolitionType, estimate.consultingType,
 						estimate.consultingLaborCost, estimate.stylingDesignCost, estimate.threeDImageCost,
-						estimate.reportProductionCost, request.requestIdx, request.createdAt, category1.name,
+						estimate.reportProductionCost, request.requestIdx, request.createdAt, request.largeServiceIdx, category1.name,
 						category2.name, category3.name, user.name, user.phone, user.zonecode, user.addr1, user.addr2,
 						request.budget, request.preferredDate, request.location, request.constructionSize,
 						request.purpose, request.place, request.additionalRequest, request.status,

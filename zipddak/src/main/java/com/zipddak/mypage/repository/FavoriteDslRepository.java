@@ -205,7 +205,7 @@ public class FavoriteDslRepository {
 
 		return jpaQueryFactory
 				.select(Projections.constructor(FavoriteCommunityDto.class, community.communityIdx, category.name,
-						community.title, community.content, communityFile.storagePath, user.nickname, community.views,
+						community.title, community.content, communityFile.fileRename, user.nickname, community.views,
 						reply.count()))
 				.from(community).leftJoin(category).on(category.categoryIdx.eq(community.category)).leftJoin(user)
 				.on(user.username.eq(community.user.username)).leftJoin(communityFile)
