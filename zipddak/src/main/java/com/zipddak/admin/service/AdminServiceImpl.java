@@ -1,20 +1,27 @@
 package com.zipddak.admin.service;
 
 import java.sql.Date;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
+import com.zipddak.admin.dto.MonthlyStatDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
+import com.zipddak.admin.repository.AdminDashBoardDslRepository;
 import com.zipddak.admin.repository.AdminDslRepository;
 import com.zipddak.entity.Expert;
+import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Seller;
 import com.zipddak.entity.Settlement;
 import com.zipddak.entity.Settlement.SettlementState;
@@ -29,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService{
 	
 	private final AdminDslRepository adminDslRepository;
+	private final AdminDashBoardDslRepository dashBoardDsl;
 	private final ExpertRepository expertRepository;
 	private final SellerRepository sellerRepository;
 	private final SettlementRepository settlementRepository;
@@ -215,6 +223,52 @@ public class AdminServiceImpl implements AdminService{
 		
 		settlementRepository.save(settlement);
 		
+	}
+
+	@Override
+	public Map<String, Object> dashboard() throws Exception {
+		
+		YearMonth thisMonth = YearMonth.now(); // 이번달
+		
+		// 1. 이번달 수수료 수익
+		// 1.1 전월 대비 비교 %
+		Map<String, Object> commissionMap = dashBoardDsl.commission(thisMonth, null);
+		
+		
+		// 2. 이번달 멤버심 수익
+		// 2.1 전월 대비 비교 %
+		Map<String, Object> membershipMap = dashBoardDsl.commission(thisMonth, PaymentType.MEMBERSHIP);
+		
+		// 3. 총 회원수
+		// 3.1 활성 사용자수, 전체 %
+		Map<String, Object> userCount = dashBoardDsl.userCount();
+		
+		// 4. 이번달 신규 가입자
+		// 4.1 저번달 가입자
+		Map<String, Object> JoinCount = dashBoardDsl.userJoin(thisMonth);
+		
+		// 5. 수익구조
+		// 5.1 이번달 수수료, 멤버십 더한거에 
+		// 5.2 멤버십, 전문가 매칭 수수료, 판매 수수료 퍼센트
+		Map<String, Object> dougnut = dashBoardDsl.dougnut(thisMonth);
+		
+		
+		// 6. 현재 달부터 6개월 전부터 6개의 달에 해당하는 매칭 수수료
+		List<MonthlyStatDto> matchingFeeList = dashBoardDsl.line(thisMonth, "matching");
+		
+		List<MonthlyStatDto> orderFeeList = dashBoardDsl.line(thisMonth, "order");
+		
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("commissionMap", commissionMap);
+		resultMap.put("membershipMap", membershipMap);
+		resultMap.put("userCount", userCount);
+		resultMap.put("JoinCount", JoinCount);
+		resultMap.put("dougnut", dougnut);
+		resultMap.put("matchingFeeList", matchingFeeList);
+		resultMap.put("orderFeeList", orderFeeList);
+		
+		return resultMap;
 	}
 
 }
