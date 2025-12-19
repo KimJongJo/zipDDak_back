@@ -107,19 +107,14 @@ public class SellerProductController {
 	//상품 상세보기
 	@GetMapping("/myProductDetail")
 	public ResponseEntity<?> getProductDetail(@RequestParam("sellerId") String sellerUsername,
-											@RequestParam(value="num") Integer productIdx) {
+												@RequestParam(value="num") Integer productIdx) {
 		//@GetMapping("/myProductDetail/{productIdx}")
 		// @AuthenticationPrincipal CustomUserDetails user,
 	    //@PathVariable Integer productIdx
-		try {
 			ProductDto myProductDetail = product_svc.MyProductDetail(sellerUsername, productIdx);
+			System.out.println("myProductDetail" + myProductDetail);
 			
 			return ResponseEntity.ok(myProductDetail);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
         
     }
 	

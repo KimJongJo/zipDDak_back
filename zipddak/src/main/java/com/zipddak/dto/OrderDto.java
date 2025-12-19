@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 public class OrderDto {
 	private Integer orderIdx;
 	private String orderCode;
-	private Long subtotalAmount;
-	private Long shippingAmount;
-	private Long totalAmount;
+	private Long subtotalAmount;  //모든 상품 합계 금액
+	private Long shippingAmount;  //모든 상품 배송비 합
+	private Long totalAmount;	//subtotalAmount + shippingAmount
 	private Integer paymentIdx;
 	private String postZonecode;
 	private String postAddr1;
