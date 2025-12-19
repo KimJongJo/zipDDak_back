@@ -49,6 +49,7 @@ public class SellerProductRepository {
 	public List<ProductDto> searchMyProducts(PageRequest pageRequest, SearchConditionDto scDto) {
 
         QProduct product = QProduct.product;
+        QProductFile thumb = QProductFile.productFile;
         
         List<ProductDto> result = jpaQueryFactory.select(Projections.fields(ProductDto.class,
 									                        product.productIdx,
@@ -60,10 +61,13 @@ public class SellerProductRepository {
 									                        product.price,
 									                        product.salePrice,
 									                        product.visibleYn,
-									                        product.createdAt
+									                        product.createdAt,
+									                        thumb.fileRename.as("thumbnailFileRename")
 									                ))
 									                .from(product)
+									                .leftJoin(thumb).on(thumb.productFileIdx.eq(product.thumbnailFileIdx))
 									                .where(product.deletedYn.isFalse(),
+//									                		product.sellerUsername.eq(sellerUsername),
 									                		QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
 									                		QPredicate.inBoolean(product.visibleYn, scDto.getVisibleList()),
 									                	    QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),

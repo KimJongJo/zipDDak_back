@@ -5,14 +5,10 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zipddak.seller.dto.OrderItemActionRequest;
-import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.service.SellerOrderService;
 
@@ -54,22 +50,6 @@ public class SellerOrderController {
 		}
 	}
 
-	// 주문 상품 운송장 등록
-	@PostMapping("/registerTrackingNo")
-	public ResponseEntity<?> registerTrackingNo(@RequestBody OrderItemActionRequest reqItems) {
-		System.out.println("reqItems : "  + reqItems);
-		try {
-			SaveResultDto result = order_svc.registerTrackingNo(reqItems.getOrderIdx(), reqItems.getItemIdxs(), reqItems.getPostComp(), reqItems.getTrackingNumber());
-
-			 if (!result.isSuccess()) { //운송장 등록 실패한 경우 
-		            return ResponseEntity.badRequest().body(result);
-		        }
-		        return ResponseEntity.ok(result);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
-	}
+	
 
 }

@@ -24,10 +24,13 @@ import com.zipddak.entity.Expert;
 import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Seller;
 import com.zipddak.entity.Settlement;
+import com.zipddak.entity.User;
 import com.zipddak.entity.Settlement.SettlementState;
+import com.zipddak.entity.User.UserRole;
 import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.SellerRepository;
 import com.zipddak.repository.SettlementRepository;
+import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +43,7 @@ public class AdminServiceImpl implements AdminService{
 	private final ExpertRepository expertRepository;
 	private final SellerRepository sellerRepository;
 	private final SettlementRepository settlementRepository;
+	private final UserRepository userRepository;
 	
 	// 회원 목록
 	@Override
@@ -182,10 +186,12 @@ public class AdminServiceImpl implements AdminService{
 	public void switchSeller(Integer sellerIdx, Integer sellerResult) throws Exception {
 		
 		Seller seller = sellerRepository.findById(sellerIdx).orElseThrow(() -> new Exception("업체 승인 중 오류"));
+		User user = userRepository.findById(seller.getUser().getUsername()).orElseThrow(() -> new Exception("판매업체의 일반 사용자 계정 조회 중 오류"));
 		
 		// 승인
 		if(sellerResult == 1) {
 			seller.setActivityStatus("ACTIVE");
+			user.setRole(UserRole.APPROVAL_SELLER);
 		}else { // 거부
 			seller.setActivityStatus("REJECT");
 		}

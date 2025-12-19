@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.zipddak.dto.ProductDto;
 
 import lombok.*;
+import lombok.Builder.Default;
 
 @Getter
 @Setter
@@ -99,7 +100,8 @@ public class Product {
     private Boolean visibleYn; 
     
     @Column(nullable = false)
-    private Boolean deletedYn = false;  //기본값 지정 
+    @ColumnDefault("false")  //기본값 지정 
+    private Boolean deletedYn; 
 
     @CreationTimestamp
     private Date createdAt;

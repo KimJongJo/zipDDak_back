@@ -31,4 +31,8 @@ public class RefundDto {
     private String username;		//구매자
     private String customerName;
     private String customerPhone;
+    private String refundImage1;
+    private String refundImage2;
+    private String refundImage3;
+    
 }
