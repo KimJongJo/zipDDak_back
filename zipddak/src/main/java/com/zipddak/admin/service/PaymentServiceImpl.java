@@ -176,6 +176,8 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentType = PaymentType.ORDER;
 			}else if(type.equals("estimate")) {
 				paymentType = PaymentType.MATCHING;
+			}else if(type.equals("rental")) {
+				paymentType = PaymentType.RENTAL;
 			}
 			
 			// 결제 데이터 (결제 테이블)

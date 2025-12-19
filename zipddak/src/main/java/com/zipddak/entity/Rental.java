@@ -75,6 +75,12 @@ public class Rental {
     
     @CreationTimestamp
     private Date createdAt;
+    
+    @Column
+    private String name;
+    
+    @Column
+    private String phone;
 
     public enum RentalStatus {
         PRE, PAYED, DELIVERY, RENTAL, RETURN
