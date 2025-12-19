@@ -219,10 +219,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        Seller seller = sellerDto.toSellerEntity(user);
 	        seller.setOnlinesalesFileIdx(SellerImgFileIdx);
 	        seller.setCompFileIdx(sellerFileIdx);
-<<<<<<< HEAD
-	        //관리자 승인
-=======
->>>>>>> refs/heads/main
+
 	        seller.setActivityStatus("WAITING");
 	        signSellerRepository.save(seller);
 		
