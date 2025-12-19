@@ -119,7 +119,7 @@ public class MessageServiceImpl implements MessageService {
 
 		ProfileFile profileFile = profileFileRepository.findById(user.getProfileImg()).orElseThrow();
 
-		return builder.nickname(user.getNickname()).userProfileImage(profileFile.getFileRename()).build();
+		return builder.nickname(user.getNickname()).userProfileImage(profileFile.getFileRename()).estimateIdx(room.getEstimateIdx()).build();
 	}
 
 	// 채팅방 목록 즉시 업데이트
@@ -128,7 +128,7 @@ public class MessageServiceImpl implements MessageService {
 		// 메시지 저장
 		Message message = messageRepository.save(Message.builder().messageRoomIdx(chatMessageDto.getMessageRoomIdx())
 				.content(chatMessageDto.getContent()).sendUsername(chatMessageDto.getSendUsername())
-				.recvUsername(chatMessageDto.getRecvUsername()).confirm(false).build());
+				.recvUsername(chatMessageDto.getRecvUsername()).sendButton(chatMessageDto.getSendButton()).confirm(false).build());
 
 		Message saved = messageRepository.save(message);
 

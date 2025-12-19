@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zipddak.mypage.dto.EstimateUpdateDto;
 import com.zipddak.mypage.dto.EstimateWriteDto;
 import com.zipddak.mypage.dto.SentEstimateDetailDto;
 import com.zipddak.mypage.dto.SentEstimateListDto;
@@ -30,6 +31,18 @@ public class EstimateController {
 	public ResponseEntity<Boolean> writeEstimate(@RequestBody EstimateWriteDto EstimateWriteDto) {
 		try {
 			estimateService.writeEstimate(EstimateWriteDto);
+			return ResponseEntity.ok(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	// [전문가]견적서 업데이트
+	@PostMapping("/estimate/update")
+	public ResponseEntity<Boolean> updateEstimate(@RequestBody EstimateUpdateDto EstimateUpdateDto) {
+		try {
+			estimateService.updateEstimate(EstimateUpdateDto);
 			return ResponseEntity.ok(true);
 		} catch (Exception e) {
 			e.printStackTrace();
