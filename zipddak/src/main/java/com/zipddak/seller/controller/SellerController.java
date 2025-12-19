@@ -28,5 +28,7 @@ public class SellerController {
 	public ResponseEntity<SaveResultDto> handleNotFound(NotFoundException e) {
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new SaveResultDto(false, null, e.getMessage()));
 	}
+	
+	
 
 }

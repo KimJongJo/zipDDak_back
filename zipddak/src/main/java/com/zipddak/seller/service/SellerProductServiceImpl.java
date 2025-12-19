@@ -115,6 +115,11 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 		// 상세이미지 detail1~detail2 자동 매핑
 		setFileIdx(productEntity, "Detail", detailIdxArr);
+		
+		productEntity.setDeletedYn(false);
+		
+		// db저장
+		product_repo.save(productEntity);
 
 		// 옵션 세팅
 		ObjectMapper mapper = new ObjectMapper();
@@ -135,9 +140,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 				}
 			}
 		}
-
-		// db저장
-		productEntity = product_repo.save(productEntity);
+		
 		return new SaveResultDto(true, productEntity.getProductIdx(), "상품 등록이 완료되었습니다.");
 	}
 

@@ -129,28 +129,33 @@ public class SellerRefundRepository {
 		QOrderItem item = QOrderItem.orderItem;
 		QProduct product = QProduct.product;
 		QProductOption pdOption =  QProductOption.productOption;
-		QRefund refund = QRefund.refund;
-		
+		QProductFile pdFile = QProductFile.productFile;
 		
 		return jpaQueryFactory.select(Projections.fields(OrderItemDto.class,
-		        item.orderItemIdx,
-		        item.orderIdx,
-		        item.productOptionIdx,
-		        item.quantity,
-		        item.unitPrice,
-		        item.orderStatus.stringValue().as("orderStatus"),
-		        item.postComp,
-		        item.trackingNo,
-		        product.name.as("productName"),
-		        product.postCharge, 
-		        product.postType.stringValue().as("postType"), // 배송방식 
-		        pdOption.name.as("optionName"), // 옵션명 추가
-		        pdOption.value.as("optionValue"), //옵션선택종류
-		        pdOption.price.as("optionPrice") //옵션 추가가격 
+								        item.orderItemIdx,
+								        item.orderIdx,
+								        item.productOptionIdx,
+								        item.quantity,
+								        item.unitPrice,
+								        item.orderStatus.stringValue().as("orderStatus"),
+								        item.postComp,
+								        item.trackingNo,
+								        pdFile.fileRename.as("thumbnailFileRename"),
+								        item.refundRejectedAt,
+								        item.refundAcceptedAt,
+								        item.refundPickupComplatedAt,
+								        item.refundComplatedAt,
+								        product.name.as("productName"),
+								        product.postCharge, 
+								        product.postType.stringValue().as("postType"), // 배송방식 
+								        pdOption.name.as("optionName"), // 옵션명 추가
+								        pdOption.value.as("optionValue"), //옵션선택종류
+								        pdOption.price.as("optionPrice") //옵션 추가가격 
 		))
 		.from(item)
 		.join(product).on(item.product.productIdx.eq(product.productIdx))
 		.join(pdOption).on(item.productOptionIdx.eq(pdOption.productOptionIdx)) 
+		.leftJoin(pdFile).on(pdFile.productFileIdx.eq(product.thumbnailFileIdx))
 		.where(product.sellerUsername.eq(sellerUsername)
 		        .and(item.refundIdx.eq(refundIdx)))
 		.fetch();
@@ -201,21 +206,6 @@ public class SellerRefundRepository {
 	}
 	
 	
-	// ============================
-	// 문자열 → Enum 변환
-	// ============================
-	private List<Refund.RefundShippingChargeType> convertToEnum(List<String> strList) {
-		if (strList == null || strList.isEmpty())
-			return null;
-
-		return strList.stream().filter(s -> s != null && !s.isBlank()).map(s -> {
-			try {
-				return Refund.RefundShippingChargeType.valueOf(s.trim());
-			} catch (Exception e) {
-				return null;
-			}
-		}).filter(Objects::nonNull).collect(Collectors.toList());
-	}
 
 	
 

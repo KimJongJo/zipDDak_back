@@ -1,21 +1,16 @@
 package com.zipddak.seller.service;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
-import com.zipddak.entity.OrderItem;
-import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
-import com.zipddak.seller.dto.SaveResultDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.repository.SellerOrderRepository;
 
@@ -80,48 +75,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 	    return result;
 	}
 
-	//운송장 등록
-	@Override
-	@Transactional
-	public SaveResultDto registerTrackingNo(Integer orderIdx, List<Integer> itemIdxs, String postComp, String trackingNumber) throws Exception {
-		// 해당 주문의 해당 itemIdx 목록만 조회
-	    List<OrderItem> Orderitems = orderItem_repo.findOrderItemIdxByOrderIdxAndOrderItemIdxIn(orderIdx, itemIdxs);
-
-		Integer successCnt = 0;
-	    
-        if (Orderitems.isEmpty()) {
-            throw new IllegalArgumentException("운송장을 등록할 상품이 없습니다.");
-//        	 return new SaveResultDto(false, null, "운송장을 등록할 상품이 없습니다.");
-        }
-
-        //각 orderItem에 운송장 등록 
-        for (OrderItem item : Orderitems) {
-        	System.out.println(item.getOrderStatus());
-            // 상태 검사 
-            if (!item.getOrderStatus().equals(OrderStatus.상품준비중)) {
-                throw new IllegalStateException("상품준비중일때만 운송장 등록 가능: " + item.getOrderItemIdx());
-//            	return new SaveResultDto(false,item.getOrderItemIdx(),"상품준비중일때만 운송장 등록 가능: " + item.getOrderItemIdx());
-            }
-            
-            item.setPostComp(postComp);
-            item.setTrackingNo(trackingNumber);
-            item.setFirstShipDate(LocalDate.now());
-            item.setOrderStatus(OrderStatus.배송중); // 상태 변경
-            item = orderItem_repo.save(item); //db저장
-            
-            successCnt++;
-        }
-        
-//        System.out.println("Orderitems.size() : " + Orderitems.size());
-//        System.out.println("successCnt : " + successCnt);
-        
-        //요청한 상품의 개수와 db변경된 개수가 일치할경우(모두 성공)
-        if(Orderitems.size() == successCnt) {
-        	 return new SaveResultDto(true,null,"요청한 상품의 운송장 등록이 완료되었습니다");
-        }else {
-        	return new SaveResultDto(false,null,"운송장 등록 실패");
-        }
-	}
+	
 
 
 }

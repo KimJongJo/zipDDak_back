@@ -24,9 +24,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -85,6 +87,34 @@ public class OrderItem {
 	
 	@CreationTimestamp
 	private Date createdAt;
+	
+	@Column
+	private LocalDate exchangeRejectedAt;  //교환 거절일자 (판매자)
+	
+	@Column
+	private LocalDate exchangeAcceptedAt;	//교환 접수수락일자 (판매자) = 수거요청일자
+	
+	@Column
+	private LocalDate exchangePickupComplatedAt; //교환 수거완료일자 (판매자)
+	
+	@Column
+	private LocalDate resendAt; //교환 재배송 일자 (판매자)
+	
+	@Column
+	private LocalDate exchangeComplatedAt;  //교환 처리완료 일자 
+	
+	@Column
+	private LocalDate refundRejectedAt;  //반품 거절일자 (판매자)
+	
+	@Column
+	private LocalDate refundAcceptedAt;	//반품 접수수락일자 (판매자) = 수거요청일자
+	
+	@Column
+	private LocalDate refundPickupComplatedAt; //반품 수거완료일자 (판매자)
+	
+	@Column
+	private LocalDate refundComplatedAt;  //반품 처리완료 일자 
+	
 
 	public enum ReceiveWay {
 		post, pickup

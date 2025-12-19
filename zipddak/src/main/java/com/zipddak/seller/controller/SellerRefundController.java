@@ -57,13 +57,30 @@ public class SellerRefundController {
 	@PostMapping("/refundRejectItems")
     public ResponseEntity<?> refundRejectItems(@RequestBody OrderItemActionRequestDto reqItems) {
 		System.out.println("reqItems : " + reqItems);
-        	SaveResultDto result = refund_svc.refundRejectItems(reqItems);
+		
+    	SaveResultDto result = refund_svc.refundRejectItems(reqItems);
 
 		if (!result.isSuccess()) { //처리 실패한 경우 
 			return ResponseEntity.badRequest().body(result);
 		}
 		return ResponseEntity.ok(result);
     }
+	
+	
+	//반품 접수 수락 처리 
+	@PostMapping("/refundAcceptItems")
+    public ResponseEntity<?> refundAcceptItems(@RequestBody OrderItemActionRequestDto reqItems) {
+		System.out.println("reqItems : " + reqItems);
+		
+    	SaveResultDto result = refund_svc.refundAcceptItems(reqItems);
+
+		if (!result.isSuccess()) { //처리 실패한 경우 
+			return ResponseEntity.badRequest().body(result);
+		}
+		return ResponseEntity.ok(result);
+    }
+		
+		
 		
 	//환불처리 
 	@PostMapping("/refundItems")

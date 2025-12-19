@@ -17,6 +17,8 @@ public interface SellerRefundService {
 	SaveResultDto refundItems(Integer orderIdx, List<Integer> itemIdxs) throws Exception;
 	//반품 거절 처리 
 	SaveResultDto refundRejectItems(OrderItemActionRequestDto reqItems);
+	//반품 접수 수락 처리 
+	SaveResultDto refundAcceptItems(OrderItemActionRequestDto reqItems);
 
 
 }
