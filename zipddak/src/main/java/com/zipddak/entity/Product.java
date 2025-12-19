@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.zipddak.dto.ProductDto;
 
 import lombok.*;
+import lombok.Builder.Default;
 
 @Getter
 @Setter

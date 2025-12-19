@@ -257,11 +257,11 @@ public class AdminDashBoardDslRepository {
 	    }
 
 	    // 2️⃣ 조회 기간 계산
-	    YearMonth startMonth = thisMonth.minusMonths(6);
-	    YearMonth endMonth = thisMonth.minusMonths(1);
+	    YearMonth startMonth = thisMonth.minusMonths(5);
+	    YearMonth endMonth = thisMonth;
 
-	    LocalDateTime startDate = startMonth.atDay(1).atStartOfDay();
-	    LocalDateTime endDate = endMonth.atEndOfMonth().atTime(23, 59, 59);
+	    LocalDateTime startDate = startMonth.atDay(1).atStartOfDay(); // 6개월 전 첫날 00:00
+	    LocalDateTime endDate = endMonth.atEndOfMonth().atTime(23, 59, 59); // 이번 달 마지막날 23:59:59
 
 	    Timestamp startTimestamp = Timestamp.valueOf(startDate);
 	    Timestamp endTimestamp = Timestamp.valueOf(endDate);
@@ -305,7 +305,7 @@ public class AdminDashBoardDslRepository {
 	    // 6️⃣ 6개월 고정 + 누락 월 0 처리
 	    List<MonthlyStatDto> graphData = new ArrayList<>();
 
-	    for (int i = 6; i >= 1; i--) {
+	    for (int i = 5; i >= 0; i--) {
 	        YearMonth month = thisMonth.minusMonths(i);
 	        graphData.add(
 	                new MonthlyStatDto(
