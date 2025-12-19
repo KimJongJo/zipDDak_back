@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zipddak.admin.dto.BrandDto;
 import com.zipddak.admin.dto.EstimatePaymentCostDto;
 import com.zipddak.admin.dto.EstimatePaymentStep1Dto;
-import com.zipddak.admin.dto.OptionListDto;
-import com.zipddak.admin.dto.OrderListDto;
 import com.zipddak.admin.dto.PaymentComplateDto;
 import com.zipddak.admin.dto.PaymentInfoDto;
 import com.zipddak.admin.dto.RecvUserDto;
@@ -28,6 +26,9 @@ import com.zipddak.admin.service.EstimateDetailService;
 import com.zipddak.admin.service.MatchingService;
 import com.zipddak.admin.service.OrderService;
 import com.zipddak.admin.service.PaymentService;
+import com.zipddak.entity.Rental;
+import com.zipddak.user.dto.RentalPaymentStep1Dto;
+import com.zipddak.user.service.RentalService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +41,7 @@ public class PaymentController {
 	private final OrderService paymentOrderService;
 	private final EstimateDetailService estimateDetailService;
 	private final MatchingService matchingService;
+	private final RentalService rentalService;
 
 	
 	@Value("${react-server.uri}")
@@ -182,5 +184,64 @@ public class PaymentController {
 		}
 		
 	}
+	
+	
+	//공구대여 결제
+	@PostMapping("/rental")
+	public ResponseEntity<PaymentInfoDto> RentalPayment(@RequestBody RentalPaymentStep1Dto paymentDto){
+		
+		try {
+			
+			// orderId 생성
+			String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+	                + "-" + (int)(Math.random() * 9000 + 1000);
+			
+			String toolIdx = paymentDto.getToolIdx().toString();
+			
+			// 주문 테이블 + 주문 상품 테이블에 저장
+			String orderName = "Rental"+toolIdx;
+			
+//			RecvUserDto recvUser = paymentDto.getRecvUser();
+			String username = paymentDto.getUsername();
+			Integer amount = paymentDto.getAmount();
+//			paymentOrderService.addRentalOrder(username, orderId, amount, recvUser);
+			rentalService.rentalApplication(paymentDto.getRental(), orderId);
+			
+			PaymentInfoDto paymentInfo = PaymentInfoDto.builder()
+				.orderId(orderId)
+				.amount(amount)
+				.orderName(orderName)
+				.build();
+			
+			return ResponseEntity.ok(paymentInfo);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+		
+	}
+	
+	
+	// 서버에서 토스 최종 결제를 승인해야함
+		@GetMapping("/rental/complate")
+		public ResponseEntity<?> paymentRentalComplate(PaymentComplateDto paymentComplateDto){
+			
+			try {
+				
+				paymentService.approvePayment(paymentComplateDto, "rental");
+				Integer toolIdx = paymentComplateDto.getToolIdx();
+				String orderId = paymentComplateDto.getOrderId();
+				
+			    String redirectUrl = reactServer + "zipddak/tool/apply/"+toolIdx;
+				
+				return ResponseEntity.status(HttpStatus.FOUND)
+						.location(URI.create(redirectUrl))
+						.build();
+			}catch(Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(null);
+			}
+			
+		}
 	
 }
