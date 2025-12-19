@@ -23,7 +23,7 @@ public class ProductFile {
     @Column(nullable = false)
     private String fileName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String fileRename;
 
     @Column(nullable = false)

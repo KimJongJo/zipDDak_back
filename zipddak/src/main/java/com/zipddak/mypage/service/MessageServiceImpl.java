@@ -117,9 +117,16 @@ public class MessageServiceImpl implements MessageService {
 				: room.getSendUsername();
 		User user = userRepository.findById(otherUsername).orElseThrow();
 
-		ProfileFile profileFile = profileFileRepository.findById(user.getProfileImg()).orElseThrow();
+		Integer imageNo = user.getProfileImg();
+		
+		if(imageNo!=null) {
+			ProfileFile profileFile = profileFileRepository.findById(user.getProfileImg()).get();;
+			return builder.nickname(user.getNickname()).userProfileImage(profileFile.getFileRename()).estimateIdx(room.getEstimateIdx()).build();			
+		} else {
+			return builder.nickname(user.getNickname()).estimateIdx(room.getEstimateIdx()).build();			
+		}
 
-		return builder.nickname(user.getNickname()).userProfileImage(profileFile.getFileRename()).estimateIdx(room.getEstimateIdx()).build();
+		
 	}
 
 	// 채팅방 목록 즉시 업데이트

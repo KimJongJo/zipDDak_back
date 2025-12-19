@@ -343,7 +343,7 @@ public class ProductDslRepository {
 						order.totalAmount, order.postZonecode))
 				.from(order).where(order.orderCode.eq(orderCode)).fetchOne();
 	}
-
+ 
 	// 각 주문에 해당하는 주문 상품 불러오기
 	public List<OrderItemsDto> getOrderItems(Integer orderIdx) {
 
@@ -467,11 +467,14 @@ public class ProductDslRepository {
 	            .leftJoin(file).on(product.thumbnailFileIdx.eq(file.productFileIdx))
 	            .where(product.productIdx.in(productIds))
 	            .fetch();
-
+	    
 	    // 3. 판매자별 TestDto 구성
 	    Map<Integer, BrandDto> sellerMap = new HashMap<>();
 
 	    for (Tuple tuple : productTuples) {
+	    	
+	    	System.out.println(tuple.get(seller));
+	    	
 	        Product prod = tuple.get(product);
 	        Seller sel = tuple.get(seller);
 	        ProductFile prodFile = tuple.get(file);

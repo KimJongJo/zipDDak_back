@@ -215,7 +215,7 @@ public class ToolServiceImpl implements ToolService {
 	//공구 상태 변경
 	@Override
 	public ToolStatus stopTool(String username, Integer toolIdx) throws Exception {
-
+		System.out.println(toolIdx);
 		Tool tool = toolRepository.findById(toolIdx).orElseThrow(()-> new Exception("toolIdx error"));
 		
 		
