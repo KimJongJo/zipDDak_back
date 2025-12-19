@@ -114,7 +114,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 
 				// 1-5. DB 저장
 				ExpertFile expertFile = ExpertFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(expertFilePath + rename).build();
+						.storagePath(expertFilePath).build();
 
 				ExpertFile savedFile = expertFileRepository.save(expertFile);
 
@@ -149,7 +149,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 
 				// 1-5. DB 저장
 				ExpertFile expertFile = ExpertFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(expertFilePath + rename).build();
+						.storagePath(expertFilePath).build();
 
 				ExpertFile savedFile = expertFileRepository.save(expertFile);
 
@@ -184,7 +184,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 
 				// 1-5. DB 저장
 				ExpertFile expertFile = ExpertFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(expertFilePath + rename).build();
+						.storagePath(expertFilePath).build();
 
 				ExpertFile savedFile = expertFileRepository.save(expertFile);
 
@@ -262,7 +262,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 
 				// 1-5. DB 저장
 				ExpertFile expertFile = ExpertFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(expertFilePath + rename).build();
+						.storagePath(expertFilePath).build();
 
 				ExpertFile savedFile = expertFileRepository.save(expertFile);
 
@@ -298,7 +298,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 	public void addCareer(CareerDto careerDto) throws Exception {
 		Career career = Career.builder().expertIdx(careerDto.getExpertIdx()).title(careerDto.getTitle())
 				.startDate(careerDto.getStartDate()).endDate(careerDto.getEndDate())
-				.description(careerDto.getDescription()).build();
+				.description(careerDto.getDescription()).months(careerDto.getMonths()).build();
 
 		careerRepository.save(career);
 	}
