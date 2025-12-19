@@ -3,23 +3,24 @@ package com.zipddak.util;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.zipddak.entity.ToolFile;
+import com.zipddak.repository.ToolFileRepository;
 
 @Service
 public class ProfileService {
 	
 	@Value("${profileFile.path}")
 	private String profileUpload;
-	
 	
 	public File ProfiledownloadImage(String imageUrl) throws Exception {
 		
@@ -40,6 +41,6 @@ public class ProfileService {
 
 	    return socialProfile;
 	}
-
+	
 
 }

@@ -1,5 +1,6 @@
 package com.zipddak.admin.repository;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import com.zipddak.entity.QEstimate;
 import com.zipddak.entity.QExpert;
 import com.zipddak.entity.QExpertFile;
 import com.zipddak.entity.QMatching;
+import com.zipddak.entity.QMembership;
+import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QProfileFile;
 import com.zipddak.entity.QReviewExpert;
 import com.zipddak.entity.QReviewFile;
@@ -123,6 +126,9 @@ public class ExpertFindDslRepository {
 		QMatching matching = QMatching.matching;
 		QReviewExpert review = QReviewExpert.reviewExpert;
 		QCareer career = QCareer.career;
+		
+		QMembership membership = QMembership.membership;
+		QPayment payment = QPayment.payment;
 
 		NumberExpression<Integer> careerSumExpr = Expressions.numberTemplate(Integer.class,
 			    "(select coalesce(sum(c2.months), 0) from Career c2 where c2.expertIdx = {0})",
@@ -131,6 +137,10 @@ public class ExpertFindDslRepository {
 		
 		BooleanBuilder builder = new BooleanBuilder();
 
+		Date now = new Date(System.currentTimeMillis());
+		
+		builder.and(membership.endDate.goe(now));
+		
 		// 카테고리 필터
 		switch(categoryNo) {
 		    case 23 : builder.and(expert.mainServiceIdx.gt(22).and(expert.mainServiceIdx.lt(44))); break;
@@ -165,10 +175,12 @@ public class ExpertFindDslRepository {
 				.leftJoin(matching).on(expert.expertIdx.eq(matching.expertIdx))
 				.leftJoin(review).on(expert.expertIdx.eq(review.expertIdx))
 				.leftJoin(career).on(expert.expertIdx.eq(career.expertIdx))
+				.leftJoin(membership).on(expert.user.username.eq(membership.username))
+				.leftJoin(payment).on(membership.paymentIdx.eq(payment.paymentIdx))
 				.where(builder)
 				.groupBy(expert.expertIdx, expert.addr1, expert.addr2, file.fileRename, file.storagePath, expert.activityName,
 						expert.mainServiceIdx, category.name, expert.introduction)
-				.orderBy(Expressions.numberTemplate(Double.class, "RAND()").asc())
+				.orderBy(payment.approvedAt.desc())
 		        .limit(3)
 				.fetch();
 		

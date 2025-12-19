@@ -1,6 +1,5 @@
 package com.zipddak.seller.repository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -12,7 +11,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
-import com.zipddak.entity.Order;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;

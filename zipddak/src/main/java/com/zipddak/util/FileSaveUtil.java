@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileSaveUtil {
+	//파일 저장에 사용하는 util
 	
 	//파일 리네임
 	public String createFileReName(String originalFilename) {
@@ -37,5 +38,19 @@ public class FileSaveUtil {
         File target = new File(uploadPath, FileRename);
         multipartFile.transferTo(target);
     }
+    
+    
+    // 저장경로에 실제 파일 삭제
+    public boolean deleteFileIfExists(String uploadPath, String fileRename) throws Exception {
+ 		
+ 	    File target = new File(uploadPath, fileRename);
+ 	    if (!target.exists()) { // 파일 없으면 그냥 false 반환 
+ 	        return false;  
+ 	    }
+
+ 	    return target.delete();
+
+    }
+
 
 }

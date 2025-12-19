@@ -1,7 +1,8 @@
 package com.zipddak.admin.repository;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,30 +12,39 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.admin.dto.AdminExpertListDto;
+import com.zipddak.admin.dto.AdminMembershipListDto;
 import com.zipddak.admin.dto.AdminRentalListDto;
+import com.zipddak.admin.dto.AdminRequestExpertListDto;
+import com.zipddak.admin.dto.AdminRequestSellerListDto;
 import com.zipddak.admin.dto.AdminSaleListDto;
 import com.zipddak.admin.dto.AdminSellerListDto;
+import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
+import com.zipddak.admin.dto.RequestExpertInfoDto;
+import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
 import com.zipddak.dto.AdminPaymentListDto;
 import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QExpert;
+import com.zipddak.entity.QExpertFile;
+import com.zipddak.entity.QMembership;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QRental;
 import com.zipddak.entity.QReportExpert;
 import com.zipddak.entity.QReportSeller;
 import com.zipddak.entity.QSeller;
+import com.zipddak.entity.QSettlement;
 import com.zipddak.entity.QTool;
 import com.zipddak.entity.QUser;
 import com.zipddak.entity.Rental.RentalStatus;
+import com.zipddak.entity.Settlement.SettlementState;
+import com.zipddak.entity.Settlement.TargetType;
 import com.zipddak.entity.User.UserRole;
 import com.zipddak.entity.User.UserState;
 import com.zipddak.util.PageInfo;
@@ -380,7 +390,6 @@ public class AdminDslRepository {
 		    }
 		}
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		if (startDate != null && !startDate.isBlank()) {
 		    try {
@@ -491,7 +500,6 @@ public class AdminDslRepository {
 		    }
 		}
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		if (startDate != null && !startDate.isBlank()) {
 		    try {
@@ -629,6 +637,421 @@ public class AdminDslRepository {
 	    
 		return new ResponseAdminListDto(paymentList, pageInfo);
 	}
+
+	public ResponseAdminListDto membershipList(Integer state, String keyword, Integer page) {
+
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
+		
+		QMembership membership = QMembership.membership;
+		QExpert expert = QExpert.expert;
+		QPayment payment = QPayment.payment;
+		
+		// state == 1 -> 활성상태 멤버십이 진행중
+		// state == 2 -> 만료상태 멤버십 endDate가 지남
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		Date now = new Date(System.currentTimeMillis());
+		
+		if(state == 1) {
+			where.and(membership.endDate.goe(now));
+		}else if( state == 2) {
+			where.and(membership.endDate.lt(now));
+		}
+		
+		// 2️⃣ 검색 조건
+		if (keyword != null && !keyword.isBlank()) {
+			System.out.println("-------------------------------------");
+			System.out.println(keyword);
+			where.and(
+                expert.activityName.contains(keyword)
+                    .or(expert.user.username.contains(keyword))
+            );
+		}
+		
+		// 3️⃣ count 쿼리
+		Long totalCount = jpaQueryFactory
+			    .select(membership.count())
+			    .from(membership)
+			    .leftJoin(expert).on(membership.username.eq(expert.user.username))
+			    .where(where)
+			    .fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+	    
+	 // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+		
+		
+		List<AdminMembershipListDto> membershipList = jpaQueryFactory.select(Projections.bean(AdminMembershipListDto.class, 
+					membership.membershipIdx,
+					expert.user.username,
+					expert.activityName,
+					membership.startDate.as("startDate"),
+					payment.approvedAt.as("paymentDate"),
+					membership.endDate.as("endDate")
+				))
+				.from(membership)
+				.leftJoin(expert).on(membership.username.eq(expert.user.username))
+				.leftJoin(payment).on(membership.paymentIdx.eq(payment.paymentIdx))
+				.where(where)
+				.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+		
+		return new ResponseAdminListDto(membershipList, pageInfo);
+		
+	}
+
+	
+	public ResponseAdminListDto requestExpertList(Integer state, Integer column, String keyword, Integer page) {
+	
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
+		
+		QExpert expert = QExpert.expert;
+		QUser user = QUser.user;
+		QCategory category = QCategory.category;
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		String stringState = null;
+		switch(state) {
+		case 1 : stringState = "WAITING"; break;
+		case 2 : stringState = "REJECT"; break;
+		}
+		
+		if(stringState != null) where.and(expert.activityStatus.eq(stringState));
+		
+		// 2️⃣ 검색 조건
+		if (keyword != null && !keyword.isBlank()) {
+		    switch (column) {
+		        case 2: // 신청자
+		            where.and(user.name.contains(keyword));
+		            break;
+		        case 3: // 전화번호
+		            where.and(user.phone.contains(keyword));
+		            break;
+		        case 4: // 사업자번호
+		            where.and(expert.businessLicense.contains(keyword));
+		            break;
+		        default:
+		            // all 검색
+		            where.and(
+		            		user.name.contains(keyword)
+		                    .or(user.phone.contains(keyword))
+		                    .or(expert.businessLicense.contains(keyword))
+		            );
+		            break;
+		    }
+		    
+		}
+		
+		// 3️⃣ count 쿼리
+		JPAQuery<Long> requestExpertQuery = jpaQueryFactory
+		    .select(expert.count())
+		    .from(expert)
+		    .leftJoin(user).on(expert.user.username.eq(user.username))
+		    .leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
+		    .where(where);
+				
+		Long totalCount = requestExpertQuery.fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+
+	    // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+	    
+	    List<AdminRequestExpertListDto> requestExpertList = jpaQueryFactory.select(Projections.bean(AdminRequestExpertListDto.class, 
+	    			user.username,
+	    			user.name,
+	    			user.phone,
+	    			expert.businessLicense,
+	    			category.name.as("mainService"),
+	    			expert.employeeCount,
+	    			expert.createdAt,
+	    			expert.expertIdx,
+	    			expert.activityStatus
+	    		))
+	    		.from(expert)
+	    		.leftJoin(user).on(expert.user.username.eq(user.username))
+	    		.leftJoin(category).on(expert.mainServiceIdx.eq(category.categoryIdx))
+	    		.where(where)
+	    		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+		
+		return new ResponseAdminListDto(requestExpertList, pageInfo);
+	}
+
+	
+	public ResponseAdminListDto requestSellerList(Integer state, Integer column, String keyword, Integer page) {
+	
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
+		
+		QSeller seller = QSeller.seller;
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		String stringState = null;
+		switch(state) {
+		case 1 : stringState = "WAITING"; break;
+		case 2 : stringState = "REJECT"; break;
+		}
+		
+		if(stringState != null) where.and(seller.activityStatus.eq(stringState));
+		
+		// 2️⃣ 검색 조건
+		if (keyword != null && !keyword.isBlank()) {
+		    switch (column) {
+		        case 2: // 회사명
+		            where.and(seller.compName.contains(keyword));
+		            break;
+		        case 3: // 브랜드명
+		            where.and(seller.brandName.contains(keyword));
+		            break;
+		        case 4: // 대표자
+		            where.and(seller.ceoName.contains(keyword));
+		            break;
+		        case 5: // 전화번호
+		            where.and(seller.managerTel.contains(keyword));
+		            break;
+		        case 6: // 사업자번호
+		            where.and(seller.compBno.contains(keyword));
+		            break;
+		        default:
+		            // all 검색
+		            where.and(
+		            		seller.compName.contains(keyword)
+		                    .or(seller.brandName.contains(keyword))
+		                    .or(seller.ceoName.contains(keyword))
+		                    .or(seller.managerTel.contains(keyword))
+		                    .or(seller.compBno.contains(keyword))
+		                    
+		            );
+		            break;
+		    }
+		    
+		}
+		
+		// 3️⃣ count 쿼리
+		JPAQuery<Long> requestExpertQuery = jpaQueryFactory
+		    .select(seller.count())
+		    .from(seller)
+		    .where(where);
+				
+		Long totalCount = requestExpertQuery.fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+
+	    // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+		
+	    List<AdminRequestSellerListDto> requestSellerList = jpaQueryFactory.select(Projections.bean(AdminRequestSellerListDto.class,
+	    			seller.sellerIdx,
+	    			seller.compName,
+	    			seller.brandName,
+	    			seller.ceoName,
+	    			seller.managerTel,
+	    			seller.compBno,
+	    			seller.compHp,
+	    			seller.activityStatus,
+	    			seller.createdAt
+	    		))
+	    		.from(seller)
+	    		.where(where)
+	    		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+	    		
+	    
+	    return new ResponseAdminListDto(requestSellerList, pageInfo);
+	}
+
+	// 전문가 상세
+	public RequestExpertInfoDto expertInfo(Integer expertIdx) {
+		
+		QExpert expert = QExpert.expert;
+		QUser user = QUser.user;
+		QExpertFile file = QExpertFile.expertFile;
+		
+		return jpaQueryFactory.select(Projections.bean(RequestExpertInfoDto.class, 
+					user.name,
+					expert.activityName,
+					expert.employeeCount,
+					expert.businessLicense,
+					file.fileRename.as("businessPdfFile"),
+					file.storagePath.as("fileStoragePath"),
+					expert.settleBank.as("bank"),
+					expert.settleAccount.as("account"),
+					expert.settleHost.as("host"),
+					expert.providedServiceIdx.as("serviceString")
+				))
+				.from(expert)
+				.leftJoin(user).on(expert.user.username.eq(user.username))
+				.leftJoin(file).on(expert.businessLicensePdfId.eq(file.expertFileIdx))
+				.where(expert.expertIdx.eq(expertIdx))
+				.fetchOne();
+	}
+
+	// 전문가 제공 서비스
+	public String expertService(Integer categoryIdx) {
+
+		QCategory category = QCategory.category;
+		
+		return jpaQueryFactory
+				.select(category.name)
+				.from(category)
+				.where(category.categoryIdx.eq(categoryIdx))
+				.fetchOne();
+	}
+
+	public RequestSellerInfoDto sellerInfo(Integer sellerIdx) {
+
+		QSeller seller = QSeller.seller;
+		
+		return jpaQueryFactory.select(Projections.bean(RequestSellerInfoDto.class, 
+					seller.compName,
+					seller.brandName,
+					seller.ceoName,
+					seller.managerTel.as("phone"),
+					seller.compBno.as("businessLicense"),
+					seller.settleAccount.as("account"),
+					seller.settleBank.as("bank"),
+					seller.settleHost.as("host"),
+					seller.handleItemCateIdx.as("itemIdxs")
+				))
+				.from(seller)
+				.where(seller.sellerIdx.eq(sellerIdx))
+				.fetchOne();
+				
+	}
+	
+	public ResponseAdminListDto settlementList(Integer type, String month, Integer state, Integer page) {
+		
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
+
+		QSettlement settlement = QSettlement.settlement;
+		QUser user = QUser.user;
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		SettlementState stringState = null;
+		switch(state) {
+		case 1 : stringState = SettlementState.PENDING; break;
+		case 2 : stringState = SettlementState.COMPLETED; break;
+		}
+		
+		if(stringState != null) where.and(settlement.state.eq(stringState));
+		
+		TargetType targetType = null;
+		switch(type) {
+		case 1 : targetType = TargetType.EXPERT; break;
+		case 2 : targetType = TargetType.SELLER; break;
+		}
+		
+		if(targetType != null) where.and(settlement.targetType.eq(targetType));
+		
+		YearMonth ym = YearMonth.parse(month); // "YYYY-MM"
+        LocalDate startLocal = ym.atDay(1); // 월 첫째 날
+        LocalDate endLocal = ym.atEndOfMonth(); // 월 마지막 날
+
+        Date start = Date.valueOf(startLocal);
+        Date end = Date.valueOf(endLocal);
+
+        where.and(settlement.settlementMonth.goe(start)
+                 .and(settlement.settlementMonth.loe(end)));
+        
+	     // 3️⃣ count 쿼리
+		JPAQuery<Long> requestExpertQuery = jpaQueryFactory
+		    .select(settlement.count())
+		    .from(settlement)
+		    .where(where);
+				
+		Long totalCount = requestExpertQuery.fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+	
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+	
+	    // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+
+        
+        List<AdminSettlementListDto> settlementList = jpaQueryFactory.select(Projections.bean(AdminSettlementListDto.class, 
+        			settlement.settlementIdx,
+        			user.username,
+        			user.name,
+        			settlement.amount.as("totalAmount"),
+        			settlement.feeRate,
+        			settlement.settlementAmount.as("settlementTotalAmount"),
+        			settlement.state
+        		))
+        		.from(settlement)
+        		.leftJoin(user).on(settlement.targetUsername.eq(user.username))
+        		.where(where)
+        		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+        
+		return new ResponseAdminListDto(settlementList, pageInfo);
+	}
+
+	public AdminSettlementListDto settlementDetail(Integer settlementIdx) {
+		
+		QSettlement settlement = QSettlement.settlement;
+		QUser user = QUser.user;
+		
+		return jpaQueryFactory.select(Projections.bean(AdminSettlementListDto.class, 
+    			settlement.settlementIdx,
+    			user.username,
+    			user.name,
+    			settlement.amount.as("totalAmount"),
+    			settlement.feeRate,
+    			settlement.settlementAmount.as("settlementTotalAmount"),
+    			settlement.state,
+    			settlement.targetType.as("userType"),
+    			settlement.settlementMonth.as("month")
+    		))
+    		.from(settlement)
+    		.leftJoin(user).on(settlement.targetUsername.eq(user.username))
+    		.where(settlement.settlementIdx.eq(settlementIdx))
+    		.fetchOne();
+	}
+
 	
 }
 

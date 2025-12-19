@@ -60,6 +60,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		
 		
 		User user = principalDetails.getUser();
+		
+		String fcmToken = request.getParameter("fcmToken");
+		user.setFcmToken(fcmToken);
+		userRepository.save(user);
 
 		String profile = 
 				profileRepository.profileFileRename(username, user.getRole().toString(), false);
@@ -72,6 +76,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		userInfo.put("expert", false);
 		userInfo.put("profile", profile);
 		userInfo.put("addr1", user.getAddr1());
+		userInfo.put("addr2", user.getAddr2());
+		userInfo.put("zonecode", user.getZonecode());
+		userInfo.put("settleBank", user.getSettleBank());
+		userInfo.put("settleAccount", user.getSettleAccount());
+		userInfo.put("settleHost", user.getSettleHost());
 		
 		response.getWriter().write(objectMapper.writeValueAsString(userInfo));
 

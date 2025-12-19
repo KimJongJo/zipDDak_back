@@ -93,6 +93,14 @@ public class Payment {
 	public enum PaymentType {
 		RENTAL, MATCHING, ORDER, MEMBERSHIP
 	}
+	
+	@Column
+	private String username;
 
-
+	@Column
+	private String sellUsername;
+	
+	@Column
+	private String sellUserType;
+	
 }

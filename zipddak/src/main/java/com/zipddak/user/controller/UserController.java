@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zipddak.auth.PrincipalDetails;
 import com.zipddak.entity.User;
+import com.zipddak.mypage.service.NotificationServiceImpl;
 import com.zipddak.user.dto.UserInfoDto;
 import com.zipddak.user.service.UserService;
 
@@ -23,6 +24,9 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private NotificationServiceImpl notificationService;
+	
 		//로그인
 		@PostMapping("/zipddak")
 		public ResponseEntity<UserInfoDto> userInfo (@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -32,7 +36,7 @@ public class UserController {
 				user.setFcmToken(fcmToken);
 				UserInfoDto userInfo = userService.login(user);
 				userInfo.setExpert(false);
-//				alarmService.registFcmToken(user.getUsername(), fcmToken);
+				notificationService.registFcmToken(user.getUsername(), fcmToken);
 				
 				return ResponseEntity.ok(userInfo);
 				

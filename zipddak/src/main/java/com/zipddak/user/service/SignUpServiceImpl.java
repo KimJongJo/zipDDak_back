@@ -24,6 +24,7 @@ import com.zipddak.entity.Seller;
 import com.zipddak.entity.SellerFile;
 import com.zipddak.entity.User;
 import com.zipddak.entity.User.UserRole;
+import com.zipddak.entity.User.UserState;
 import com.zipddak.repository.CategoryRepository;
 import com.zipddak.repository.ExpertFileRepository;
 import com.zipddak.repository.SellerFileRepository;
@@ -70,6 +71,7 @@ public class SignUpServiceImpl implements SignUpService {
 		if(userDto.getNickname() == null || userDto.getNickname().trim().isEmpty()) {
 			userDto.setNickname(userDto.getName());
 		}
+		userDto.setState(UserState.ACTIVE);
 		User user = modelMapper.map(userDto, User.class);
 		userRepository.save(user);
 	}
@@ -142,7 +144,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        expert.setBusinessLicensePdfId(expertFileIdx);
 	        expert.setUser(user);
 	        //관리자가 승인...
-	        expert.setActivityStatus("STOPPED");
+	        expert.setActivityStatus("WAITING");
 
 	        signExpertRepository.save(expert);
 	    }
@@ -210,13 +212,18 @@ public class SignUpServiceImpl implements SignUpService {
 		    //User테이블 등록
 	        User user = sellerDto.toUserEntity();
 	        user.setNickname(sellerDto.getBrandName());
-
+	        user.setRole(UserRole.SELLER);
 	        userRepository.save(user);
 	        
 	        //Seller테이블 등록
 	        Seller seller = sellerDto.toSellerEntity(user);
 	        seller.setOnlinesalesFileIdx(SellerImgFileIdx);
 	        seller.setCompFileIdx(sellerFileIdx);
+<<<<<<< HEAD
+	        //관리자 승인
+=======
+>>>>>>> refs/heads/main
+	        seller.setActivityStatus("WAITING");
 	        signSellerRepository.save(seller);
 		
 	}
