@@ -22,7 +22,7 @@ public class SellerInfoController {
 	private final SellerInfoService sellerInfoService;
 	
 	// 자재 판매 업체의 정보를 가져와서 보여주기
-	@GetMapping("seller")
+	@GetMapping("storeInfo")
 	public ResponseEntity<SellerInfoDto> sellerInfo(@RequestParam("sellerId") Integer sellerId,
 													@RequestParam(value = "username", required = false) String username){
 		

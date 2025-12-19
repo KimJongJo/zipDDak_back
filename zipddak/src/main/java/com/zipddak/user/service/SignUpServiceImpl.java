@@ -213,13 +213,13 @@ public class SignUpServiceImpl implements SignUpService {
 	        User user = sellerDto.toUserEntity();
 	        user.setNickname(sellerDto.getBrandName());
 	        user.setRole(UserRole.SELLER);
+	        user.setState(UserState.ACTIVE);
 	        userRepository.save(user);
 	        
 	        //Seller테이블 등록
 	        Seller seller = sellerDto.toSellerEntity(user);
 	        seller.setOnlinesalesFileIdx(SellerImgFileIdx);
 	        seller.setCompFileIdx(sellerFileIdx);
-
 	        seller.setActivityStatus("WAITING");
 	        signSellerRepository.save(seller);
 		

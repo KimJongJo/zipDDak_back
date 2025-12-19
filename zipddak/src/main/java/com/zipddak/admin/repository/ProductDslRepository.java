@@ -109,14 +109,15 @@ public class ProductDslRepository {
 
 		// 상품 공개 유무가 1인 상품만
 		where.and(product.visibleYn.eq(true));
-
-		if (cate1 == 1 || cate1 == 2) {
-			if (cate2 == 1) {
+		
+		// 주방 욕실인 경우
+		if (cate1 == 1 || cate1 == 6) {
+			if (cate2 == 1) { // 전체 경우
 				where.and(product.categoryIdx.eq(cate1));
-			} else {
+			} else { // 중분류가 있을 경우
 				where.and(product.categoryIdx.eq(cate1)).and(product.subCategoryIdx.eq(cate2));
 			}
-		} else {
+		} else { // 나머지 카테고리인 경우
 			where.and(product.categoryIdx.eq(cate1));
 		}
 
