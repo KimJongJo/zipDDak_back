@@ -38,6 +38,9 @@ public class Tool {
 
     @Column(nullable = false)
     private String tradeAddr;
+    
+    @Column
+    private Boolean quickRental;
 
     @Column(nullable = false)
     private Boolean directRental;
@@ -46,7 +49,7 @@ public class Tool {
     private Boolean postRental;
 
     @Column
-    private Date freePost;
+    private Boolean freePost;
 
     @Column
     private Long postCharge;
@@ -89,8 +92,21 @@ public class Tool {
 
     @Column
     private Integer img5;
+    
+    @Column
+    private Integer toolChatCnt;
+    
+    @Column
+    private String settleBank;
+    @Column
+    private String settleAccount;
+    @Column
+    private String settleHost;
 
     public enum ToolStatus {
-        ABLE, INABLE, DELETE
+        ABLE, INABLE, DELETE, STOP
     }
+    
+    
+    
 }
