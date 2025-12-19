@@ -2,6 +2,7 @@ package com.zipddak.mypage.service;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import com.zipddak.entity.EstimateCost;
 import com.zipddak.entity.Expert;
 import com.zipddak.entity.Notification.NotificationType;
 import com.zipddak.entity.Request;
+import com.zipddak.mypage.dto.EstimateUpdateDto;
 import com.zipddak.mypage.dto.EstimateWriteDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
 import com.zipddak.mypage.dto.SentEstimateDetailDto;
@@ -42,7 +44,7 @@ public class EstimateServiceImpl implements EstimateService {
 	// [전문가]견적서 보내기
 	@Override
 	public void writeEstimate(EstimateWriteDto estimateWriteDto) throws Exception {
-		
+
 		System.out.println(estimateWriteDto);
 		// 전문가 조회
 		Expert expert = expertRepository.findByUser_Username(estimateWriteDto.getUsername()).get();
@@ -75,18 +77,63 @@ public class EstimateServiceImpl implements EstimateService {
 
 			estimateCostRepository.saveAll(costEntities);
 		}
-		
+
 		// 요청서 조회
 		Request request = requestRepository.findById(estimateWriteDto.getRequestIdx()).get();
-		
+
 		// 알림 전송
-		NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.ESTIMATE)
-				.title("새로운 견적 도착").content(expert.getActivityName() + "님이 견적서를 보냈습니다.")
-				.recvUsername(request.getUserUsername())
-				.sendUsername(estimateWriteDto.getUsername())
-				.estimateIdx(saveEstimate.getEstimateIdx()).build();
-		
+		NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.ESTIMATE).title("새로운 견적 도착")
+				.content(expert.getActivityName() + "님이 견적서를 보냈습니다.").recvUsername(request.getUserUsername())
+				.sendUsername(estimateWriteDto.getUsername()).estimateIdx(saveEstimate.getEstimateIdx()).build();
+
 		notificationService.sendNotification(notificationDto);
+	}
+
+	// [전문가] 견적서 수정
+	@Override
+	@Transactional
+	public void updateEstimate(EstimateUpdateDto dto) throws Exception {
+
+		// 1. 기존 견적 조회
+		Estimate estimate = estimateRepository.findById(dto.getEstimateIdx())
+				.orElseThrow(() -> new IllegalArgumentException("견적서가 존재하지 않습니다."));
+
+		// 2. 견적서 필드 수정
+		estimate.setLargeServiceIdx(dto.getLargeServiceIdx());
+		estimate.setDiagnosisType(dto.getDiagnosisType());
+		estimate.setRepairType(dto.getRepairType());
+		estimate.setDemolitionType(dto.getDemolitionType());
+		estimate.setConsultingType(dto.getConsultingType());
+
+		estimate.setWorkDurationType(dto.getWorkDurationType());
+		estimate.setWorkDurationValue(dto.getWorkDurationValue());
+		estimate.setWorkScope(dto.getWorkScope());
+		estimate.setWorkDetail(dto.getWorkDetail());
+
+		estimate.setDisposalCost(dto.getDisposalCost());
+		estimate.setDemolitionCost(dto.getDemolitionCost());
+		estimate.setEtcFee(dto.getEtcFee());
+
+		estimate.setConsultingLaborCost(dto.getConsultingLaborCost());
+		estimate.setStylingDesignCost(dto.getStylingDesignCost());
+		estimate.setThreeDImageCost(dto.getThreeDImageCost());
+		estimate.setReportProductionCost(dto.getReportProductionCost());
+
+		estimate.setCostDetail(dto.getCostDetail());
+
+		// 3. 기존 비용 삭제
+		estimateCostRepository.deleteByEstimateIdx(estimate.getEstimateIdx());
+
+		// 4. 비용 재등록
+		if (dto.getCostList() != null && !dto.getCostList().isEmpty()) {
+			List<EstimateCost> costEntities = dto.getCostList().stream()
+					.map(costDto -> EstimateCost.builder().estimateIdx(estimate.getEstimateIdx())
+							.type(costDto.getType()).label(costDto.getLabel()).amount(costDto.getAmount()).build())
+					.collect(Collectors.toList());
+
+			estimateCostRepository.saveAll(costEntities);
+		}
+
 	}
 
 	// [전문가]보낸 견적서 목록 조회
@@ -126,11 +173,11 @@ public class EstimateServiceImpl implements EstimateService {
 	public Map<String, Object> getExpertSentEstimateDetail(Integer estimateIdx) throws Exception {
 		SentEstimateDetailDto sentEstimateDetail = estimateDslRepository.selectSentEstimateDetail(estimateIdx);
 		List<EstimateCostListDto> estimateCostList = estimateDslRepository.selectEstimateCostList(estimateIdx);
-		
+
 		Map<String, Object> res = new HashMap<>();
 		res.put("sentEstimateDetail", sentEstimateDetail);
 		res.put("estimateCostList", estimateCostList);
-		
+
 		return res;
 	}
 }
