@@ -111,7 +111,8 @@ public class ExpertDslRepository {
 	                    career.startDate,
 	                    career.endDate,
 	                    career.description,
-	                    career.createdAt
+	                    career.createdAt,
+	                    career.months
 	            ))
 	            .from(career)
 	            .where(career.expertIdx.eq(expertIdx))
