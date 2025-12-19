@@ -28,4 +28,6 @@ public interface ExpertRequestService {
 	RequestActiveDetailDto getUserRequestActiveDetail(String username) throws Exception;
 	
 	Map<String, Object> getUserEstimateActiveDetail(Integer estimateIdx) throws Exception;
+	
+	Boolean stopRequest(Integer requestIdx) throws Exception;
 }
