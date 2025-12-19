@@ -99,8 +99,9 @@ public class Product {
     @Column(nullable = false)
     private Boolean visibleYn; 
     
-    @Column(nullable = false, columnDefinition = "false")
-    private Boolean deletedYn;  //기본값 지정 
+    @Column(nullable = false)
+    @ColumnDefault("false")  //기본값 지정 
+    private Boolean deletedYn; 
 
     @CreationTimestamp
     private Date createdAt;

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.zipddak.dto.EstimateDto;
 import com.zipddak.entity.Estimate;
@@ -147,5 +148,14 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 		res.put("expertUsername", expertUsername);
 
 		return res;
+	}
+	
+	// 요청 그만받기
+	@Override
+	@Transactional
+	public Boolean stopRequest(Integer requestIdx) throws Exception {
+		Request request = requestRepository.findById(requestIdx).get();
+		request.setStatus("STOPPED");
+		return true;
 	}
 }
