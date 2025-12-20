@@ -393,6 +393,7 @@ public class ToolCardDsl {
 		
 		ToolDetailDto toolDetail = query
 			    .where(tool.toolIdx.eq(toolIdx))
+			    .groupBy(tool.toolIdx)
 			    .fetchOne();
 		
 		return toolDetail;
