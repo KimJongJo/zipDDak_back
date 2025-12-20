@@ -34,7 +34,7 @@ public class RentalDto {
     private String addr2;
     private String postRequest;
     private Boolean paymentType;
-    private String satus;
+    private RentalStatus satus;
     private String borrower;
     private String owner;
     private Integer paymentIdx;
@@ -43,5 +43,7 @@ public class RentalDto {
     private Integer toolIdx;
     private String name;
     private String phone;
+    
+    private String trackingNo;
 
 }

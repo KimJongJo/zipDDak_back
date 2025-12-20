@@ -34,10 +34,10 @@ public class Settlement {
     @Column
     private String workType;
 
-    @Column(nullable = false)
+    @Column
     private Integer amount;
     
-    @Column(nullable = false)
+    @Column
     private Integer settlementAmount;
     
     @Column

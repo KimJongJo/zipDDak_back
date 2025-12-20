@@ -81,6 +81,18 @@ public class Rental {
     
     @Column
     private String phone;
+    
+    @Column
+    private Integer settlementIdx;
+    
+    @Column
+    private String postComp;
+    
+    @Column
+    private String trackingNo;
+    
+    @Column(nullable = false)
+    private Boolean reviewCheck = false;
 
     public enum RentalStatus {
         PRE, PAYED, DELIVERY, RENTAL, RETURN
