@@ -1,15 +1,15 @@
 package com.zipddak.user.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.ToolDto;
 import com.zipddak.entity.Tool.ToolStatus;
-import com.zipddak.user.dto.ToolCardDto;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
-import com.zipddak.user.dto.ToolDetailDto;
+import com.zipddak.user.dto.ToolDetailviewDto;
 
 public interface ToolService {
 	
@@ -32,10 +32,13 @@ public interface ToolService {
 	//공구 상태 변경
 	ToolStatus stopTool (String username, Integer toolIdx)throws Exception;
 	
-	//대상 공구 1개
-	ToolDetailDto targetTool (Integer toolIdx, String username) throws Exception;
+	//공구 상세
+	ToolDetailviewDto targetTool (Integer toolIdx, String username) throws Exception;
 	
 	//유저의 다른 공구
 	ToolCardsDto ownersTool (String username, String owner, Integer toolIdx)throws Exception;
+	
+	//공구 리뷰
+	Map<String,Object> toolsReview (Integer toolIdx, Integer page, Integer orderNo)throws Exception;
 
 }

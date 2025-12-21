@@ -18,7 +18,8 @@ import com.zipddak.dto.ToolDto;
 import com.zipddak.entity.Tool.ToolStatus;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
-import com.zipddak.user.dto.ToolDetailDto;
+import com.zipddak.user.dto.ToolDetailviewDto;
+import com.zipddak.user.dto.ToolReviewDto;
 import com.zipddak.user.service.ToolService;
 
 @RestController
@@ -134,11 +135,12 @@ public class ToolController {
 	
 	//공구 상세
 	@GetMapping(value="tool/detail")
-	ResponseEntity<ToolDetailDto> targetTool (@RequestParam("toolIdx") Integer toolIdx, @RequestParam("username")String username){
+	ResponseEntity<ToolDetailviewDto> targetTool (@RequestParam("toolIdx") Integer toolIdx, @RequestParam("username")String username){
 		
 		System.out.println(">>>>>"+toolIdx);
 		try {
-			ToolDetailDto toolDto = toolService.targetTool(toolIdx,username);
+			ToolDetailviewDto toolDto = toolService.targetTool(toolIdx,username);
+			System.out.println("toolDetailController>>"+toolDto);
 			return ResponseEntity.ok(toolDto);
 			
 		}catch (Exception e) {
@@ -164,7 +166,23 @@ public class ToolController {
 			}
 		}
 	
-	
+		//공구 리뷰
+		@GetMapping(value="tool/review")
+		ResponseEntity<Map<String,Object>> toolReview (
+				@RequestParam(defaultValue = "0") Integer page,
+				@RequestParam("toolIdx")Integer toolIdx,
+				@RequestParam("orderNo")Integer orderNo){
+			
+			try {
+				System.out.println("review: toolIdx>>"+toolIdx);
+				Map<String,Object> toolDto = toolService.toolsReview(toolIdx, page,orderNo);
+				return ResponseEntity.ok(toolDto);
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(null);
+			}
+		}
 	
 	
 	
