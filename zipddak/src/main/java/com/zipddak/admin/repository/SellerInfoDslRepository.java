@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -138,7 +139,7 @@ public class SellerInfoDslRepository {
 	    QSeller seller = QSeller.seller;
 
 	    // 로그인한 유저의 관심상품 여부
-	    Expression<Boolean> isFavoriteExpr = Expressions.asBoolean(false);
+	    Expression<Boolean> isFavoriteExpr = ExpressionUtils.as(Expressions.constant(false), "favorite"); 
 	    if (username != null && !username.isBlank()) {
 	        isFavoriteExpr = new CaseBuilder()
 	                .when(favorite.productIdx.isNotNull()).then(true)

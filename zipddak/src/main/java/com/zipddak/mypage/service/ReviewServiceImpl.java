@@ -52,7 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ToolRepository toolRepository;
 	private final ExpertRepository expertRepository;
 	
-	@Value("reviewFile.path")
+	@Value("${reviewFile.path}")
 	private String reviewFilePath;
 
 	@Override
@@ -92,9 +92,9 @@ public class ReviewServiceImpl implements ReviewService {
 				// 1-3. 리네임 파일명 생성 (UUID)
 				String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
 				String rename = UUID.randomUUID().toString() + ext;
-
+				
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath , rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -155,7 +155,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -216,7 +216,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -316,7 +316,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
 				ReviewFile saved = reviewFileRepository
@@ -399,7 +399,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
 				ReviewFile saved = reviewFileRepository
@@ -482,7 +482,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
 				ReviewFile saved = reviewFileRepository
