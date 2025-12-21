@@ -2,11 +2,11 @@ package com.zipddak.user.dto;
 
 import java.sql.Date;
 
-import com.google.auto.value.AutoValue.Builder;
 import com.zipddak.entity.Expert;
 import com.zipddak.entity.User;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

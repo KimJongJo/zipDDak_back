@@ -1,6 +1,7 @@
 package com.zipddak.admin.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.querydsl.QPageRequest;
@@ -34,14 +35,28 @@ public class CartServiceImpl implements CartService {
 		
 		for(OrderListDto product : productList) {
 			
-			Cart cart = Cart.builder()
-							.optionIdx(product.getOptionId())
-							.product(Product.builder()
-									.productIdx(product.getProductId())
-									.build())
-							.quantity(product.getCount())
-							.userUsername(username)
-							.build();
+			Optional<Cart> checkCart = cartRepository.findByProduct_ProductIdxAndUserUsernameAndOptionIdx(product.getProductId(), username, product.getOptionId());
+			
+			
+			Cart cart = null;
+			
+			// 이미 존재하면 수량 증가
+			if(checkCart.isPresent()) {
+				cart = checkCart.get();
+				
+				cart.setQuantity(cart.getQuantity() + product.getCount());
+				
+			}else { // 새로 만들어서 저장 
+				cart = Cart.builder()
+						.optionIdx(product.getOptionId())
+						.product(Product.builder()
+								.productIdx(product.getProductId())
+								.build())
+						.quantity(product.getCount())
+						.userUsername(username)
+						.build();
+		
+			}
 			
 			cartRepository.save(cart);
 		}

@@ -8,4 +8,6 @@ public interface RequestService {
 
 	EstimatePaymentRequestDetailDto detail(Integer estimateIdx, String username) throws Exception;
 
+	boolean requestCheck(String username) throws Exception;
+
 }

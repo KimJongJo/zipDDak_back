@@ -32,5 +32,18 @@ public class ProductDetailDto {
 	private String category; // 메인 카테고리
 	private String subCategory; // 서브 카테고리
 	
+	// 판매업체 아이디
+	private Integer sellerIdx;
+	
+	// 이미지 목록들
+	private String thumbnail;
+	private String img1;
+	private String img2;
+	private String img3;
+	private String img4;
+	private String img5;
+	private String detailImg1;
+	private String detailImg2;
+	
 	
 }
