@@ -1,6 +1,7 @@
 package com.zipddak.user.controller;
 
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,16 +32,22 @@ public class RentalController {
 	private SettlementService settlementService;
 	
 	//대여등록
-//		@PostMapping(value="/rental/application")
-//		ResponseEntity<Integer> toolRegist (@RequestBody RentalDto rentalDto) {
-//			try {
-//				Integer rentalIdx = rentalService.rentalApplication(rentalDto);
-//				System.out.println("rental application controller");
-//				return ResponseEntity.ok(rentalIdx);
-//			}catch(Exception e) {
-//				return ResponseEntity.badRequest().body(null);
-//			}
-//		}
+		@PostMapping(value="/rental/application")
+		ResponseEntity<Boolean> toolRegist (@RequestBody RentalDto rentalDto) {
+			try {
+				
+				// orderId 생성
+				String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+		                + "-" + (int)(Math.random() * 9000 + 1000);
+				
+				rentalService.rentalApplication(rentalDto,orderId);
+				System.out.println("rental application controller");
+				
+				return ResponseEntity.ok(true);
+			}catch(Exception e) {
+				return ResponseEntity.badRequest().body(false);
+			}
+		}
 	
 	// 마이페이지 공구 대여 목록 조회
 	@GetMapping("/user/mypage/rental")

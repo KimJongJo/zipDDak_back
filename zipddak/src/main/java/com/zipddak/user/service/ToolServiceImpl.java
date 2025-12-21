@@ -2,6 +2,7 @@ package com.zipddak.user.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -9,6 +10,7 @@ import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +22,8 @@ import com.zipddak.repository.ToolFileRepository;
 import com.zipddak.repository.ToolRepository;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
-import com.zipddak.user.dto.ToolDetailDto;
+import com.zipddak.user.dto.ToolDetailviewDto;
+import com.zipddak.user.dto.ToolReviewDto;
 import com.zipddak.user.repository.ToolCardDsl;
 
 @Service
@@ -212,7 +215,7 @@ public class ToolServiceImpl implements ToolService {
 	}
 	
 	
-	//공구 상태 변경
+	//공구 상태변경
 	@Override
 	public ToolStatus stopTool(String username, Integer toolIdx) throws Exception {
 		System.out.println(toolIdx);
@@ -256,10 +259,10 @@ public class ToolServiceImpl implements ToolService {
 	}
 
 	
-	//대상 공구 
+	//대상 상세 
 	@Override
-	public ToolDetailDto targetTool(Integer toolIdx, String username) throws Exception {
-		ToolDetailDto toolDto = toolCardDsl.toolDetails(toolIdx, username);
+	public ToolDetailviewDto targetTool(Integer toolIdx, String username) throws Exception {
+		ToolDetailviewDto toolDto = toolCardDsl.toolDetails(toolIdx, username);
 		System.out.println(toolDto);
 		return toolDto;
 	}
@@ -272,6 +275,18 @@ public class ToolServiceImpl implements ToolService {
 		ToolCardsDto toolDto = toolCardDsl.toolOwner(username, owner, toolIdx);
 		
 		return toolDto;
+	}
+
+	//공구 리뷰
+	@Override
+	public Map<String,Object> toolsReview(Integer toolIdx, Integer page, Integer orderNo) throws Exception {
+		
+		int pageSize = 5; // 한 페이지에 5개
+        PageRequest pageRequest = PageRequest.of(page-1, pageSize);
+		
+		Map<String,Object> toolReview = toolCardDsl.toolReview(toolIdx, pageRequest, orderNo);
+		
+		return toolReview;
 	}
 
 	

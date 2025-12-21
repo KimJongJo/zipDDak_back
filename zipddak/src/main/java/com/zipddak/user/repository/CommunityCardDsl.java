@@ -36,7 +36,7 @@ public class CommunityCardDsl {
 		BooleanBuilder where = new BooleanBuilder();
 
 		// 카테고리
-        if (category != null) {
+        if (category != null && category != 0) {
             where.and(community.category.eq(category));
         }
 
