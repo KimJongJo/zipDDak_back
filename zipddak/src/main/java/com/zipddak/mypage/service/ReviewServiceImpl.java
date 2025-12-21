@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,6 +51,9 @@ public class ReviewServiceImpl implements ReviewService {
 	private final UserRepository userRepository;
 	private final ToolRepository toolRepository;
 	private final ExpertRepository expertRepository;
+	
+	@Value("${reviewFile.path}")
+	private String reviewFilePath;
 
 	@Override
 	public List<BeforeToolReviewDto> beforeToolReviewList(String username) throws Exception {
@@ -78,8 +82,7 @@ public class ReviewServiceImpl implements ReviewService {
 					continue;
 
 				// 1-1. 저장 경로 설정
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/review/";
-				File folder = new File(uploadDir);
+				File folder = new File(reviewFilePath);
 				if (!folder.exists())
 					folder.mkdirs();
 
@@ -89,14 +92,14 @@ public class ReviewServiceImpl implements ReviewService {
 				// 1-3. 리네임 파일명 생성 (UUID)
 				String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
 				String rename = UUID.randomUUID().toString() + ext;
-
+				
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(reviewFilePath , rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
 				ReviewFile reviewFile = ReviewFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(uploadDir).build();
+						.storagePath(reviewFilePath).build();
 
 				ReviewFile savedFile = reviewFileRepository.save(reviewFile);
 
@@ -140,8 +143,7 @@ public class ReviewServiceImpl implements ReviewService {
 					continue;
 
 				// 1-1. 저장 경로 설정
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/review/";
-				File folder = new File(uploadDir);
+				File folder = new File(reviewFilePath);
 				if (!folder.exists())
 					folder.mkdirs();
 
@@ -153,12 +155,12 @@ public class ReviewServiceImpl implements ReviewService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
 				ReviewFile reviewFile = ReviewFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(uploadDir).build();
+						.storagePath(reviewFilePath).build();
 
 				ReviewFile savedFile = reviewFileRepository.save(reviewFile);
 
@@ -202,8 +204,7 @@ public class ReviewServiceImpl implements ReviewService {
 					continue;
 
 				// 1-1. 저장 경로 설정
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/review/";
-				File folder = new File(uploadDir);
+				File folder = new File(reviewFilePath);
 				if (!folder.exists())
 					folder.mkdirs();
 
@@ -215,12 +216,12 @@ public class ReviewServiceImpl implements ReviewService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
 				ReviewFile reviewFile = ReviewFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(uploadDir).build();
+						.storagePath(reviewFilePath).build();
 
 				ReviewFile savedFile = reviewFileRepository.save(reviewFile);
 
@@ -307,8 +308,7 @@ public class ReviewServiceImpl implements ReviewService {
 				if (mf == null || mf.isEmpty())
 					continue;
 
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/review/";
-				File folder = new File(uploadDir);
+				File folder = new File(reviewFilePath);
 				if (!folder.exists())
 					folder.mkdirs();
 
@@ -316,11 +316,11 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
 				ReviewFile saved = reviewFileRepository
-						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(uploadDir).build());
+						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
 
 				newImgIdxList.add(saved.getReviewFileIdx());
 			}
@@ -391,8 +391,7 @@ public class ReviewServiceImpl implements ReviewService {
 				if (mf == null || mf.isEmpty())
 					continue;
 
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/review/";
-				File folder = new File(uploadDir);
+				File folder = new File(reviewFilePath);
 				if (!folder.exists())
 					folder.mkdirs();
 
@@ -400,11 +399,11 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
 				ReviewFile saved = reviewFileRepository
-						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(uploadDir).build());
+						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
 
 				newImgIdxList.add(saved.getReviewFileIdx());
 			}
@@ -475,8 +474,7 @@ public class ReviewServiceImpl implements ReviewService {
 				if (mf == null || mf.isEmpty())
 					continue;
 
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/review/";
-				File folder = new File(uploadDir);
+				File folder = new File(reviewFilePath);
 				if (!folder.exists())
 					folder.mkdirs();
 
@@ -484,11 +482,11 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
 				ReviewFile saved = reviewFileRepository
-						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(uploadDir).build());
+						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
 
 				newImgIdxList.add(saved.getReviewFileIdx());
 			}

@@ -145,7 +145,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        expert.setUser(user);
 	        //관리자가 승인...
 	        expert.setActivityStatus("WAITING");
-
+	        
 	        signExpertRepository.save(expert);
 	    }
 		

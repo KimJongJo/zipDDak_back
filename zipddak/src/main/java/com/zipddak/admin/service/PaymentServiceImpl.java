@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +36,8 @@ import com.zipddak.entity.Order.PaymentStatus;
 import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Product.PostType;
+import com.zipddak.entity.Rental.RentalStatus;
+import com.zipddak.entity.Rental;
 import com.zipddak.entity.User;
 import com.zipddak.entity.OrderItem;
 import com.zipddak.repository.ExpertRepository;
@@ -42,6 +45,7 @@ import com.zipddak.repository.MatchingRepository;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
 import com.zipddak.repository.PaymentRepository;
+import com.zipddak.repository.RentalRepository;
 import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -58,6 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final MatchingRepository matchingRepository;
 	private final ExpertRepository expertRepository;
 	private final UserRepository userRepository;
+	private final RentalRepository rentalRepository;
 	
 	@Value("${toss-payment-secret-key}")
 	private String tossSecretKey;
@@ -132,6 +137,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	// 결제 최종 승인
 	@Override
+	@Transactional
 	public void approvePayment(PaymentComplateDto paymentComplateDto, String type) throws Exception {
 		
 		// Toss 결제 승인 api url
@@ -254,6 +260,15 @@ public class PaymentServiceImpl implements PaymentService {
 				matching.setPaymentIdx(savedPayment.getPaymentIdx());
 				
 				matchingRepository.save(matching);
+				
+			}else if(type.equals("rental")) {
+				
+				Rental rental = rentalRepository.findByRentalCode(jsonNode.path("orderId").asText());
+				
+				rental.setSatus(RentalStatus.PAYED);
+				
+				rentalRepository.save(rental);
+				
 			}
 			
 		}
