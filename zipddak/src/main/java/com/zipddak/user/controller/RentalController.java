@@ -154,10 +154,12 @@ public class RentalController {
 			){
 		try {	
 
-			// 렌탈 리뷰 작성 상태 업데이트
-			rentalService.reviewWriteState(reviewToolDto.getRentalIdx());
+			
 			// 리뷰 작성
 			reviewService.writeToolReview(reviewToolDto, reviewImages);
+			// 렌탈 리뷰 작성 상태 업데이트
+			rentalService.reviewWriteState(reviewToolDto.getRentalIdx());
+			
 
 			
 			return ResponseEntity.ok(true);
