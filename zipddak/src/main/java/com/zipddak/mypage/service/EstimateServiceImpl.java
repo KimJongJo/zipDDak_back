@@ -4,20 +4,33 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.zipddak.dto.NotificationDto;
+import com.zipddak.entity.Career;
 import com.zipddak.entity.Estimate;
 import com.zipddak.entity.EstimateCost;
 import com.zipddak.entity.Expert;
+import com.zipddak.entity.QCareer;
+import com.zipddak.entity.QCategory;
+import com.zipddak.entity.QExpert;
+import com.zipddak.entity.QExpertFile;
+import com.zipddak.entity.QFavoritesExpert;
+import com.zipddak.entity.QMatching;
+import com.zipddak.entity.QReviewExpert;
 import com.zipddak.entity.Notification.NotificationType;
 import com.zipddak.entity.Request;
 import com.zipddak.mypage.dto.EstimateUpdateDto;
 import com.zipddak.mypage.dto.EstimateWriteDto;
+import com.zipddak.mypage.dto.FavoriteExpertDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
 import com.zipddak.mypage.dto.SentEstimateDetailDto;
 import com.zipddak.mypage.dto.SentEstimateListDto;
@@ -180,4 +193,5 @@ public class EstimateServiceImpl implements EstimateService {
 
 		return res;
 	}
+
 }

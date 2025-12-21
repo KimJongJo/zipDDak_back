@@ -21,6 +21,7 @@ import com.zipddak.mypage.dto.RequestActiveDetailDto;
 import com.zipddak.mypage.dto.RequestActiveExpertListDto;
 import com.zipddak.mypage.dto.RequestHistoryListDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
+import com.zipddak.mypage.dto.FavoriteExpertDto;
 import com.zipddak.mypage.repository.EstimateDslRepository;
 import com.zipddak.mypage.repository.RequestDslRepository;
 import com.zipddak.repository.EstimateRepository;
@@ -146,11 +147,14 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 		List<EstimateCostListDto> costList = estimateDslRepository.selectEstimateCostList(estimateIdx);
 		
 		String expertUsername = expert.getUser().getUsername();
+		
+		FavoriteExpertDto expertDetail = estimateDslRepository.selectExpertCard(expert.getExpertIdx());
 
 		Map<String, Object> res = new HashMap<>();
 		res.put("estimateDetail", estimateDto);
 		res.put("costList", costList);
 		res.put("expertUsername", expertUsername);
+		res.put("expertDetail", expertDetail);
 
 		return res;
 	}

@@ -75,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
 
 				// 1-5. DB 저장
 				ProfileFile profileFile = ProfileFile.builder().fileName(originalFileName).fileRename(rename)
-						.storagePath(profileFilePath + rename).build();
+						.storagePath(profileFilePath).build();
 
 				ProfileFile savedFile = profileFileRepository.save(profileFile);
 
