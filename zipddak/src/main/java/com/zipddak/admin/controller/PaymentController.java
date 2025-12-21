@@ -26,6 +26,7 @@ import com.zipddak.admin.service.EstimateDetailService;
 import com.zipddak.admin.service.MatchingService;
 import com.zipddak.admin.service.OrderService;
 import com.zipddak.admin.service.PaymentService;
+import com.zipddak.admin.service.UserAddressService;
 import com.zipddak.entity.Rental;
 import com.zipddak.user.dto.RentalPaymentStep1Dto;
 import com.zipddak.user.service.RentalService;
@@ -42,6 +43,7 @@ public class PaymentController {
 	private final EstimateDetailService estimateDetailService;
 	private final MatchingService matchingService;
 	private final RentalService rentalService;
+	private final UserAddressService userService;
 
 	
 	@Value("${react-server.uri}")
@@ -54,6 +56,11 @@ public class PaymentController {
 	public ResponseEntity<PaymentInfoDto> productPayment(@RequestBody productPaymentStep1Dto paymentDto){
 		
 		try {
+			
+			// 기본 배송지로 저장을 체크한 경우
+			if(paymentDto.getRecvUser().isDefaultAddress()) {
+				userService.saveAddress(paymentDto.getRecvUser(), paymentDto.getUsername());
+			}
 			
 			// orderId 생성
 			String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
@@ -153,7 +160,7 @@ public class PaymentController {
 			paymentService.approvePayment(paymentComplateDto, "product");
 			
 			 // 클라이언트로 리다이렉트할 때 주문 ID 포함
-		    String redirectUrl = reactServer + "zipddak/productOrderComplate?orderCode=" + paymentComplateDto.getOrderId();
+		    String redirectUrl = reactServer + "zipddak/productOrderComplete?orderCode=" + paymentComplateDto.getOrderId();
 			
 			return ResponseEntity.status(HttpStatus.FOUND)
 					.location(URI.create(redirectUrl))
@@ -173,7 +180,7 @@ public class PaymentController {
 			
 			paymentService.approvePayment(paymentComplateDto, "estimate");
 			
-		    String redirectUrl = reactServer + "zipddak/mypage/expert/requests/active";
+		    String redirectUrl = reactServer + "zipddak/mypage/expert/works";
 			
 			return ResponseEntity.status(HttpStatus.FOUND)
 					.location(URI.create(redirectUrl))

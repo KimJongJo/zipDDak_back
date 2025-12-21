@@ -25,5 +25,4 @@ public class ProductDetailResponseDto {
 	Map<String, List<ColorOption>> productOption; // 상품 옵션
 	boolean favorite; // 관심 유무
 	
-	
 }

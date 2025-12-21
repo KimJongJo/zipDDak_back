@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -159,6 +160,16 @@ public class RequestServiceImpl implements RequestService {
 	public EstimatePaymentRequestDetailDto detail(Integer estimateIdx, String username) throws Exception {
 
 		return requestDslRepository.findByEstimateIdx(estimateIdx);
+	}
+
+	// 진행중인 요청서가 있는지 확인
+	@Override
+	public boolean requestCheck(String username) throws Exception {
+	
+		Optional<Request> request = requestRepository.findByUserUsernameAndStatus(username, "RECRUITING");
+		
+		return request.isPresent() ? true : false;
+		
 	}
 
 }

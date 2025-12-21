@@ -51,7 +51,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final UserRepository userRepository;
 	private final ToolRepository toolRepository;
 	private final ExpertRepository expertRepository;
-	
+
 	@Value("${reviewFile.path}")
 	private String reviewFilePath;
 
@@ -155,7 +155,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(reviewFilePath  + rename);
+				File saveFile = new File(reviewFilePath + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -216,7 +216,7 @@ public class ReviewServiceImpl implements ReviewService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(reviewFilePath  + rename);
+				File saveFile = new File(reviewFilePath + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -316,11 +316,11 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
-				ReviewFile saved = reviewFileRepository
-						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
+				ReviewFile saved = reviewFileRepository.save(
+						ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
 
 				newImgIdxList.add(saved.getReviewFileIdx());
 			}
@@ -399,11 +399,11 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
-				ReviewFile saved = reviewFileRepository
-						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
+				ReviewFile saved = reviewFileRepository.save(
+						ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
 
 				newImgIdxList.add(saved.getReviewFileIdx());
 			}
@@ -482,11 +482,11 @@ public class ReviewServiceImpl implements ReviewService {
 				String ext = origin.substring(origin.lastIndexOf("."));
 				String rename = UUID.randomUUID() + ext;
 
-				File saveFile = new File(reviewFilePath + rename);
+				File saveFile = new File(reviewFilePath, rename);
 				mf.transferTo(saveFile);
 
-				ReviewFile saved = reviewFileRepository
-						.save(ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
+				ReviewFile saved = reviewFileRepository.save(
+						ReviewFile.builder().fileName(origin).fileRename(rename).storagePath(reviewFilePath).build());
 
 				newImgIdxList.add(saved.getReviewFileIdx());
 			}

@@ -17,9 +17,11 @@ import com.zipddak.entity.Inquiries;
 import com.zipddak.entity.Inquiries.AnswererType;
 import com.zipddak.entity.Inquiries.InquiryType;
 import com.zipddak.entity.Inquiries.WriterType;
+import com.zipddak.entity.Product;
 import com.zipddak.repository.InquireFileRepository;
 import com.zipddak.repository.InquiriesRepository;
 import com.zipddak.repository.ProductFileRepository;
+import com.zipddak.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +31,8 @@ public class InquiryProductServiceImpl implements InquiryService {
 
 	private final InquiriesRepository inquiriesRepository;
 	private final InquireFileRepository inquireFileRepository;
+	
+	private final ProductRepository productRepository;
 	
 	@Value("${inquireFile.path}")
 	private String inquireFilePath;
@@ -73,6 +77,8 @@ public class InquiryProductServiceImpl implements InquiryService {
 					}
 				}
 				
+				Product product = productRepository.findById(writeInquiryDto.getProductIdx()).orElseThrow(() -> new Exception("문의 등록 중 판매 업체 아이디 불러오는 중 에러"));
+				
 				Inquiries inqu = Inquiries.builder()
 								.type(InquiryType.PRODUCT)
 								.content(writeInquiryDto.getContent())
@@ -80,6 +86,7 @@ public class InquiryProductServiceImpl implements InquiryService {
 								.writerType(WriterType.USER)
 								.productIdx(writeInquiryDto.getProductIdx())
 								.answererType(AnswererType.SELLER)
+								.answererUsername(product.getSellerUsername())
 								.build();
 				
 				if (fileIdxList.size() > 0) {

@@ -71,8 +71,6 @@ public class ProductController {
 		try {
 			ProductDetailResponseDto productInfo = productService.productInfo(productId, username);
 			
-			System.out.println(productInfo);
-			
 			return ResponseEntity.ok(productInfo);
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -161,15 +159,7 @@ public class ProductController {
 //	}
 //	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	// 테스트
+	// 구매 목록의 상품 정보
 		@PostMapping("user/orderListProduct2")
 		public ResponseEntity<LastOrderResponseDto> orderListProduct2(@RequestBody OrderListWrapperDto orderListWrapperDto){
 			
@@ -178,7 +168,6 @@ public class ProductController {
 				// 리스트 안에
 				// userDto가 들어가야하고
 				// 리스트인데 브랜드별 상품 목록이 들어가야함
-				
 				
 				List<OrderListDto> orderList = orderListWrapperDto.getOrderList();
 				LastOrderResponseDto lastOrderResponseDto = productService.getTestList(orderList);
