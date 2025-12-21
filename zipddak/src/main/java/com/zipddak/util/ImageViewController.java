@@ -94,7 +94,7 @@ public class ImageViewController {
 			
 			//파일이 없는경우
 			if (!file.exists()) {
-				file = new File(basePath, "no_img.svg");
+				return;
 			}
 
 			// 3. Stream 출력

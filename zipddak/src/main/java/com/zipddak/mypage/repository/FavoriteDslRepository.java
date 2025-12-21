@@ -56,7 +56,7 @@ public class FavoriteDslRepository {
 
 		return jpaQueryFactory
 				.select(Projections.constructor(FavoriteProductDto.class, product.productIdx, product.name,
-						productFile.storagePath, product.salePrice, product.discount, seller.brandName,
+						productFile.fileRename, product.salePrice, product.discount, seller.brandName,
 						reviewProduct.score.avg().coalesce(0.0).intValue(), reviewProduct.count()))
 				.from(favoritesProduct).leftJoin(product).on(product.productIdx.eq(favoritesProduct.productIdx))
 				.leftJoin(seller).on(product.sellerUsername.eq(seller.user.username)).leftJoin(reviewProduct)
@@ -84,7 +84,7 @@ public class FavoriteDslRepository {
 		QFavoritesTool favoritesTool = QFavoritesTool.favoritesTool;
 
 		return jpaQueryFactory
-				.select(Projections.constructor(FavoriteToolDto.class, tool.toolIdx, tool.name, toolFile.storagePath,
+				.select(Projections.constructor(FavoriteToolDto.class, tool.toolIdx, tool.name, toolFile.fileRename,
 						tool.rentalPrice, tool.tradeAddr))
 				.from(favoritesTool).leftJoin(tool).on(tool.toolIdx.eq(favoritesTool.toolIdx)).leftJoin(toolFile)
 				.on(toolFile.toolFileIdx.eq(tool.thunbnail)).where(favoritesTool.userUsername.eq(username))
@@ -112,7 +112,7 @@ public class FavoriteDslRepository {
 
 		List<FavoriteExpertDto> result = jpaQueryFactory
 				.select(Projections.constructor(FavoriteExpertDto.class, expert.expertIdx, expert.activityName,
-						expertFile.storagePath, category.name, expert.addr1, Expressions.constant(0), matching.count(),
+						expertFile.fileRename, category.name, expert.addr1, Expressions.constant(0), matching.count(),
 						reviewExpert.score.avg().coalesce(0.0).intValue(), reviewExpert.count()))
 				.from(favoritesExpert).leftJoin(expert).on(expert.expertIdx.eq(favoritesExpert.expertIdx))
 				.leftJoin(expertFile).on(expertFile.expertFileIdx.eq(expert.profileImageIdx)).leftJoin(category)
@@ -120,7 +120,7 @@ public class FavoriteDslRepository {
 				.on(reviewExpert.expertIdx.eq(expert.expertIdx)).leftJoin(matching)
 				.on(matching.expertIdx.eq(expert.expertIdx)).leftJoin(career).on(career.expertIdx.eq(expert.expertIdx))
 				.where(favoritesExpert.userUsername.eq(username))
-				.groupBy(expert.expertIdx, expert.activityName, expertFile.storagePath, category.name)
+				.groupBy(expert.expertIdx, expert.activityName, expertFile.fileRename, category.name)
 				.offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 
 		// 2) 전문가별 career 조회 + Java로 경력 계산
@@ -171,7 +171,7 @@ public class FavoriteDslRepository {
 
 		return jpaQueryFactory
 				.select(Projections.constructor(FavoriteCommunityDto.class, community.communityIdx, category.name,
-						community.title, community.content, communityFile.storagePath, user.nickname, community.views,
+						community.title, community.content, communityFile.fileRename, user.nickname, community.views,
 						reply.count()))
 
 				.from(favoritesCommunity)
@@ -182,7 +182,7 @@ public class FavoriteDslRepository {
 				.on(communityFile.communityFileIdx.eq(community.img1)).leftJoin(reply)
 				.on(reply.communityIdx.eq(community.communityIdx)).where(favoritesCommunity.userUsername.eq(username))
 				.groupBy(community.communityIdx, category.name, community.title, community.content,
-						communityFile.storagePath, user.nickname, community.views)
+						communityFile.fileRename, user.nickname, community.views)
 				.offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
 	}
 
