@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,9 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 	private final RefundRepository refundRepository;
 	private final ExchangeRepository exchangeRepository;
 	private final ClaimFileRepository claimFileRepository;
+	
+	@Value("${claimFile.path}")
+	private String uploadDir;
 
 	// 취소
 	@Override
@@ -72,7 +76,6 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 					continue;
 
 				// 1-1. 저장 경로 설정
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/claim/";
 				File folder = new File(uploadDir);
 				if (!folder.exists())
 					folder.mkdirs();

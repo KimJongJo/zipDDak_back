@@ -46,12 +46,13 @@ public class SellerProductController {
 			    							@RequestParam(value="thumbnailFile") MultipartFile thumbnail, 
 											@RequestParam(value="addImageFiles", required=false) MultipartFile[] addImageFiles, 
 											@RequestParam(value="detailImageFiles") MultipartFile[] detailImageFiles,
-											@RequestParam(value = "options", required = false) String optionsJson) {
+											@RequestParam(value = "options", required = false) String optionsJson,
+											@RequestParam(value= "username") String username) {
 //		System.out.println("pDto : " + product_dto);
 //		System.out.println(optionsJson);
 		
         try {
-        	product_dto.setSellerUsername("ss123");
+        	product_dto.setSellerUsername(username);
         	SaveResultDto result = product_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);
 
             if (!result.isSuccess()) { //상품 등록 실패한 경우 
