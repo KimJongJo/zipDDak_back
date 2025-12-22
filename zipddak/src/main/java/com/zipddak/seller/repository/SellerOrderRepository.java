@@ -1,5 +1,6 @@
 package com.zipddak.seller.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
 import com.zipddak.entity.OrderItem;
+import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
@@ -161,6 +163,19 @@ public class SellerOrderRepository {
 								.fetch();
 	}
 	
+	//자동 배송완료 처리 
+	public List<OrderItem> findAutoCompleteTargets(LocalDate referenceTime) {
+		QOrderItem item = QOrderItem.orderItem;
+		return jpaQueryFactory.selectFrom(item)
+				                .where(item.orderStatus.eq(OrderStatus.배송중),
+				                		item.firstShipDate.lt(referenceTime)
+				                )
+				                .fetch();
+	}
+	
+	
+	
+	
 	
 
 	// ============================
@@ -178,6 +193,8 @@ public class SellerOrderRepository {
 			}
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
+
+	
 
 	
 

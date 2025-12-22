@@ -89,6 +89,9 @@ public class OrderItem {
 	private Date createdAt;
 	
 	@Column
+    private LocalDate deliveredAt; //배송완료 날짜 
+	
+	@Column
 	private LocalDate exchangeRejectedAt;  //교환 거절일자 (판매자)
 	
 	@Column
@@ -132,4 +135,14 @@ public class OrderItem {
 				.productIdx(product.getProductIdx()).name(product.getName()).sellerUsername(product.getSellerUsername())
 				.build();
 	}
+	
+	//자동 배송완료처리 메소드 
+	public void completeDelivery() {
+        if (this.orderStatus != OrderStatus.배송중) {
+            throw new IllegalStateException("배송중 상태에서만 배송완료 가능");
+        }
+
+        this.orderStatus = OrderStatus.배송완료;
+        this.deliveredAt = LocalDate.now();
+    }
 }

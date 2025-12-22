@@ -151,11 +151,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 	}
 
 	// 특정 셀러의 상품 리스트
-	public Map<String, Object> searchMyProductList(String sellerUsername,
-										            String status,
-										            String category,
-										            String keyword,
-										            Integer page) {
+	public Map<String, Object> searchMyProductList(String sellerUsername, String status, String category, String keyword, Integer page) {
         PageRequest pr = PageRequest.of(page - 1, 10);
         
         // -> status 문자열을 Boolean 리스트로 변환 
@@ -178,13 +174,13 @@ public class SellerProductServiceImpl implements SellerProductService {
                 : null;
 
         SearchConditionDto scDto = SearchConditionDto.builder()
-                .sellerUsername(sellerUsername)
-//                .visibleList(visibleList)
-                .categoryList(categoryList)
-                .keyword(keyword)
-                .build();
+						                .sellerUsername(sellerUsername)
+						                .visibleList(visibleList)
+						                .categoryList(categoryList)
+						                .keyword(keyword)
+						                .build();
 
-        List<ProductDto> myProductList = sellerProduct_repo.searchMyProducts(pr, scDto);
+        List<ProductDto> myProductList = sellerProduct_repo.searchMyProducts(pr, scDto, sellerUsername);
         Long myProductCount = sellerProduct_repo.countMyProducts(scDto);
 
         int allPage = (int) Math.ceil(myProductCount / 10.0);
