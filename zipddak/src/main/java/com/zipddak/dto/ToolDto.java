@@ -2,6 +2,8 @@ package com.zipddak.dto;
 
 import java.sql.Date;
 
+import javax.persistence.Column;
+
 import com.zipddak.entity.Tool.ToolStatus;
 
 import lombok.AllArgsConstructor;
@@ -44,4 +46,8 @@ public class ToolDto {
     private String settleBank;
     private String settleAccount;
     private String settleHost;
+   
+    private String tradeAddr1;
+    private String tradeAddr2;
+    private String tradeZonecode;
 }
