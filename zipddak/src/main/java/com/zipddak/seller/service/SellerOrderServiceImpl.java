@@ -83,7 +83,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 	@Transactional
 	public void autoCompleteDelivery() {
 //		LocalDate ReferenceTime = LocalDate.now().minusDays(1);  //기준 날짜 
-		
+		//ㄴㄴㄴ
 		// 테스트용: 즉시 완료
 		LocalDate referenceDate = LocalDate.now(); //배송중으로 변경 후 10분후 배송완료 처리
         List<OrderItem> targets = sellerOrder_repo.findAutoCompleteTargets(referenceDate);
