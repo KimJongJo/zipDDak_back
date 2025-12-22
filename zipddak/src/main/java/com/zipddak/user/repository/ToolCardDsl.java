@@ -368,7 +368,6 @@ public class ToolCardDsl {
 				tool.rentalPrice,
 				tool.freeRental,
 				tool.content,
-				tool.tradeAddr,
 				tool.quickRental,
 				tool.directRental,
 				tool.postRental,
@@ -384,6 +383,10 @@ public class ToolCardDsl {
 				tool.settleBank,
 				tool.settleAccount,
 				tool.settleHost,
+				
+				tool.tradeAddr1,
+				tool.tradeAddr2,
+				tool.tradeZonecode,
 				
 				ownerUser.nickname,
 				ownerProfile.fileRename.as("ownerProfile"),
