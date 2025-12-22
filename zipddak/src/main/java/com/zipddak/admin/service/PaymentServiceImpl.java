@@ -70,22 +70,23 @@ public class PaymentServiceImpl implements PaymentService {
 	// 결제 금액 계산
 	@Override
 	public Map<String, Long> getTotalPrice(List<BrandDto> brandList) {
-		
-		
-		
+
 		long productTotal = 0;   // 상품 전체 금액
 	    long postChargeTotal = 0; // 배송비 합계
 
 	    for (BrandDto brand : brandList) {
 	        List<OptionListDto> orderList = brand.getOrderList();
 	        if (orderList == null || orderList.isEmpty()) continue;
-
+	        
 	        // 1. 상품 금액 합계
 	        long brandProductTotal = orderList.stream()
-	                .mapToLong(o -> (o.getSalePrice() + o.getPrice()) * o.getCount())
+	                .mapToLong(o -> {
+	                    return o.getPrice() * o.getCount();
+	                })
 	                .sum();
 
 	        productTotal += brandProductTotal;
+
 
 	        // 2. 배송비 합계
 	        // single 배송비
@@ -97,7 +98,10 @@ public class PaymentServiceImpl implements PaymentService {
 	        // bundle 배송비
 	        long bundleTotalPrice = orderList.stream()
 	                .filter(o -> o.getPostType() == PostType.bundle)
-	                .mapToLong(o -> (o.getSalePrice() + o.getPrice()) * o.getCount())
+	                .mapToLong(o -> {
+
+	                    return o.getPrice() * o.getCount();
+	                })
 	                .sum();
 
 	        long bundlePost = bundleTotalPrice >= brand.getFreeChargeAmount() ? 0 : brand.getBasicPostCharge();

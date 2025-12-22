@@ -32,6 +32,8 @@ public class OrderItemFlatDto {
 	private String optionName; // 옵션명
 	private Integer quantity; // 수량
 	private Long price; // 가격
+	private Long salePrice; // 세일 가격
+	private Long productPrice; // 상품 정가
 	private String thumbnail; // 썸네일
 	private String trackingNo; // 송장번호
 	private String postComp; // 택배사

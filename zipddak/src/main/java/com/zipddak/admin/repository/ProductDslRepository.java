@@ -395,7 +395,7 @@ public class ProductDslRepository {
 		return jpaQueryFactory.select(Projections.bean(OrderItemsDto.class, orderItem.orderItemIdx, // order_item_idx
 				orderItem.quantity, // quantity
 				productFile.fileRename.as("fileRename"), productFile.storagePath.as("storagePath"),
-				product.name.as("productName"), product.salePrice.as("productPrice"),
+				product.name.as("productName"), product.salePrice.as("salePrice"), product.price.as("productPrice"),
 				Projections.bean(OptionDto.class, // 옵션 정보 매핑
 						productOption.name.as("optionName"), productOption.value.as("optionValue"),
 						productOption.price.as("optionPrice")).as("option")))
@@ -499,7 +499,7 @@ public class ProductDslRepository {
 	            .map(OrderListDto::getProductId)
 	            .distinct()
 	            .collect(Collectors.toList());
-
+	    
 	    // 2. QueryDSL로 상품 + 판매자 + 썸네일 정보 조회
 	    List<Tuple> productTuples = jpaQueryFactory
 	            .select(product, seller, file)
@@ -522,12 +522,19 @@ public class ProductDslRepository {
 	        ProductOption prodOption = tuple.get(option);
 
 	        int sellerIdx = sel.getSellerIdx();
-	        BrandDto testDto = sellerMap.getOrDefault(sellerIdx, new BrandDto());
-	        testDto.setSellerIdx(sellerIdx);
-	        testDto.setBrandName(sel.getBrandName());
-	        testDto.setFreeChargeAmount(sel.getFreeChargeAmount());
-	        testDto.setBasicPostCharge(sel.getBasicPostCharge());
-	        testDto.setOrderList(new ArrayList<>());
+	        
+	        BrandDto testDto = sellerMap.get(sellerIdx);
+	        if (testDto == null) {
+	            testDto = new BrandDto();
+	            testDto.setSellerIdx(sellerIdx);
+	            testDto.setBrandName(sel.getBrandName());
+	            testDto.setFreeChargeAmount(sel.getFreeChargeAmount());
+	            testDto.setBasicPostCharge(sel.getBasicPostCharge());
+	            testDto.setOrderList(new ArrayList<>());
+
+	            sellerMap.put(sellerIdx, testDto);
+	        }
+
 
 	        // 해당 상품에 대한 옵션(orderList) 필터링
 	        List<OptionListDto> options = orderList.stream()
@@ -540,13 +547,16 @@ public class ProductDslRepository {
 	                    optionDto.setValue(o.getValue());
 	                    optionDto.setPrice(o.getPrice());
 	                    optionDto.setCount(o.getCount());
-	                    optionDto.setSalePrice(prod.getSalePrice()); // 필요시 계산
+	                    optionDto.setSalePrice(prod.getSalePrice() != null ? prod.getSalePrice() : 0); // 필요시 계산
+	                    
 	                    optionDto.setProductName(prod.getName());
 	                    optionDto.setPostCharge(prod.getPostCharge());
 	                    optionDto.setPostType(prod.getPostType());
 	                    optionDto.setProductImg(prodFile.getFileRename());
 	                    optionDto.setImgStoragePath(prodFile.getStoragePath());
 	                    optionDto.setSellerIdx(sellerIdx);
+	                    
+	                    optionDto.setProductPrice(prod.getPrice());
 	                    return optionDto;
 	                })
 	                .collect(Collectors.toList());
