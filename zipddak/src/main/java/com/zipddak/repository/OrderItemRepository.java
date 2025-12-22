@@ -13,4 +13,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 	List<OrderItem> findOrderItemIdxByOrderIdxAndOrderItemIdxIn(Integer orderIdx, List<Integer> itemIdxs); //특정 orderIdx에 포함된 orderItemIdx리스트 select
 
 	List<OrderItem> findByRefundIdx(Integer refundIdx);
+
+//	List<OrderItem> findByOrderStatusAndShippingStartedAtBefore(OrderStatus status, LocalDate referenceTime);
 }

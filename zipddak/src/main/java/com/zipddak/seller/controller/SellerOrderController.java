@@ -26,7 +26,7 @@ public class SellerOrderController {
 	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername,
 										@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
 										SearchConditionDto scDto) {
-		System.out.println("AAA");
+		System.out.println("sellerUsername" + sellerUsername);
 		try {
 			Map<String, Object> myOrder = order_svc.getMyOrderList(sellerUsername, page, scDto);
 			return ResponseEntity.ok(myOrder);
