@@ -18,5 +18,6 @@ public class RecvUserDto {
 	private String addr1;
 	private String detailAddress;
 	private String requestContent;
+	private boolean defaultAddress;
 	
 }

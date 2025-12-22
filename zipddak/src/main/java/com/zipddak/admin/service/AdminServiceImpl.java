@@ -1,22 +1,36 @@
 package com.zipddak.admin.service;
 
 import java.sql.Date;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
+import com.zipddak.admin.dto.MonthlyStatDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.RequestSellerInfoDto;
 import com.zipddak.admin.dto.ResponseAdminListDto;
+import com.zipddak.admin.repository.AdminDashBoardDslRepository;
 import com.zipddak.admin.repository.AdminDslRepository;
 import com.zipddak.entity.Expert;
+import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Seller;
+import com.zipddak.entity.Settlement;
+import com.zipddak.entity.User;
+import com.zipddak.entity.Settlement.SettlementState;
+import com.zipddak.entity.User.UserRole;
 import com.zipddak.repository.ExpertRepository;
 import com.zipddak.repository.SellerRepository;
+import com.zipddak.repository.SettlementRepository;
+import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,8 +39,11 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService{
 	
 	private final AdminDslRepository adminDslRepository;
+	private final AdminDashBoardDslRepository dashBoardDsl;
 	private final ExpertRepository expertRepository;
 	private final SellerRepository sellerRepository;
+	private final SettlementRepository settlementRepository;
+	private final UserRepository userRepository;
 	
 	// 회원 목록
 	@Override
@@ -169,10 +186,12 @@ public class AdminServiceImpl implements AdminService{
 	public void switchSeller(Integer sellerIdx, Integer sellerResult) throws Exception {
 		
 		Seller seller = sellerRepository.findById(sellerIdx).orElseThrow(() -> new Exception("업체 승인 중 오류"));
+		User user = userRepository.findById(seller.getUser().getUsername()).orElseThrow(() -> new Exception("판매업체의 일반 사용자 계정 조회 중 오류"));
 		
 		// 승인
 		if(sellerResult == 1) {
 			seller.setActivityStatus("ACTIVE");
+			user.setRole(UserRole.APPROVAL_SELLER);
 		}else { // 거부
 			seller.setActivityStatus("REJECT");
 		}
@@ -183,10 +202,79 @@ public class AdminServiceImpl implements AdminService{
 
 	// 정산 페이지 들어올때 결제 테이블에서 추출한 데이터 리스트 반환
 	@Override
-	public ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) throws Exception {
+	public ResponseAdminListDto settlement(Integer type, String month, Integer state, Integer page) throws Exception {
 
-		return adminDslRepository.settlement(month, page, column, state);
+		return adminDslRepository.settlementList(type, month, state, page);
 		
+	}
+
+	@Override
+	public AdminSettlementListDto settlementDetail(Integer settlementIdx) throws Exception {
+		
+		return adminDslRepository.settlementDetail(settlementIdx);
+	}
+
+	
+	@Override
+	public void settlementComplate(Integer settlementIdx, String comment) throws Exception {
+		
+		Settlement settlement = settlementRepository.findById(settlementIdx).orElseThrow(() -> new Exception("정산 데이터 찾다가 오류"));
+		
+		settlement.setState(SettlementState.COMPLETED);
+		
+		if(comment != null) {
+			settlement.setComment(comment);
+		}
+		
+		
+		settlementRepository.save(settlement);
+		
+	}
+
+	@Override
+	public Map<String, Object> dashboard() throws Exception {
+		
+		YearMonth thisMonth = YearMonth.now(); // 이번달
+		
+		// 1. 이번달 수수료 수익
+		// 1.1 전월 대비 비교 %
+		Map<String, Object> commissionMap = dashBoardDsl.commission(thisMonth, null);
+		
+		
+		// 2. 이번달 멤버심 수익
+		// 2.1 전월 대비 비교 %
+		Map<String, Object> membershipMap = dashBoardDsl.commission(thisMonth, PaymentType.MEMBERSHIP);
+		
+		// 3. 총 회원수
+		// 3.1 활성 사용자수, 전체 %
+		Map<String, Object> userCount = dashBoardDsl.userCount();
+		
+		// 4. 이번달 신규 가입자
+		// 4.1 저번달 가입자
+		Map<String, Object> JoinCount = dashBoardDsl.userJoin(thisMonth);
+		
+		// 5. 수익구조
+		// 5.1 이번달 수수료, 멤버십 더한거에 
+		// 5.2 멤버십, 전문가 매칭 수수료, 판매 수수료 퍼센트
+		Map<String, Object> dougnut = dashBoardDsl.dougnut(thisMonth);
+		
+		
+		// 6. 현재 달부터 6개월 전부터 6개의 달에 해당하는 매칭 수수료
+		List<MonthlyStatDto> matchingFeeList = dashBoardDsl.line(thisMonth, "matching");
+		
+		List<MonthlyStatDto> orderFeeList = dashBoardDsl.line(thisMonth, "order");
+		
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("commissionMap", commissionMap);
+		resultMap.put("membershipMap", membershipMap);
+		resultMap.put("userCount", userCount);
+		resultMap.put("JoinCount", JoinCount);
+		resultMap.put("dougnut", dougnut);
+		resultMap.put("matchingFeeList", matchingFeeList);
+		resultMap.put("orderFeeList", orderFeeList);
+		
+		return resultMap;
 	}
 
 }

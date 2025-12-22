@@ -1,6 +1,8 @@
 package com.zipddak.admin.repository;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import com.zipddak.admin.dto.AdminRequestExpertListDto;
 import com.zipddak.admin.dto.AdminRequestSellerListDto;
 import com.zipddak.admin.dto.AdminSaleListDto;
 import com.zipddak.admin.dto.AdminSellerListDto;
+import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.RequestSellerInfoDto;
@@ -36,9 +39,12 @@ import com.zipddak.entity.QRental;
 import com.zipddak.entity.QReportExpert;
 import com.zipddak.entity.QReportSeller;
 import com.zipddak.entity.QSeller;
+import com.zipddak.entity.QSettlement;
 import com.zipddak.entity.QTool;
 import com.zipddak.entity.QUser;
 import com.zipddak.entity.Rental.RentalStatus;
+import com.zipddak.entity.Settlement.SettlementState;
+import com.zipddak.entity.Settlement.TargetType;
 import com.zipddak.entity.User.UserRole;
 import com.zipddak.entity.User.UserState;
 import com.zipddak.util.PageInfo;
@@ -946,10 +952,104 @@ public class AdminDslRepository {
 				.fetchOne();
 				
 	}
+	
+	public ResponseAdminListDto settlementList(Integer type, String month, Integer state, Integer page) {
+		
+		int itemsPerPage = 15; 
+		int buttonsPerPage = 5;
 
-	public ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) {
-		// TODO Auto-generated method stub
-		return null;
+		QSettlement settlement = QSettlement.settlement;
+		QUser user = QUser.user;
+		
+		BooleanBuilder where = new BooleanBuilder();
+		
+		SettlementState stringState = null;
+		switch(state) {
+		case 1 : stringState = SettlementState.PENDING; break;
+		case 2 : stringState = SettlementState.COMPLETED; break;
+		}
+		
+		if(stringState != null) where.and(settlement.state.eq(stringState));
+		
+		TargetType targetType = null;
+		switch(type) {
+		case 1 : targetType = TargetType.EXPERT; break;
+		case 2 : targetType = TargetType.SELLER; break;
+		}
+		
+		if(targetType != null) where.and(settlement.targetType.eq(targetType));
+		
+		YearMonth ym = YearMonth.parse(month); // "YYYY-MM"
+        LocalDate startLocal = ym.atDay(1); // 월 첫째 날
+        LocalDate endLocal = ym.atEndOfMonth(); // 월 마지막 날
+
+        Date start = Date.valueOf(startLocal);
+        Date end = Date.valueOf(endLocal);
+
+        where.and(settlement.settlementMonth.goe(start)
+                 .and(settlement.settlementMonth.loe(end)));
+        
+	     // 3️⃣ count 쿼리
+		JPAQuery<Long> requestExpertQuery = jpaQueryFactory
+		    .select(settlement.count())
+		    .from(settlement)
+		    .where(where);
+				
+		Long totalCount = requestExpertQuery.fetchOne();
+		
+		 // 2. 페이징 계산
+	    int allPage = (int) Math.ceil((double) totalCount / itemsPerPage);
+	
+	    int startPage = ((page - 1) / buttonsPerPage) * buttonsPerPage + 1;
+	    int endPage = Math.min(startPage + buttonsPerPage - 1, allPage);
+	
+	    // 4. PageInfo 세팅
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurPage(page);
+	    pageInfo.setAllPage(allPage);
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+
+        
+        List<AdminSettlementListDto> settlementList = jpaQueryFactory.select(Projections.bean(AdminSettlementListDto.class, 
+        			settlement.settlementIdx,
+        			user.username,
+        			user.name,
+        			settlement.amount.as("totalAmount"),
+        			settlement.feeRate,
+        			settlement.settlementAmount.as("settlementTotalAmount"),
+        			settlement.state
+        		))
+        		.from(settlement)
+        		.leftJoin(user).on(settlement.targetUsername.eq(user.username))
+        		.where(where)
+        		.offset((page - 1) * itemsPerPage)
+	    		.limit(itemsPerPage)
+	    		.fetch();
+        
+		return new ResponseAdminListDto(settlementList, pageInfo);
+	}
+
+	public AdminSettlementListDto settlementDetail(Integer settlementIdx) {
+		
+		QSettlement settlement = QSettlement.settlement;
+		QUser user = QUser.user;
+		
+		return jpaQueryFactory.select(Projections.bean(AdminSettlementListDto.class, 
+    			settlement.settlementIdx,
+    			user.username,
+    			user.name,
+    			settlement.amount.as("totalAmount"),
+    			settlement.feeRate,
+    			settlement.settlementAmount.as("settlementTotalAmount"),
+    			settlement.state,
+    			settlement.targetType.as("userType"),
+    			settlement.settlementMonth.as("month")
+    		))
+    		.from(settlement)
+    		.leftJoin(user).on(settlement.targetUsername.eq(user.username))
+    		.where(settlement.settlementIdx.eq(settlementIdx))
+    		.fetchOne();
 	}
 
 	

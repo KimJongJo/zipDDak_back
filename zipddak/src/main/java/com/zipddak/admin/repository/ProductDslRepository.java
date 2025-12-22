@@ -109,14 +109,15 @@ public class ProductDslRepository {
 
 		// 상품 공개 유무가 1인 상품만
 		where.and(product.visibleYn.eq(true));
-
-		if (cate1 == 1 || cate1 == 2) {
-			if (cate2 == 1) {
+		
+		// 주방 욕실인 경우
+		if (cate1 == 1 || cate1 == 6) {
+			if (cate2 == 1) { // 전체 경우
 				where.and(product.categoryIdx.eq(cate1));
-			} else {
+			} else { // 중분류가 있을 경우
 				where.and(product.categoryIdx.eq(cate1)).and(product.subCategoryIdx.eq(cate2));
 			}
-		} else {
+		} else { // 나머지 카테고리인 경우
 			where.and(product.categoryIdx.eq(cate1));
 		}
 
@@ -199,6 +200,15 @@ public class ProductDslRepository {
 
 		QSeller seller = QSeller.seller;
 		
+		QProductFile thumbnail = new QProductFile("thumbnail");
+		QProductFile img1 = new QProductFile("img1");
+		QProductFile img2 = new QProductFile("img2");
+		QProductFile img3 = new QProductFile("img3");
+		QProductFile img4 = new QProductFile("img4");
+		QProductFile img5 = new QProductFile("img5");
+		QProductFile detailImg1 = new QProductFile("detailImg1");
+		QProductFile detailImg2 = new QProductFile("detailImg2");
+		
 		return jpaQueryFactory.select(Projections.bean(ProductDetailDto.class, 
 					category1.name.as("category"),
 					category2.name.as("subCategory"),
@@ -215,12 +225,29 @@ public class ProductDslRepository {
 					product.zonecode,
 					product.pickupAddr1,
 					product.pickupAddr2,
-					seller.brandName
+					seller.brandName,
+					seller.sellerIdx,
+					thumbnail.fileRename.as("thumbnail"),
+					img1.fileRename.as("img1"),
+					img2.fileRename.as("img2"),
+					img3.fileRename.as("img3"),
+					img4.fileRename.as("img4"),
+					img5.fileRename.as("img5"),
+					detailImg1.fileRename.as("detailImg1"),
+					detailImg2.fileRename.as("detailImg2")
 				))
 				.from(product)
 				.leftJoin(category1).on(category1.categoryIdx.eq(product.categoryIdx))
 				.leftJoin(category2).on(category2.categoryIdx.eq(product.subCategoryIdx))
 				.leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
+				.leftJoin(thumbnail).on(thumbnail.productFileIdx.eq(product.thumbnailFileIdx))
+				.leftJoin(img1).on(img1.productFileIdx.eq(product.image1FileIdx))
+				.leftJoin(img2).on(img2.productFileIdx.eq(product.image2FileIdx))
+				.leftJoin(img3).on(img3.productFileIdx.eq(product.image3FileIdx))
+				.leftJoin(img4).on(img4.productFileIdx.eq(product.image4FileIdx))
+				.leftJoin(img5).on(img5.productFileIdx.eq(product.image5FileIdx))
+				.leftJoin(detailImg1).on(detailImg1.productFileIdx.eq(product.detail1FileIdx))
+				.leftJoin(detailImg2).on(detailImg2.productFileIdx.eq(product.detail2FileIdx))
 				.where(product.productIdx.eq(productId))
 				.fetchFirst();
 	}
@@ -260,18 +287,25 @@ public class ProductDslRepository {
 
 		QReviewProduct reviewProduct = QReviewProduct.reviewProduct;
 		QUser user = QUser.user;
-		QReviewFile reviewFile = QReviewFile.reviewFile;
+		QReviewFile file1 = new QReviewFile("file1");
+		QReviewFile file2 = new QReviewFile("file2");
+		QReviewFile file3 = new QReviewFile("file3");
 
 		return jpaQueryFactory
 				.select(Projections.bean(ProductReviewsDto.class, reviewProduct.reviewProductIdx, reviewProduct.score,
 						reviewProduct.content, reviewProduct.createdate, user.nickname,
-						reviewFile.fileRename.as("img1Name"), reviewFile.fileRename.as("img2Name"),
-						reviewFile.fileRename.as("img3Name"), reviewFile.storagePath.as("img1Path"),
-						reviewFile.storagePath.as("img2Path"), reviewFile.storagePath.as("img3Path")))
-				.from(reviewProduct).leftJoin(user).on(reviewProduct.writer.eq(user.username)).leftJoin(reviewFile)
-				.on(reviewProduct.img1.eq(reviewFile.reviewFileIdx)).leftJoin(reviewFile)
-				.on(reviewProduct.img2.eq(reviewFile.reviewFileIdx)).leftJoin(reviewFile)
-				.on(reviewProduct.img3.eq(reviewFile.reviewFileIdx)).where(reviewProduct.productIdx.eq(productId))
+						file1.fileRename.as("img1Name"),
+						file2.fileRename.as("img2Name"),
+						file3.fileRename.as("img3Name"),
+						file1.storagePath.as("img1Path"),
+						file2.storagePath.as("img2Path"),
+						file3.storagePath.as("img3Path")))
+				.from(reviewProduct)
+				.leftJoin(user).on(reviewProduct.writer.eq(user.username))
+				.leftJoin(file1).on(reviewProduct.img1.eq(file1.reviewFileIdx))
+				.leftJoin(file2).on(reviewProduct.img2.eq(file2.reviewFileIdx))
+				.leftJoin(file3).on(reviewProduct.img3.eq(file3.reviewFileIdx))
+				.where(reviewProduct.productIdx.eq(productId))
 				.orderBy(reviewProduct.createdate.desc()).offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize()).fetch();
 	}
@@ -311,7 +345,13 @@ public class ProductDslRepository {
 
 		QUser user = QUser.user;
 
-		return jpaQueryFactory.select(Projections.bean(UserDto.class, user.name, user.phone)).from(user)
+		return jpaQueryFactory.select(Projections.bean(UserDto.class,
+				user.name,
+				user.phone,
+				user.addr1,
+				user.addr2,
+				user.zonecode
+				)).from(user)
 				.where(user.username.eq(username)).fetchOne();
 	}
 
@@ -342,7 +382,7 @@ public class ProductDslRepository {
 						order.totalAmount, order.postZonecode))
 				.from(order).where(order.orderCode.eq(orderCode)).fetchOne();
 	}
-
+ 
 	// 각 주문에 해당하는 주문 상품 불러오기
 	public List<OrderItemsDto> getOrderItems(Integer orderIdx) {
 
@@ -466,11 +506,14 @@ public class ProductDslRepository {
 	            .leftJoin(file).on(product.thumbnailFileIdx.eq(file.productFileIdx))
 	            .where(product.productIdx.in(productIds))
 	            .fetch();
-
+	    
 	    // 3. 판매자별 TestDto 구성
 	    Map<Integer, BrandDto> sellerMap = new HashMap<>();
 
 	    for (Tuple tuple : productTuples) {
+	    	
+	    	System.out.println(tuple.get(seller));
+	    	
 	        Product prod = tuple.get(product);
 	        Seller sel = tuple.get(seller);
 	        ProductFile prodFile = tuple.get(file);

@@ -20,5 +20,6 @@ public class PaymentComplateDto {
 	private String orderName;
 	private String username;
 	private Integer expertIdx;
+	private Integer toolIdx;
 	
 }

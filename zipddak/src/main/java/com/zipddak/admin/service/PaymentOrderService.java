@@ -98,4 +98,17 @@ public class PaymentOrderService implements OrderService {
 		return productDslRepository.getOrderInfo(orderCode);
 	}
 
+
+
+	@Override
+	public void addRentalOrder(String username, String orderId, Integer amount, RecvUserDto recvUser) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
+
+
+
 }

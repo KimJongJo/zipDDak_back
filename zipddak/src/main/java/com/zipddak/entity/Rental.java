@@ -75,6 +75,24 @@ public class Rental {
     
     @CreationTimestamp
     private Date createdAt;
+    
+    @Column
+    private String name;
+    
+    @Column
+    private String phone;
+    
+    @Column
+    private Integer settlementIdx;
+    
+    @Column
+    private String postComp;
+    
+    @Column
+    private String trackingNo;
+    
+    @Column(nullable = false)
+    private Boolean reviewCheck = false;
 
     public enum RentalStatus {
         PRE, PAYED, DELIVERY, RENTAL, RETURN

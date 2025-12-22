@@ -6,4 +6,5 @@ import com.zipddak.entity.Tool;
 
 public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
+
 }

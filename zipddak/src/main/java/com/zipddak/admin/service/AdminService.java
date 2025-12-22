@@ -2,7 +2,9 @@ package com.zipddak.admin.service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.zipddak.admin.dto.AdminSettlementListDto;
 import com.zipddak.admin.dto.AdminUserListDto;
 import com.zipddak.admin.dto.RequestExpertInfoDto;
 import com.zipddak.admin.dto.RequestSellerInfoDto;
@@ -37,7 +39,13 @@ public interface AdminService {
 	RequestSellerInfoDto requestSellerInfo(Integer sellerIdx) throws Exception;
 
 	void switchSeller(Integer sellerIdx, Integer sellerResult) throws Exception;
+	
+	ResponseAdminListDto settlement(Integer type, String month, Integer state, Integer page) throws Exception;
 
-	ResponseAdminListDto settlement(Integer month, Integer page, Integer column, Integer state) throws Exception;
+	AdminSettlementListDto settlementDetail(Integer settlementIdx) throws Exception;
+
+	void settlementComplate(Integer settlementIdx, String comment) throws Exception;
+
+	Map<String, Object> dashboard() throws Exception;
 
 }

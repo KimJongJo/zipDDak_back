@@ -34,16 +34,28 @@ public class Settlement {
     @Column
     private String workType;
 
-    @Column(nullable = false)
+    @Column
     private Integer amount;
+    
+    @Column
+    private Integer settlementAmount;
+    
+    @Column
+    private Integer feeRate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SettlementState state;
 
-    @CreationTimestamp
+    @Column
     private Date completedAt;
 
+    @CreationTimestamp
+    private Date createdAt;
+    
+    @Column
+    private Date settlementMonth; // 예: "2025-09"
+    
     @Column
     private String comment;
 

@@ -42,6 +42,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
 		map.put("refresh_token", JwtProperties.TOKEN_PREFIX+ refreshToken);
 		
 		String token = objectMapper.writeValueAsString(map);
+		System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 		System.out.println("소셜 로그인으로 생성한 토큰 : " + token);
 		
 		String targetUrl = UriComponentsBuilder.fromUriString(reactTokenUri)
