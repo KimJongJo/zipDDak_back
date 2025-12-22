@@ -36,8 +36,14 @@ public class Tool {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private String tradeAddr;
+    @Column
+    private String tradeAddr1;
+    
+    @Column
+    private String tradeAddr2;
+    
+    @Column
+    private String tradeZonecode;
     
     @Column
     private Boolean quickRental;
@@ -54,13 +60,13 @@ public class Tool {
     @Column
     private Long postCharge;
 
-    @Column(nullable = false)
+    @Column
     private String zonecode;
 
-    @Column(nullable = false)
+    @Column
     private String addr1;
 
-    @Column(nullable = false)
+    @Column
     private String addr2;
 
     @Column
