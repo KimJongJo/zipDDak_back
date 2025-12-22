@@ -540,7 +540,7 @@ public class ProductDslRepository {
 	                    optionDto.setValue(o.getValue());
 	                    optionDto.setPrice(o.getPrice());
 	                    optionDto.setCount(o.getCount());
-	                    optionDto.setSalePrice(prod.getSalePrice()); // 필요시 계산
+	                    optionDto.setSalePrice(prod.getSalePrice() != null ? prod.getSalePrice() : 0); // 필요시 계산
 	                    optionDto.setProductName(prod.getName());
 	                    optionDto.setPostCharge(prod.getPostCharge());
 	                    optionDto.setPostType(prod.getPostType());
