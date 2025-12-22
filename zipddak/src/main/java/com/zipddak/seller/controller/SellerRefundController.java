@@ -53,50 +53,5 @@ public class SellerRefundController {
 
 	
 	
-	//반품 거절 처리 
-	@PostMapping("/refundRejectItems")
-    public ResponseEntity<?> refundRejectItems(@RequestBody OrderItemActionRequestDto reqItems) {
-		System.out.println("reqItems : " + reqItems);
-		
-    	SaveResultDto result = refund_svc.refundRejectItems(reqItems);
-
-		if (!result.isSuccess()) { //처리 실패한 경우 
-			return ResponseEntity.badRequest().body(result);
-		}
-		return ResponseEntity.ok(result);
-    }
 	
-	
-	//반품 접수 수락 처리 
-	@PostMapping("/refundAcceptItems")
-    public ResponseEntity<?> refundAcceptItems(@RequestBody OrderItemActionRequestDto reqItems) {
-		System.out.println("reqItems : " + reqItems);
-		
-    	SaveResultDto result = refund_svc.refundAcceptItems(reqItems);
-
-		if (!result.isSuccess()) { //처리 실패한 경우 
-			return ResponseEntity.badRequest().body(result);
-		}
-		return ResponseEntity.ok(result);
-    }
-		
-		
-		
-	//환불처리 
-	@PostMapping("/refundItems")
-    public ResponseEntity<?> refundItems(@RequestBody OrderItemActionRequestDto reqItems) {
-		System.out.println("reqItems : " + reqItems);
-        try {
-        	SaveResultDto result = refund_svc.refundItems(reqItems.getOrderIdx(),reqItems.getItemIdxs());
-
-			 if (!result.isSuccess()) { //환불처리 실패한 경우 
-		            return ResponseEntity.badRequest().body(result);
-		        }
-		        return ResponseEntity.ok(result);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-    }
 }
