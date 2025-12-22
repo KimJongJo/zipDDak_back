@@ -15,6 +15,7 @@ import com.zipddak.auth.PrincipalDetails;
 import com.zipddak.entity.ProfileFile;
 import com.zipddak.entity.User;
 import com.zipddak.entity.User.UserRole;
+import com.zipddak.entity.User.UserState;
 import com.zipddak.repository.ProfileFileRepository;
 import com.zipddak.repository.UserRepository;
 import com.zipddak.util.ProfileService;
@@ -112,6 +113,7 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService{
 					.phone(mobile)
 					.expert(false)
 					.role(UserRole.USER)
+					.state(UserState.ACTIVE)
 					.build();
 			
 		} else { // 정보 변경

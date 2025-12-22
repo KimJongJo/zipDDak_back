@@ -145,7 +145,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        expert.setUser(user);
 	        //관리자가 승인...
 	        expert.setActivityStatus("WAITING");
-
+	        
 	        signExpertRepository.save(expert);
 	    }
 		
@@ -213,6 +213,7 @@ public class SignUpServiceImpl implements SignUpService {
 	        User user = sellerDto.toUserEntity();
 	        user.setNickname(sellerDto.getBrandName());
 	        user.setRole(UserRole.SELLER);
+	        user.setState(UserState.ACTIVE);
 	        userRepository.save(user);
 	        
 	        //Seller테이블 등록

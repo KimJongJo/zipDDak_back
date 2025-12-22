@@ -36,7 +36,7 @@ public class CommunityCardDsl {
 		BooleanBuilder where = new BooleanBuilder();
 
 		// 카테고리
-        if (category != null) {
+        if (category != null && category != 0) {
             where.and(community.category.eq(category));
         }
 
@@ -68,8 +68,9 @@ public class CommunityCardDsl {
 				.leftJoin(favorite).on(community.communityIdx.eq(favorite.communityIdx))
 				.leftJoin(user).on(community.user.username.eq(user.username))
 				.leftJoin(file).on(community.img1.eq(file.communityFileIdx))
+				.where(where)
 				.groupBy(community.communityIdx)
-				.offset(4).orderBy(order).fetch();
+				.offset(0).limit(4).orderBy(order).fetch();
 		
 		Long totalCount = jpaQueryFactory
 				.select(community.communityIdx.countDistinct())

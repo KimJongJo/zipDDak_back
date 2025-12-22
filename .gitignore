@@ -2,3 +2,10 @@
 
 # application.properties 보안 설정
 application.properties
+<<<<<<< HEAD
+src/main/resources/firebase/
+=======
+
+src/main/resources/firebase/
+
+>>>>>>> branch 'main' of https://github.com/KimJongJo/zipDDak_back.git

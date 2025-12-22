@@ -23,6 +23,7 @@ public class CartProductDetailDto {
 	private String optionValue; // 옵션 선택값
 	private Integer quantity; // 수량
 	private long productSalePrice; // 상품 판매가
+	private long productPrice; // 상품 정가
 	private long optionPrice; // 옵션 가격
 	private PostType postType; // 배송 단위
 	private long postCharge; // 배송비 -> 개별배송일때만 사용

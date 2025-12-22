@@ -45,6 +45,7 @@ public class SentEstimateDetailDto {
 	/* 요청서 */
 	private Integer requestIdx; // 요청서 아이디
 	private Date requestAt; // 요청일
+	private Integer largeServiceIdx;
 	private String largeServiceName; // 서비스 대분류 이름
 	private String midServiceName; // 서비스 중분류 이름
 	private String smallServiceName; // 서비스 소분류 이름

@@ -63,7 +63,9 @@ public class ProductCardDsl {
 			where.and(product.visibleYn.eq(true));
 
 			// 카테고리
+			if(categoryNo != null && categoryNo != 0) {
 			where.and(product.categoryIdx.eq(categoryNo));
+			}
 			
 			//키워드
 			if (keyword != null && !keyword.isBlank()) {

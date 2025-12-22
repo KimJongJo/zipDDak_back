@@ -48,6 +48,9 @@ public class SellerProductController {
 											@RequestParam(value="detailImageFiles") MultipartFile[] detailImageFiles,
 											@RequestParam(value = "options", required = false) String optionsJson,
 											@RequestParam(value="sellerId") String sellerUsername) {
+//		System.out.println("pDto : " + product_dto);
+//		System.out.println(optionsJson);
+		
         try {
         	product_dto.setSellerUsername(sellerUsername);
         	SaveResultDto result = product_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);

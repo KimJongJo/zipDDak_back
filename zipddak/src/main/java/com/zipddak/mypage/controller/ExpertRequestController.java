@@ -132,4 +132,16 @@ public class ExpertRequestController {
 			return ResponseEntity.badRequest().body(null);
 		}
 	}
+	
+	// 요청 그만하기
+	@GetMapping("/request/stop")
+	public ResponseEntity<Boolean> stopRequest(
+			@RequestParam("requestIdx") Integer requestIdx) {
+		try {
+			return ResponseEntity.ok(requestService.stopRequest(requestIdx));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
 }

@@ -60,8 +60,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 		if (orderDto == null) {
 	        throw new Exception("주문 없음");
 	    }
-				
-				
+		
 		// 주문상품정보 (셀러 소유 OrderItem만 가져오기)
 	    List<OrderItemDto> itemList = sellerOrder_repo.findMyOrderItems(sellerUsername, orderIdx);
 	    if (itemList.isEmpty()) {

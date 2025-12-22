@@ -14,5 +14,8 @@ public interface OrderService {
 			List<BrandDto> brandList);
 
 	OrderDto getOrderInfo(String orderCode) throws Exception;
+	
+	//대여
+	public void addRentalOrder(String username, String orderId, Integer amount, RecvUserDto recvUser);
 
 }

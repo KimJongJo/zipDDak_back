@@ -1,19 +1,29 @@
 package com.zipddak.mypage.repository;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zipddak.entity.Career;
+import com.zipddak.entity.QCareer;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QEstimate;
 import com.zipddak.entity.QEstimateCost;
+import com.zipddak.entity.QExpert;
 import com.zipddak.entity.QExpertFile;
+import com.zipddak.entity.QFavoritesExpert;
+import com.zipddak.entity.QMatching;
 import com.zipddak.entity.QRequest;
+import com.zipddak.entity.QReviewExpert;
 import com.zipddak.entity.QUser;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
+import com.zipddak.mypage.dto.FavoriteExpertDto;
 import com.zipddak.mypage.dto.SentEstimateDetailDto;
 import com.zipddak.mypage.dto.SentEstimateListDto;
 
@@ -117,14 +127,15 @@ public class EstimateDslRepository {
 
 		return jpaQueryFactory
 				.select(Projections.constructor(SentEstimateDetailDto.class, estimate.estimateIdx,
-						estimate.workDurationType, estimate.workDurationValue, estimate.workScope, estimate.workDetail, estimate.disposalCost, estimate.demolitionCost, estimate.etcFee, estimate.costDetail,
+						estimate.workDurationType, estimate.workDurationValue, estimate.workScope, estimate.workDetail,
+						estimate.disposalCost, estimate.demolitionCost, estimate.etcFee, estimate.costDetail,
 						estimate.diagnosisType, estimate.repairType, estimate.demolitionType, estimate.consultingType,
 						estimate.consultingLaborCost, estimate.stylingDesignCost, estimate.threeDImageCost,
-						estimate.reportProductionCost, request.requestIdx, request.createdAt, category1.name,
-						category2.name, category3.name, user.name, user.phone, user.zonecode, user.addr1, user.addr2,
-						request.budget, request.preferredDate, request.location, request.constructionSize,
-						request.purpose, request.place, request.additionalRequest, request.status,
-						expertFile1.fileRename, expertFile2.fileRename, expertFile3.fileRename))
+						estimate.reportProductionCost, request.requestIdx, request.createdAt, request.largeServiceIdx,
+						category1.name, category2.name, category3.name, user.name, user.phone, user.zonecode,
+						user.addr1, user.addr2, request.budget, request.preferredDate, request.location,
+						request.constructionSize, request.purpose, request.place, request.additionalRequest,
+						request.status, expertFile1.fileRename, expertFile2.fileRename, expertFile3.fileRename))
 				.from(estimate).leftJoin(request).on(request.requestIdx.eq(estimate.requestIdx)).leftJoin(category1)
 				.on(request.largeServiceIdx.eq(category1.categoryIdx)).leftJoin(category2)
 				.on(request.midServiceIdx.eq(category2.categoryIdx)).leftJoin(category3)
@@ -144,6 +155,51 @@ public class EstimateDslRepository {
 				.select(Projections.constructor(EstimateCostListDto.class, estimateCost.type, estimateCost.label,
 						estimateCost.amount))
 				.from(estimateCost).where(estimateCost.estimateIdx.eq(estimateIdx)).fetch();
+	}
+
+	// 전문가 프로필 조회
+	public FavoriteExpertDto selectExpertCard(Integer expertIdx) throws Exception {
+
+		QExpert expert = QExpert.expert;
+		QExpertFile expertFile = QExpertFile.expertFile;
+		QCategory category = QCategory.category;
+		QReviewExpert reviewExpert = QReviewExpert.reviewExpert;
+		QMatching matching = QMatching.matching;
+		QCareer career = QCareer.career;
+
+		FavoriteExpertDto result = jpaQueryFactory
+				.select(Projections.constructor(FavoriteExpertDto.class, expert.expertIdx, expert.activityName,
+						expertFile.fileRename, category.name, expert.addr1, Expressions.constant(0), matching.count(),
+						reviewExpert.score.avg().coalesce(0.0).intValue(), reviewExpert.count()))
+				.from(expert).leftJoin(expertFile).on(expertFile.expertFileIdx.eq(expert.profileImageIdx))
+				.leftJoin(category).on(category.categoryIdx.eq(expert.mainServiceIdx)).leftJoin(reviewExpert)
+				.on(reviewExpert.expertIdx.eq(expert.expertIdx)).leftJoin(matching)
+				.on(matching.expertIdx.eq(expert.expertIdx)).leftJoin(career).on(career.expertIdx.eq(expert.expertIdx))
+				.where(expert.expertIdx.eq(expertIdx))
+				.groupBy(expert.expertIdx, expert.activityName, expertFile.fileRename, category.name).fetchOne();
+
+		// 2) 전문가별 career 조회 + Java로 경력 계산
+		List<Career> careers = jpaQueryFactory.selectFrom(career).where(career.expertIdx.eq(expertIdx)).fetch();
+
+		result.setCareerCount(calculateCareerMonths(careers));
+
+		return result;
+	}
+
+	private int calculateCareerMonths(List<Career> careers) {
+		int totalMonths = 0;
+
+		for (Career c : careers) {
+			if (c.getStartDate() != null && c.getEndDate() != null) {
+				LocalDate start = c.getStartDate().toLocalDate();
+				LocalDate end = c.getEndDate().toLocalDate();
+
+				Period p = Period.between(start, end);
+				totalMonths += p.getYears() * 12 + p.getMonths();
+			}
+		}
+
+		return totalMonths;
 	}
 
 }

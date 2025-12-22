@@ -46,8 +46,8 @@ public class SellerRefundController {
 	// 반품요청건 내역 상세보기
 	@GetMapping("/refundReqDetail")
 	public ResponseEntity<?> refundReqDetail(@RequestParam("sellerId") String sellerUsername,@RequestParam("num") Integer refundIdx) {
+		System.out.println("sellerUsername : " + sellerUsername);
 			Map<String, Object> refundReqDetail = refund_svc.getRefundReqDetail(sellerUsername, refundIdx);
-			System.out.println("refundReqDetail : " + refundReqDetail);
 			return ResponseEntity.ok(refundReqDetail);
 	}
 

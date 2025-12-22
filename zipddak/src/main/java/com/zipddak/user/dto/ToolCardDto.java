@@ -18,10 +18,13 @@ public class ToolCardDto {
 	 private Long rentalPrice;
 	 private String addr1;
 	 private ToolStatus satus;
+	 private String categoryName;
 	 
-	 private String fileRename; // 썸네일 파일 이름
-	 private String storagePath; // 사진 저장 경로
+	 private Boolean directRental;
+	 private Boolean postRental;
 	 
+	 private String thunbnail; // 썸네일 파일 이름
+	
 	 private Integer chatCount; //문의 수
 	 private Boolean favorite; // 관심 표시
 	 private Integer favoriteCount; //관심 수

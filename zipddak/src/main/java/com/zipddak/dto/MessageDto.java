@@ -1,6 +1,6 @@
 package com.zipddak.dto;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import lombok.*;
 
@@ -10,14 +10,11 @@ import lombok.*;
 @Builder
 public class MessageDto {
     private Integer messageIdx;
-    private String type;
+    private Integer messageRoomIdx;
     private String content;
-    private String receiverUsername;
-    private String receiverName;
-    private String senderUsername;
-    private String senderName;
-    private Integer toolIdx;
-    private Integer estimateIdx;
+    private String recvUsername;
+    private String sendUsername;
     private Boolean sendButton;
-    private Date createdAt;
+    private Boolean confirm;
+    private Timestamp createdAt;
 }

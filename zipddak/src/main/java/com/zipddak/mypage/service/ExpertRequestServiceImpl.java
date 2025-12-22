@@ -3,9 +3,11 @@ package com.zipddak.mypage.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.zipddak.dto.EstimateDto;
 import com.zipddak.entity.Estimate;
@@ -19,6 +21,7 @@ import com.zipddak.mypage.dto.RequestActiveDetailDto;
 import com.zipddak.mypage.dto.RequestActiveExpertListDto;
 import com.zipddak.mypage.dto.RequestHistoryListDto;
 import com.zipddak.mypage.dto.EstimateWriteDto.EstimateCostListDto;
+import com.zipddak.mypage.dto.FavoriteExpertDto;
 import com.zipddak.mypage.repository.EstimateDslRepository;
 import com.zipddak.mypage.repository.RequestDslRepository;
 import com.zipddak.repository.EstimateRepository;
@@ -104,9 +107,13 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 	// [일반사용자]진행중인 요청서 조회 - 전문가 목록
 	@Override
 	public List<RequestActiveExpertListDto> getRequestActiveExpertList(String username) throws Exception {
-		Request request = requestRepository.findByUserUsernameAndStatus(username, "RECRUITING").get();
-
-		return requestDslRepository.getRequestActiveExpertList(request.getRequestIdx());
+		Optional<Request> request = requestRepository.findByUserUsernameAndStatus(username, "RECRUITING");
+		
+		if(request.isPresent()) {
+			return requestDslRepository.getRequestActiveExpertList(request.get().getRequestIdx());
+		} else {
+			return null;
+		}
 	}
 
 	// [일반사용자]진행중인 요청서 조회
@@ -120,6 +127,8 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 	public Map<String, Object> getUserEstimateActiveDetail(Integer estimateIdx) throws Exception {
 
 		Estimate estimate = estimateRepository.findById(estimateIdx).get();
+		
+		Expert expert = expertRepository.findById(estimate.getExpert().getExpertIdx()).get();
 
 		EstimateDto estimateDto = EstimateDto.builder().estimateIdx(estimate.getEstimateIdx())
 				.requestIdx(estimate.getRequestIdx()).largeServiceIdx(estimate.getLargeServiceIdx())
@@ -131,14 +140,31 @@ public class ExpertRequestServiceImpl implements ExpertRequestService {
 				.consultingLaborCost(estimate.getConsultingLaborCost())
 				.stylingDesignCost(estimate.getStylingDesignCost()).threeDImageCost(estimate.getThreeDImageCost())
 				.reportProductionCost(estimate.getReportProductionCost()).etcFee(estimate.getEtcFee())
-				.costDetail(estimate.getCostDetail()).createdAt(estimate.getCreatedAt()).build();
+				.costDetail(estimate.getCostDetail()).createdAt(estimate.getCreatedAt())
+				.expertIdx(estimate.getExpert().getExpertIdx()).activityName(estimate.getExpert().getActivityName())
+				.build();
 
 		List<EstimateCostListDto> costList = estimateDslRepository.selectEstimateCostList(estimateIdx);
+		
+		String expertUsername = expert.getUser().getUsername();
+		
+		FavoriteExpertDto expertDetail = estimateDslRepository.selectExpertCard(expert.getExpertIdx());
 
 		Map<String, Object> res = new HashMap<>();
 		res.put("estimateDetail", estimateDto);
 		res.put("costList", costList);
+		res.put("expertUsername", expertUsername);
+		res.put("expertDetail", expertDetail);
 
 		return res;
+	}
+	
+	// 요청 그만받기
+	@Override
+	@Transactional
+	public Boolean stopRequest(Integer requestIdx) throws Exception {
+		Request request = requestRepository.findById(requestIdx).get();
+		request.setStatus("STOPPED");
+		return true;
 	}
 }
