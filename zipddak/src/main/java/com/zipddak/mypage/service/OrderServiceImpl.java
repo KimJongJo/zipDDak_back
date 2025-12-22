@@ -106,6 +106,8 @@ public class OrderServiceImpl implements OrderService {
 			orderItemDto.setOptionName(orderItemFlatDto.getOptionName());
 			orderItemDto.setQuantity(orderItemFlatDto.getQuantity());
 			orderItemDto.setPrice(orderItemFlatDto.getPrice());
+			orderItemDto.setSalePrice(orderItemFlatDto.getSalePrice());
+			orderItemDto.setProductPrice(orderItemFlatDto.getProductPrice());
 			orderItemDto.setThumbnail(orderItemFlatDto.getThumbnail());
 			orderItemDto.setTrackingNo(orderItemFlatDto.getTrackingNo());
 			orderItemDto.setPostComp(orderItemFlatDto.getPostComp());
@@ -120,7 +122,11 @@ public class OrderServiceImpl implements OrderService {
 		for (OrderListDto orderListDto : orderListDtoMap.values()) {
 			for (DeliveryGroupsDto group : orderListDto.getDeliveryGroups()) {
 
-				long totalGroupPrice = group.getOrderItems().stream().mapToLong(OrderItemDto::getPrice).sum();
+				// 수량 * 상품 가격으로 총합 상품 금액 계산
+				long totalGroupPrice = group.getOrderItems().stream()
+				        .mapToLong(item -> item.getPrice() * item.getQuantity())
+				        .sum();
+
 
 				// 무료배송
 				if (group.getFreeChargeAmount() != null && totalGroupPrice >= group.getFreeChargeAmount()) {
