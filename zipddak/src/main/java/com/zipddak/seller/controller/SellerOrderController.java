@@ -26,7 +26,7 @@ public class SellerOrderController {
 	public ResponseEntity<?> orderList(@RequestParam("sellerId") String sellerUsername,
 										@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
 										SearchConditionDto scDto) {
-		System.out.println("AAA");
+		System.out.println("sellerUsername" + sellerUsername);
 		System.out.println(sellerUsername);
 		System.out.println(scDto);
 		try {

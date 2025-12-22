@@ -46,7 +46,7 @@ public class SellerProductRepository {
     }
 
 	//특정 셀러가 등록한 상품 리스트 
-	public List<ProductDto> searchMyProducts(PageRequest pageRequest, SearchConditionDto scDto) {
+	public List<ProductDto> searchMyProducts(PageRequest pageRequest, SearchConditionDto scDto, String sellerUsername) {
 
         QProduct product = QProduct.product;
         QProductFile thumb = QProductFile.productFile;
@@ -67,7 +67,7 @@ public class SellerProductRepository {
 									                .from(product)
 									                .leftJoin(thumb).on(thumb.productFileIdx.eq(product.thumbnailFileIdx))
 									                .where(product.deletedYn.isFalse(),
-//									                		product.sellerUsername.eq(sellerUsername),
+									                		product.sellerUsername.eq(sellerUsername),
 									                		QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
 									                		QPredicate.inBoolean(product.visibleYn, scDto.getVisibleList()),
 									                	    QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),
@@ -89,7 +89,7 @@ public class SellerProductRepository {
 				                .from(product)
 				                .where(product.deletedYn.isFalse(),
 				                        QPredicate.eq(product.sellerUsername, scDto.getSellerUsername()),
-//				                        QPredicate.inInt(product.visibleYn, scDto.getVisibleList()),
+				                        QPredicate.inBoolean(product.visibleYn, scDto.getVisibleList()),
 				                        QPredicate.inInt(product.categoryIdx, scDto.getCategoryList()),
 				                        QPredicate.contains(product.name, scDto.getKeyword()))
 				                .fetchOne();

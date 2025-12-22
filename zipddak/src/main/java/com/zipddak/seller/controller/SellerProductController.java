@@ -47,12 +47,12 @@ public class SellerProductController {
 											@RequestParam(value="addImageFiles", required=false) MultipartFile[] addImageFiles, 
 											@RequestParam(value="detailImageFiles") MultipartFile[] detailImageFiles,
 											@RequestParam(value = "options", required = false) String optionsJson,
-											@RequestParam(value= "username") String username) {
+											@RequestParam(value="sellerId") String sellerUsername) {
 //		System.out.println("pDto : " + product_dto);
 //		System.out.println(optionsJson);
 		
         try {
-        	product_dto.setSellerUsername(username);
+        	product_dto.setSellerUsername(sellerUsername);
         	SaveResultDto result = product_svc.productRegist(product_dto, thumbnail, addImageFiles, detailImageFiles, optionsJson);
 
             if (!result.isSuccess()) { //상품 등록 실패한 경우 
@@ -72,6 +72,7 @@ public class SellerProductController {
 	//셀러가 등록한 상품의 카테고리만 필터박스에 세팅 
 	@GetMapping("/categories")
 	public ResponseEntity<?> getSellerCategories(@RequestParam("sellerId") String sellerUsername) {
+		System.out.println("sellerUsername : " + sellerUsername);
 		try {
 			List<CategoryDto> sellerCategories = product_svc.getSellerCategories(sellerUsername);
 			return ResponseEntity.ok(sellerCategories);

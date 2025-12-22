@@ -12,6 +12,9 @@ public interface SellerOrderService {
 	//주문내역 상세보기
 	Map<String, Object> getMyOrderDetail(String sellerUsername, Integer orderIdx) throws Exception;
 
+	//자동배송완료처리
+	void autoCompleteDelivery();
+
 	
 
 }
