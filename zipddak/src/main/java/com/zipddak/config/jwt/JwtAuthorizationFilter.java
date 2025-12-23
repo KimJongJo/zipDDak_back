@@ -47,11 +47,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		String uri = request.getRequestURI();
 		System.out.println(uri);
 		
-		// 로그인(인증) 필요없는 요청은 토큰 체크하지 않는다
-		if(!(uri.contains("/zipddak") || uri.contains("/admin") || uri.contains("/seller"))) {
-			chain.doFilter(request, response);
-			return;
+		String[] parts = uri.split("/"); // "/" 기준으로 분리
+
+		// parts[1]가 admin, seller, expert 중 하나면 인증 체크
+		boolean isProtectedPath = parts.length > 1 && 
+		                          (parts[1].equals("admin") || parts[1].equals("seller") || parts[1].equals("expert"));
+
+		if (!isProtectedPath) {
+		    chain.doFilter(request, response);
+		    return;
 		}
+
 		
 		String authentication = request.getHeader(JwtProperties.HEADER_STRING);
 		if(authentication == null) {

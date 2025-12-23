@@ -8,4 +8,6 @@ public interface MatchingRepository extends JpaRepository<Matching, Integer>{
 
 	Matching findByMatchingCode(String asText);
 
+	Matching findFirstByEstimateIdxOrderByMatchingIdxDesc(Integer estimateIdx);
+
 }

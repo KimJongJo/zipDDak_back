@@ -16,4 +16,6 @@ public interface ExpertFindService {
 
 	EstimatePaymentExpertDto expertDetail(Integer estimateIdx) throws Exception;
 
+	boolean mainServiceCheck(String username) throws Exception;
+
 }

@@ -117,7 +117,11 @@ public class PaymentController {
 						+ costDto.getEtcFee();
 			}else {
 				amount += costDto.getBuildCostSum()
-						+costDto.getMaterialCostSum();
+						+costDto.getMaterialCostSum()
+						+costDto.getDisposalCost()
+						+costDto.getDemolitionCost()
+						+costDto.getEtcFee();
+						
 			}
 			
 			// 상품 이름 + 옵션 개수 string 생성

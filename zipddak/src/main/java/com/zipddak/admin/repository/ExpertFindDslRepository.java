@@ -59,7 +59,7 @@ public class ExpertFindDslRepository {
 		switch(categoryNo) {
 		    case 23 : builder.and(expert.mainServiceIdx.gt(22).and(expert.mainServiceIdx.lt(44))); break;
 		    case 44 : builder.and(expert.mainServiceIdx.gt(43).and(expert.mainServiceIdx.lt(74))); break;
-		    case 74 : builder.and(expert.mainServiceIdx.eq(74)); break;
+		    case 74 : builder.and(expert.mainServiceIdx.eq(75)); break;
 		}
 		
 		// where절 만들기
@@ -145,7 +145,7 @@ public class ExpertFindDslRepository {
 		switch(categoryNo) {
 		    case 23 : builder.and(expert.mainServiceIdx.gt(22).and(expert.mainServiceIdx.lt(44))); break;
 		    case 44 : builder.and(expert.mainServiceIdx.gt(43).and(expert.mainServiceIdx.lt(74))); break;
-		    case 74 : builder.and(expert.mainServiceIdx.eq(74)); break;
+		    case 74 : builder.and(expert.mainServiceIdx.eq(75)); break;
 		}
 		
 		// 멤버십 종료일도 넣기

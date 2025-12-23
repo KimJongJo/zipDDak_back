@@ -83,6 +83,7 @@ public class ProductCardDsl {
 			                product.name,
 			                product.discount,
 			                product.salePrice,
+			                product.price,
 			                product.sellerUsername,
 			                productFile.fileRename,
 			                productFile.storagePath,
