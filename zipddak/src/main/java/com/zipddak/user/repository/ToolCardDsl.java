@@ -379,6 +379,7 @@ public class ToolCardDsl {
 				tool.satus,
 				tool.owner,
 				tool.createdate,
+				tool.category,
 				
 				tool.settleBank,
 				tool.settleAccount,
