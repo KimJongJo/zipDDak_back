@@ -89,7 +89,6 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		// 2. 요청서 생성후 저장
-
 		// 가져온 데이터에서 카테고리 1, 2, 3 에 맞는 idx를 가져와야함
 		Integer cate1 = categoryRepository.findByName(requestForm.getCate1()).getCategoryIdx();
 

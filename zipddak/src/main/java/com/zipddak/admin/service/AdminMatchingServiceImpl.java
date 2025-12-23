@@ -6,10 +6,10 @@ import java.util.Calendar;
 import org.springframework.stereotype.Service;
 
 import com.zipddak.admin.dto.EstimatePaymentStep1Dto;
+import com.zipddak.entity.Estimate.WorkDurationType;
 import com.zipddak.entity.Matching;
 import com.zipddak.entity.Matching.MatchingStatus;
 import com.zipddak.entity.Request;
-import com.zipddak.entity.Estimate.WorkDurationType;
 import com.zipddak.repository.MatchingRepository;
 import com.zipddak.repository.RequestRepository;
 
@@ -61,6 +61,14 @@ public class AdminMatchingServiceImpl implements MatchingService{
 		matchingRepository.save(matching);
 							
 		
+	}
+
+	@Override
+	public Matching checkMatchingState(Integer estimateIdx) throws Exception {
+
+		Matching matching = matchingRepository.findFirstByEstimateIdxOrderByMatchingIdxDesc(estimateIdx);
+		
+		return matching;
 	}
 
 }

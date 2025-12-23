@@ -110,7 +110,7 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 				.returnShippingFee(returnRequest.getReturnShippingFee()).refundAmount(returnRequest.getRefundAmount())
 				.build();
 
-		refundRepository.save(refund);
+		Refund saveRefund = refundRepository.save(refund);
 
 		// 3. 반품 요청된 orderItem 상태 변경
 		for (Integer itemIdx : returnRequest.getReturnItemIdxs()) {
@@ -118,6 +118,7 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 			OrderItem orderItem = orderItemRepository.findById(itemIdx)
 					.orElseThrow(() -> new RuntimeException("잘못된 주문상품 아이디"));
 
+			orderItem.setRefundIdx(saveRefund.getRefundIdx());
 			orderItem.setOrderStatus(OrderStatus.반품요청);
 
 			orderItemRepository.save(orderItem);
@@ -181,7 +182,7 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 				.reshipAddr1(exchangeRequest.getReshipAddr1()).reshipAddr2(exchangeRequest.getReshipAddr2())
 				.reshipPostMemo(exchangeRequest.getReshipPostMemo()).build();
 
-		exchangeRepository.save(exchange);
+		Exchange saveExchange = exchangeRepository.save(exchange);
 
 		// 3. 교환 요청된 orderItem 상태 변경, 교환옵션 추가
 		for (ExchangeItemDto exchangeItem : exchangeRequest.getExchangeItems()) {
@@ -189,6 +190,7 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 			OrderItem orderItem = orderItemRepository.findById(exchangeItem.getOrderItemIdx())
 					.orElseThrow(() -> new RuntimeException("잘못된 주문상품 아이디"));
 
+			orderItem.setExchangeIdx(saveExchange.getExchangeIdx());
 			orderItem.setOrderStatus(OrderStatus.교환요청);
 			orderItem.setExchangeIdx(exchangeItem.getNewOptionIdx());
 
