@@ -22,6 +22,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QFavoritesTool;
 import com.zipddak.entity.QProfileFile;
+import com.zipddak.entity.QRental;
 import com.zipddak.entity.QReviewFile;
 import com.zipddak.entity.QReviewTool;
 import com.zipddak.entity.QTool;
@@ -47,6 +48,7 @@ public class ToolCardDsl {
 		QToolFile toolFile = QToolFile.toolFile;
 		QFavoritesTool favorite = QFavoritesTool.favoritesTool;
 		QReviewTool review = QReviewTool.reviewTool;
+		QRental rental = QRental.rental;
 
 		// 로그인 했을때 안했을때 구분
 		Expression<Boolean> isFavoriteTool = Expressions.asBoolean(false).as("favorite");				
@@ -82,22 +84,29 @@ public class ToolCardDsl {
 				tool.addr1,
 				tool.satus,
 				toolFile.fileRename.as("thunbnail"),
+				
+				favorite.toolIdx.count().as("favoriteCount"),
+			    rental.count().as("rentalCount"),
 				isFavoriteTool
 				
 				)).from(tool)
 				.leftJoin(toolFile).on(toolFile.toolFileIdx.eq(tool.thunbnail))
 				.leftJoin(review).on(review.toolIdx.eq(tool.toolIdx))
+				.leftJoin(rental).on(rental.tool.toolIdx.eq(tool.toolIdx))
 				.leftJoin(category).on(category.categoryIdx.eq(tool.category));
 		
 		if(username != null && !username.isBlank()) {
 			query.leftJoin(favorite)
 					.on(favorite.toolIdx.eq(tool.toolIdx).and(favorite.userUsername.eq(username)));
+		}else {
+		    query.leftJoin(favorite).on(favorite.toolIdx.eq(tool.toolIdx));
 		}
 		 
 			List<ToolCardDto> cards = query
 					.where(where)
 					.groupBy(tool.toolIdx)
-					.orderBy(order).limit(6).fetch();
+					.orderBy(order)
+					.limit(6).fetch();
 
 			Long totalCount = jpaQueryFactory
 					.select(tool.toolIdx.countDistinct())
@@ -119,6 +128,7 @@ public class ToolCardDsl {
 		QToolFile toolFile = QToolFile.toolFile;
 		QFavoritesTool favorite = QFavoritesTool.favoritesTool;
 		QReviewTool review = QReviewTool.reviewTool;
+		QRental rental = QRental.rental;
 		
 		
 
@@ -156,7 +166,11 @@ public class ToolCardDsl {
 		
 		//키워드
 		if(keyword != null && !keyword.isBlank()) {
-			where.and(tool.name.contains(keyword));
+			where.and(
+			        tool.name.contains(keyword)
+			        .or(tool.addr1.contains(keyword))
+			        .or(tool.tradeAddr1.contains(keyword))
+			    );
 		}
 		
 		//정렬기준
@@ -193,16 +207,22 @@ public class ToolCardDsl {
 				tool.postRental,
 				category.name.as("categoryName"),
 				toolFile.fileRename.as("thunbnail"),
+				
+				 favorite.toolIdx.count().as("favoriteCount"),
+			    rental.count().as("rentalCount"),
 				isFavoriteTool
 				
 				)).from(tool)
 				.leftJoin(toolFile).on(toolFile.toolFileIdx.eq(tool.thunbnail))
 				.leftJoin(review).on(review.toolIdx.eq(tool.toolIdx))
+				.leftJoin(rental).on(rental.tool.toolIdx.eq(tool.toolIdx))
 				.leftJoin(category).on(category.categoryIdx.eq(tool.category));
 		
 		if(username != null && !username.isBlank()) {
 			query.leftJoin(favorite)
 					.on(favorite.toolIdx.eq(tool.toolIdx).and(favorite.userUsername.eq(username)));
+		}else {
+		    query.leftJoin(favorite).on(favorite.toolIdx.eq(tool.toolIdx));
 		}
 		 
 		if (!orders.isEmpty()) {
@@ -215,7 +235,6 @@ public class ToolCardDsl {
 		
 			List<ToolCardDto> cards = query.where(where)
 					.groupBy(tool.toolIdx)
-//					.distinct()
 					.limit(limit)
 				    .offset(realOffset)
 				    .fetch();
@@ -232,7 +251,22 @@ public class ToolCardDsl {
 
 	}
 	
-	
+	//공구 좋아요 수
+	public Long toolFavoriteCount (Integer toolIdx) {
+		QTool tool = QTool.tool;
+		QFavoritesTool favorite = QFavoritesTool.favoritesTool;
+		
+		Long favoriteCount = jpaQueryFactory
+				.select(favorite.count())
+				.from(favorite)
+				.join(tool)
+				.on(tool.toolIdx.eq(favorite.toolIdx))
+				.where(tool.toolIdx.eq(toolIdx))
+				.fetchOne();
+		
+		return favoriteCount;
+	}
+		
 	
 	//내공구
 	public ToolCardsDto myTools (String username,Integer rentalStateNo, Integer size, Integer offset) {
@@ -556,6 +590,59 @@ public class ToolCardDsl {
 			return reviewPage;
 		}
 	
+		//공구 지도
+		public List<ToolCardDto> toolMap(String keyword) {
+
+			QCategory category = QCategory.category;
+			QTool tool = QTool.tool;
+			QToolFile toolFile = QToolFile.toolFile;
+			QFavoritesTool favorite = QFavoritesTool.favoritesTool;
+			QReviewTool review = QReviewTool.reviewTool;
+			QRental rental = QRental.rental;
+
+			// 로그인 했을때 안했을때 구분
+			Expression<Boolean> isFavoriteTool = Expressions.asBoolean(false).as("favorite");				
+						
+
+			BooleanBuilder where = new BooleanBuilder();
+
+			// 대여 가능만 보기
+			where.and(tool.satus.eq(ToolStatus.ABLE));
+			
+			//키워드
+			if(keyword != null && !keyword.isBlank()) {
+				where.and(tool.name.contains(keyword));
+			}
+			
+			
+			JPQLQuery<ToolCardDto> query = jpaQueryFactory.select(Projections.bean(ToolCardDto.class,
+					tool.toolIdx,
+					tool.name,
+					tool.rentalPrice,
+					tool.addr1,
+					tool.satus,
+					toolFile.fileRename.as("thunbnail"),
+					
+					favorite.toolIdx.count().as("favoriteCount"),
+				    rental.count().as("rentalCount"),
+					isFavoriteTool
+					
+					)).from(tool)
+					.leftJoin(toolFile).on(toolFile.toolFileIdx.eq(tool.thunbnail))
+					.leftJoin(review).on(review.toolIdx.eq(tool.toolIdx))
+					.leftJoin(rental).on(rental.tool.toolIdx.eq(tool.toolIdx))
+					.leftJoin(category).on(category.categoryIdx.eq(tool.category));
+			
+			 
+				List<ToolCardDto> cards = query
+						.where(where)
+						.groupBy(tool.toolIdx)
+						.fetch();
+
+
+				return cards; 
+
+		}
 
 
 }

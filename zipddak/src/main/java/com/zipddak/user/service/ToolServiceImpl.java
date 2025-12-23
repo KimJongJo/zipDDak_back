@@ -20,10 +20,10 @@ import com.zipddak.entity.Tool.ToolStatus;
 import com.zipddak.entity.ToolFile;
 import com.zipddak.repository.ToolFileRepository;
 import com.zipddak.repository.ToolRepository;
+import com.zipddak.user.dto.ToolCardDto;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
 import com.zipddak.user.dto.ToolDetailviewDto;
-import com.zipddak.user.dto.ToolReviewDto;
 import com.zipddak.user.repository.ToolCardDsl;
 
 @Service
@@ -157,7 +157,7 @@ public class ToolServiceImpl implements ToolService {
 		        tool.setThunbnail(thumbnailIdx);
 		    }
 
-		    // 🔹 상세 이미지 교체 (지정된 슬롯만)
+		    // 상세 이미지 교체 (지정된 슬롯만)
 		    if (imgs != null && imageIndexes != null) {
 
 		        for (int i = 0; i < imgs.size(); i++) {
@@ -271,6 +271,20 @@ public class ToolServiceImpl implements ToolService {
 		Tool tool = toolRepository.findById(toolIdx).orElseThrow(()-> new Exception("toolIdx error"));
 		ToolDto toolDto = modelMapper.map(tool, ToolDto.class);
 		return toolDto;
+	}
+
+	
+	//공구 좋아요 수
+	@Override
+	public Long toolFavoriteCount(Integer toolIdx) throws Exception {
+		
+		return toolCardDsl.toolFavoriteCount(toolIdx);
+	}
+
+	@Override
+	public List<ToolCardDto> toolList(String keyword) throws Exception {
+		
+		return toolCardDsl.toolMap(keyword);
 	}
 
 	
