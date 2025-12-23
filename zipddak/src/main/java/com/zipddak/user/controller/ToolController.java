@@ -19,7 +19,6 @@ import com.zipddak.entity.Tool.ToolStatus;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
 import com.zipddak.user.dto.ToolDetailviewDto;
-import com.zipddak.user.dto.ToolReviewDto;
 import com.zipddak.user.service.ToolService;
 
 @RestController
@@ -66,15 +65,29 @@ public class ToolController {
 		}
 	}
 	
+	//공구 찾기
+	@GetMapping(value="/tool/select")
+	ResponseEntity<ToolDto> toolSelect (@RequestParam("toolIdx") Integer toolIdx) {
+		try {
+			ToolDto tool = toolService.toolSelect(toolIdx); 
+			return ResponseEntity.ok().body(tool);
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+	
+	
+	
 	//공구수정
 	@PostMapping(value="/tool/modify", produces = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<Boolean> toolModify (
 			@RequestPart("tool") ToolDto toolDto,
 			 @RequestPart(required=false) MultipartFile thumbnail,
-			 @RequestPart(required=false) List<MultipartFile> images
+			 @RequestPart(required=false) List<MultipartFile> images,
+			 @RequestParam(required = false) List<Integer> imageIndexes
 			) {
 		try {
-			toolService.ToolModify(toolDto, thumbnail, images);
+			toolService.ToolModify(toolDto, thumbnail, images, imageIndexes);
 			System.out.println("ㅎㅎ");
 			return ResponseEntity.ok().body(true);
 		}catch(Exception e) {

@@ -85,7 +85,7 @@ public class ToolServiceImpl implements ToolService {
 		if (thumbnail != null && !thumbnail.isEmpty()) {
 			thumbnailIdx = saveToolFile(thumbnail);
 		}
-		System.out.println("11 : " + thumbnailIdx);
+		System.out.println("썸네일 저장 : " + thumbnailIdx);
 		// 상세 이미지 저장
 		Integer[] imgIdx = new Integer[5];
 
@@ -108,30 +108,14 @@ public class ToolServiceImpl implements ToolService {
 		tool.setImg3(imgIdx[2]);
 		tool.setImg4(imgIdx[3]);
 		tool.setImg5(imgIdx[4]);
+		
+		System.out.println(tool);
 
 		Tool savedTool = toolRepository.save(tool);
 		toolRepository.flush();
 
 		return savedTool.getToolIdx();
 
-	}
-
-	// 기존 이미지 가져오기
-	private Integer getOldImgIdx(Tool tool, int index) {
-		switch (index) {
-		case 0:
-			return tool.getImg1();
-		case 1:
-			return tool.getImg2();
-		case 2:
-			return tool.getImg3();
-		case 3:
-			return tool.getImg4();
-		case 4:
-			return tool.getImg5();
-		default:
-			return null;
-		}
 	}
 
 	// 새 이미지 채우기
@@ -154,52 +138,43 @@ public class ToolServiceImpl implements ToolService {
 			break;
 		}
 	}
+	
 
 	// 공구 수정
 	@Override
-	public void ToolModify(ToolDto toolDto, MultipartFile thumbnail, List<MultipartFile> imgs) throws Exception {
+	public void ToolModify(ToolDto toolDto, MultipartFile thumbnail, List<MultipartFile> imgs, List<Integer> imageIndexes) throws Exception {
 
-		Tool oldTool = toolRepository.findById(toolDto.getToolIdx())
-				.orElseThrow(() -> new RuntimeException("Tool not found"));
-		modelMapper.map(toolDto, oldTool); // oldTool 객체에 값만 덮어쓰기
+		//기존 tool
+		 Tool tool = toolRepository.findById(toolDto.getToolIdx())
+		            .orElseThrow(() -> new RuntimeException("Tool not found"));
 
-		// 썸네일 저장
-		if (thumbnail != null && !thumbnail.isEmpty()) {
-			if (oldTool.getThunbnail() != null) {
-				ToolFile oldFile = toolFileRepository.findById(oldTool.getThunbnail()).orElse(null);
-				if (oldFile != null) {
-					File prefile = new File(toolfileUpload, oldFile.getFileRename());
-					if (prefile.exists())
-						prefile.delete();
-					toolFileRepository.delete(oldFile);
-				}
-			}
-			Integer thumbnailIdx = saveToolFile(thumbnail);
-			oldTool.setThunbnail(thumbnailIdx);
-		}
+		    //tool 덮어쓰기
+		    modelMapper.map(toolDto, tool);
 
-		// 상세 이미지 저장
-		for (int i = 0; i < imgs.size() && i < 5; i++) {
-			MultipartFile img = imgs.get(i);
-			if (img == null || img.isEmpty())
-				continue;
+		    // 썸네일 교체
+		    if (thumbnail != null && !thumbnail.isEmpty()) {
+		        Integer thumbnailIdx = saveToolFile(thumbnail);
+		        tool.setThunbnail(thumbnailIdx);
+		    }
 
-			// 기존 이미지 삭제
-			Integer oldImgIdx = getOldImgIdx(oldTool, i);
-			if (oldImgIdx != null) {
-				ToolFile oldFile = toolFileRepository.findById(oldImgIdx).orElse(null);
-				if (oldFile != null) {
-					File prefile = new File(toolfileUpload, oldFile.getFileRename());
-					if (prefile.exists())
-						prefile.delete();
-					toolFileRepository.delete(oldFile);
-				}
-			}
+		    // 🔹 상세 이미지 교체 (지정된 슬롯만)
+		    if (imgs != null && imageIndexes != null) {
 
-			// 새 이미지 저장
-			Integer newIdx = saveToolFile(img);
-			setToolImgIdx(oldTool, i, newIdx);
-		}
+		        for (int i = 0; i < imgs.size(); i++) {
+
+		            MultipartFile img = imgs.get(i);
+		            Integer slotIdx = imageIndexes.get(i); // ⭐ 핵심
+
+		            if (img == null || img.isEmpty()) continue;
+
+		            Integer newImgIdx = saveToolFile(img);
+
+		            // 슬롯 번호에 맞게 덮어쓰기
+		            setToolImgIdx(tool, slotIdx, newImgIdx);
+		        }
+		    }
+
+		    toolRepository.save(tool);
 
 	}
 
@@ -259,13 +234,14 @@ public class ToolServiceImpl implements ToolService {
 	}
 
 	
-	//대상 상세 
+	//공구 상세 
 	@Override
 	public ToolDetailviewDto targetTool(Integer toolIdx, String username) throws Exception {
 		ToolDetailviewDto toolDto = toolCardDsl.toolDetails(toolIdx, username);
 		System.out.println(toolDto);
 		return toolDto;
 	}
+	
 
 	//유저의 다른 공구
 	@Override
@@ -287,6 +263,14 @@ public class ToolServiceImpl implements ToolService {
 		Map<String,Object> toolReview = toolCardDsl.toolReview(toolIdx, pageRequest, orderNo);
 		
 		return toolReview;
+	}
+
+	//공구 선택
+	@Override
+	public ToolDto toolSelect(Integer toolIdx) throws Exception {
+		Tool tool = toolRepository.findById(toolIdx).orElseThrow(()-> new Exception("toolIdx error"));
+		ToolDto toolDto = modelMapper.map(tool, ToolDto.class);
+		return toolDto;
 	}
 
 	
