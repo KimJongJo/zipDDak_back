@@ -64,6 +64,6 @@ public class Matching {
 	private Date createdAt;
 
 	public enum MatchingStatus {
-		PAYMENT_COMPLETED, IN_PROGRESS, COMPLETED, CANCELLED
+		PAYMENT_CANCELLED, PAYMENT_COMPLETED, IN_PROGRESS, COMPLETED, CANCELLED
 	}
 }

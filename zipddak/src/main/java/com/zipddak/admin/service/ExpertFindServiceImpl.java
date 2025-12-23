@@ -9,6 +9,8 @@ import com.zipddak.admin.dto.EstimatePaymentExpertDto;
 import com.zipddak.admin.dto.ExpertCardDto;
 import com.zipddak.admin.dto.ExpertProfileDto;
 import com.zipddak.admin.repository.ExpertFindDslRepository;
+import com.zipddak.entity.Expert;
+import com.zipddak.repository.ExpertRepository;
 import com.zipddak.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class ExpertFindServiceImpl implements ExpertFindService{
 	
 	private final ExpertFindDslRepository expertFindDslRepository;
+	private final ExpertRepository expertRepository;
 	
 	// 광고 전문가
 	@Override
@@ -46,6 +49,17 @@ public class ExpertFindServiceImpl implements ExpertFindService{
 	public EstimatePaymentExpertDto expertDetail(Integer estimateIdx) throws Exception {
 		
 		return expertFindDslRepository.expertDetail(estimateIdx);
+	}
+
+	// 전문가가 공개요청을 들어갈때 메인 서비스가 존재하지 않으면 마이페이지로 이동시켜야함
+	@Override
+	public boolean mainServiceCheck(String username) throws Exception {
+		
+		Expert expert = expertRepository.findByUser_Username(username).get();
+		
+		System.out.println(expert);
+		
+		return expert.getMainServiceIdx() != null;
 	}
 
 

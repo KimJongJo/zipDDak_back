@@ -51,7 +51,7 @@ public class AdminMatchingServiceImpl implements MatchingService{
 							.estimateIdx(paymentDto.getEstimateIdx())
 							.matchingCode(orderId)
 							.requestIdx(paymentDto.getRequestIdx())
-							.status(MatchingStatus.IN_PROGRESS)
+							.status(MatchingStatus.PAYMENT_CANCELLED)
 							.expertIdx(paymentDto.getExpertIdx())
 							.userUsername(paymentDto.getUsername())
 							.workStartDate(startDate)

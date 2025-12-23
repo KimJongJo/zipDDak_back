@@ -133,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		Request saveRequest = requestRepository.save(request);
-
+		
 		if (!requestForm.getExpertIdx().equals("null")) {
 			saveRequest.setExpertIdx(Integer.parseInt(requestForm.getExpertIdx()));
 
@@ -142,7 +142,7 @@ public class RequestServiceImpl implements RequestService {
 
 			// 전문가 검색
 			Expert expert = expertRepository.findById(Integer.valueOf(requestForm.getExpertIdx())).get();
-
+			
 			// 알림 전송
 			NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.REQUEST)
 					.title("새로운 요청 도착").content(user.getName() + "님이 요청서를 보냈습니다.")

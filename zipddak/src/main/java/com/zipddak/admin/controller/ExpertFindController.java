@@ -50,6 +50,7 @@ public class ExpertFindController {
 				@RequestParam("sort") String sort
 			) {
 		
+		
 		try {
 			List<ExpertCardDto> experts = expertFindService.experts(page, cateNo, keyword, sort);
 			
@@ -172,5 +173,21 @@ public class ExpertFindController {
 		}
 		
 	}
+	
+	// 전문가 프로필에서 메인 서비스 등록이 안되어있을때
+	@GetMapping("expert/mainServiceCheck")
+	public ResponseEntity<Boolean> mainServiceCheck(@RequestParam(required = false) String username) {
+
+	    try {
+	        boolean check = expertFindService.mainServiceCheck(username);
+
+	        return ResponseEntity.ok(check);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body(null);
+	    }
+	}
+
 	
 }

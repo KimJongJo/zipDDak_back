@@ -99,14 +99,26 @@ public class MessageServiceImpl implements MessageService {
 		Estimate estimate = estimateRepository.findById(room.getEstimateIdx()).get();
 
 		Expert expert = expertRepository.findById(estimate.getExpert().getExpertIdx()).get();
-
-		ExpertFile expertFile = expertFileRepository.findById(expert.getProfileImageIdx()).get();
-
+		
+		// 파일이 존재하는지 체크하는 변수
+		boolean flag = false;
+		
+		Optional<ExpertFile> expertFile = null;
+		
+		if(expert.getProfileImageIdx() != null) {
+			expertFile = expertFileRepository.findById(expert.getProfileImageIdx());
+			flag = true;
+		}
+		
 		Category category = categoryRepository.findById(expert.getMainServiceIdx()).get();
 
-		return builder.estimateIdx(estimate.getEstimateIdx()).activityName(expert.getActivityName())
-				.expertProfileImage(expertFile.getFileRename()).mainService(category.getName()).addr1(expert.getAddr1())
+		MessageRoomListDto createRoomDto = builder.estimateIdx(estimate.getEstimateIdx()).activityName(expert.getActivityName())
+				.mainService(category.getName()).addr1(expert.getAddr1())
 				.build();
+		
+		if(flag) createRoomDto.setExpertProfileImage(expertFile.get().getFileRename());
+		
+		return createRoomDto;
 	}
 
 	// NOTUSER 타입 채팅방 DTO 구성
