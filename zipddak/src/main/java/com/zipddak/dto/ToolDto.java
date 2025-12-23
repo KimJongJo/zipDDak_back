@@ -22,7 +22,7 @@ public class ToolDto {
     private Long rentalPrice;
     private Boolean freeRental;
     private String content;
-    private String tradeAddr;
+   
     private Boolean quickRental;
     private Boolean directRental;
     private Boolean postRental;

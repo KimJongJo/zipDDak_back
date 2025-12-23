@@ -20,8 +20,11 @@ public interface ToolService {
 	//공구 등록
 	Integer ToolRegist(ToolDto toolDto, MultipartFile thumbnail,List<MultipartFile> imgs)throws Exception;
 	
+	//공구 선택
+	ToolDto toolSelect (Integer toolIdx) throws Exception;
+	
 	//공구 수정
-	void ToolModify(ToolDto toolDto, MultipartFile thumbnail,List<MultipartFile> imgs)throws Exception;
+	void ToolModify(ToolDto toolDto, MultipartFile thumbnail,List<MultipartFile> imgs, List<Integer>imageIndexes)throws Exception;
 	
 	//내공구
 	ToolCardsMoreDto myTools (String username, Integer toolStatusNo, Integer size, Integer offset)throws Exception;
