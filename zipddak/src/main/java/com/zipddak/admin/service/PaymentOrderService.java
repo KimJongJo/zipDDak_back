@@ -74,7 +74,7 @@ public class PaymentOrderService implements OrderService {
 		                .product(Product.builder()
 		                        .productIdx(optionListDto.getProductId())
 		                        .build())
-		                .unitPrice(optionListDto.getSalePrice() + optionListDto.getPrice()) // long 타입으로 처리 가능
+		                .unitPrice(optionListDto.getPrice()) // long 타입으로 처리 가능
 		                .quantity(optionListDto.getCount())
 		                .receiveWay(ReceiveWay.post)
 		                .orderStatus(OrderStatus.결제취소)

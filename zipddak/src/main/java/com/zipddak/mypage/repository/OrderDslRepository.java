@@ -91,7 +91,9 @@ public class OrderDslRepository {
 				.select(Projections.constructor(OrderItemFlatDto.class, order.orderIdx, order.orderCode,
 						order.createdAt, seller.brandName, orderItem.receiveWay, product.postType, product.postCharge,
 						seller.freeChargeAmount, orderItem.orderItemIdx, product.productIdx, product.name,
-						productOption1.name, orderItem.quantity, orderItem.unitPrice, productFile.storagePath,
+						productOption1.name, orderItem.quantity, orderItem.unitPrice.as("price"),
+						product.salePrice, product.price.as("productPrice"),
+						productFile.fileRename.as("thumbnail"),
 						trackingNoExpr, postCompExpr, orderItem.orderStatus,
 						new CaseBuilder().when(isReviewable).then(true).otherwise(false).as("reviewAvailable"),
 						productOption2.name))

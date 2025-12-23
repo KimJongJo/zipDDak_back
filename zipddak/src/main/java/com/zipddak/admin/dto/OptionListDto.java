@@ -26,6 +26,7 @@ public class OptionListDto {
 	private String productImg; // 상품 이미지
 	private String imgStoragePath; // 상품 이미지 경로
 	private Integer sellerIdx; // 판매업체 idx
+	private long productPrice; // 원래 상품 가격
 	
 	
 }
