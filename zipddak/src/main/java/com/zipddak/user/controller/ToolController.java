@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.ToolDto;
 import com.zipddak.entity.Tool.ToolStatus;
+import com.zipddak.user.dto.ToolCardDto;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
 import com.zipddak.user.dto.ToolDetailviewDto;
@@ -197,7 +198,47 @@ public class ToolController {
 			}
 		}
 	
-	
+		//공구 좋아요 수
+		@GetMapping(value="tool/favoriteCount")
+		ResponseEntity<Long> toolFavCount (@RequestParam("toolIdx") Integer toolIdx){
+			try {
+				Long favCount = toolService.toolFavoriteCount(toolIdx);
+				return ResponseEntity.ok(favCount);
+			}catch(Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(null);
+			}
+		}
+		
+		//공구 지도에서 등록
+		@PostMapping(value="tool/directRental/map")
+		ResponseEntity<Boolean> toolDirectRentalMap (@RequestBody Map<String,Object> map){
+			
+			Integer toolIdx = (Integer)map.get("toolIdx");
+			String clickedAddress = (String)map.get("clickedAddress");
+			
+			try {
+				ToolDto tool = toolService.toolSelect(toolIdx);
+				tool.setTradeAddr1(clickedAddress);
+				return ResponseEntity.ok(true);
+			}catch(Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(false);
+			}
+		}
+		
+		//공구 지도 리스트
+		@GetMapping(value="tool/mapList")
+		ResponseEntity<List<ToolCardDto>> toolMapList (@RequestParam("keyword") String keyword){
+			try {
+				System.out.println(">>>>>>>>>>>");
+				List<ToolCardDto> tools = toolService.toolList(keyword);
+				return ResponseEntity.ok(tools);
+			}catch(Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(null);
+			}
+		}
 	
 	
 	
