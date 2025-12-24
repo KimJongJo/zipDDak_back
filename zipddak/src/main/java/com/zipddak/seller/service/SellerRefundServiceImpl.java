@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 
 import com.zipddak.dto.OrderItemDto;
 import com.zipddak.dto.RefundDto;
+import com.zipddak.entity.OrderItem;
 import com.zipddak.entity.Refund.RefundShippingChargeType;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.RefundRepository;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.dto.SellerOrderAmountDto;
 import com.zipddak.seller.repository.SellerRefundRepository;
+import com.zipddak.util.RefundAmountCalculator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,38 +60,40 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 		if (refundOrderData == null) {
 	        throw new IllegalStateException("반품 요청 없음");
 	    }
-		
+		System.out.println("refundOrderData : " + refundOrderData);
 		// 반품요청된 주문상품정보 
 		List<OrderItemDto> refundOrderItemList = sellerRefund_repo.findRefundOrderItemList(sellerUsername, refundIdx);
 		    if (refundOrderItemList.isEmpty()) {
 		        throw new IllegalStateException("해당 주문상품은 이 셀러의 상품이 아님");
 		}
-
 		    
 		//구매자가 주문한 주문상품의 특정 셀러 총금액확인용 (무료배송 여부 확인용)
 		SellerOrderAmountDto orderTotalAmountBySeller = sellerRefund_repo.findSellerOrderAmount(sellerUsername, refundOrderData.getOrderIdx());
 		//이 반품건의 반품상품 금액만 계산
-		Long refundProductTotalThisReq = sellerRefund_repo.findRefundProductTotal(sellerUsername, refundIdx, refundOrderData.getOrderIdx() );
+		Long refundProductTotal = sellerRefund_repo.findRefundProductTotal(sellerUsername, refundIdx, refundOrderData.getOrderIdx() );
 
-		long reqRefundAmount;
-		RefundShippingChargeType shippingChargeType = RefundShippingChargeType.valueOf(refundOrderData.getShippingChargeType());
-
-		if (shippingChargeType == RefundShippingChargeType.BUYER) {
-			reqRefundAmount = refundProductTotalThisReq - (orderTotalAmountBySeller.getBasicPostCharge() * 2);
-		    //구매자 귀책 -> 환불금액 = 왕복배송비 제외 후 환불 
-		} else {
-			reqRefundAmount = refundProductTotalThisReq;
-		    //판매자 귀책 -> 환불금액 = 상품 금액 
-		}
+		long sellerOrderTotal = orderTotalAmountBySeller.getSellerOrderTotal();
+		long basicPostCharge = orderTotalAmountBySeller.getBasicPostCharge();
+		long freeChargeAmount = orderTotalAmountBySeller.getFreeChargeAmount();
+		
+		//환불금액 계산 
+		long refundAmount = RefundAmountCalculator.calculate(sellerOrderTotal,
+													        refundProductTotal,
+													        basicPostCharge,
+													        freeChargeAmount,
+													        refundOrderData.getReturnShippingFee(),
+													        RefundShippingChargeType.valueOf(refundOrderData.getShippingChargeType()));
 		    
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("refundOrderData", refundOrderData);
 	    result.put("refundOrderItemList", refundOrderItemList);
-	    result.put("refundProductTotal", refundProductTotalThisReq);
-	    result.put("reqRefundAmount", reqRefundAmount);
+	    result.put("refundProductTotal", refundProductTotal);
+	    result.put("refundAmount", refundAmount);
 		
 		return result;
 	}
+
+
 	
 	
 	

@@ -6,4 +6,6 @@ import com.zipddak.entity.Refund;
 
 public interface RefundRepository extends JpaRepository<Refund, Integer> {
 
+	Refund findByOrderIdx(Integer orderIdx);
+
 }

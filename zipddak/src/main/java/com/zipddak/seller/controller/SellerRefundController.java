@@ -20,7 +20,7 @@ import com.zipddak.seller.service.SellerRefundService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/refund")
+@RequestMapping("/seller/refund")
 @RequiredArgsConstructor
 public class SellerRefundController {
 	
@@ -31,8 +31,6 @@ public class SellerRefundController {
 	public ResponseEntity<?> refundList(@RequestParam("sellerId") String sellerUsername, 
 										@RequestParam(value="page", required=false, defaultValue="1") Integer page,
 										SearchConditionDto scDto) {
-		
-
 		try {
 			Map<String, Object> myRefund = refund_svc.getMyRefundList(sellerUsername, page, scDto);
 			return ResponseEntity.ok(myRefund);
@@ -46,9 +44,8 @@ public class SellerRefundController {
 	// 반품요청건 내역 상세보기
 	@GetMapping("/refundReqDetail")
 	public ResponseEntity<?> refundReqDetail(@RequestParam("sellerId") String sellerUsername,@RequestParam("num") Integer refundIdx) {
-		System.out.println("sellerUsername : " + sellerUsername);
-			Map<String, Object> refundReqDetail = refund_svc.getRefundReqDetail(sellerUsername, refundIdx);
-			return ResponseEntity.ok(refundReqDetail);
+		Map<String, Object> refundReqDetail = refund_svc.getRefundReqDetail(sellerUsername, refundIdx);
+		return ResponseEntity.ok(refundReqDetail);
 	}
 
 	

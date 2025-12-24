@@ -32,9 +32,6 @@ public class SellerShippingServiceImpl implements SellerShippingService {
 		List<ShippingManageDto> myShippingList = sellerShipping_repo.searchMyShippings(sellerUsername, pr, scDto); // 배송진행리스트
 		Long myShippingCount = sellerShipping_repo.countMyShippings(sellerUsername, scDto); // 배송 개수
 
-		System.out.println("myShippingList : " +  myShippingList);
-		System.out.println("myShippingCount : " +  myShippingCount);
-		
 		int allPage = (int) Math.ceil(myShippingCount / 10.0);
 		int startPage = (page - 1) / 10 * 10 + 1;
 		int endPage = Math.min(startPage + 9, allPage);

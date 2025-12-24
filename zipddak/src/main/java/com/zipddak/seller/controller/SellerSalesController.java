@@ -21,7 +21,7 @@ import com.zipddak.seller.service.SellerSalesService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/sales")
+@RequestMapping("/seller/sales")
 @RequiredArgsConstructor
 public class SellerSalesController {
 	

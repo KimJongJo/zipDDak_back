@@ -2,6 +2,7 @@ package com.zipddak.seller.dto;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class ShippingManageDto {
     private Date orderDate;          // 주문일자
     
     private Long itemCount;			//배송중인 아이템 수 
-    private LocalDate firstShipDate;	//최초 발송일자
+    private LocalDateTime firstShipDate;	//최초 발송일자
     
     private Integer orderIdx;
     

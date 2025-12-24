@@ -1,7 +1,7 @@
 package com.zipddak.entity;
 
 import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -67,7 +67,7 @@ public class OrderItem {
 	private String trackingNo;
 	
 	@Column
-	private LocalDate firstShipDate;
+	private LocalDateTime firstShipDate;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -89,34 +89,34 @@ public class OrderItem {
 	private Date createdAt;
 	
 	@Column
-    private LocalDate deliveredAt; //배송완료 날짜 
+    private LocalDateTime deliveredAt; //배송완료 날짜 
 	
 	@Column
-	private LocalDate exchangeRejectedAt;  //교환 거절일자 (판매자)
+	private LocalDateTime exchangeRejectedAt;  //교환 거절일자 (판매자)
 	
 	@Column
-	private LocalDate exchangeAcceptedAt;	//교환 접수수락일자 (판매자) = 수거요청일자
+	private LocalDateTime exchangeAcceptedAt;	//교환 접수수락일자 (판매자) = 수거요청일자
 	
 	@Column
-	private LocalDate exchangePickupComplatedAt; //교환 수거완료일자 (판매자)
+	private LocalDateTime exchangePickupComplatedAt; //교환 수거완료일자 (판매자)
 	
 	@Column
-	private LocalDate resendAt; //교환 재배송 일자 (판매자)
+	private LocalDateTime resendAt; //교환 재배송 일자 (판매자)
 	
 	@Column
-	private LocalDate exchangeComplatedAt;  //교환 처리완료 일자 
+	private LocalDateTime exchangeComplatedAt;  //교환 처리완료 일자 
 	
 	@Column
-	private LocalDate refundRejectedAt;  //반품 거절일자 (판매자)
+	private LocalDateTime refundRejectedAt;  //반품 거절일자 (판매자)
 	
 	@Column
-	private LocalDate refundAcceptedAt;	//반품 접수수락일자 (판매자) = 수거요청일자
+	private LocalDateTime refundAcceptedAt;	//반품 접수수락일자 (판매자) = 수거요청일자
 	
 	@Column
-	private LocalDate refundPickupComplatedAt; //반품 수거완료일자 (판매자)
+	private LocalDateTime refundPickupComplatedAt; //반품 수거완료일자 (판매자)
 	
 	@Column
-	private LocalDate refundComplatedAt;  //반품 처리완료 일자 
+	private LocalDateTime refundComplatedAt;  //반품 처리완료 일자 
 	
 
 	public enum ReceiveWay {
@@ -143,6 +143,6 @@ public class OrderItem {
         }
 
         this.orderStatus = OrderStatus.배송완료;
-        this.deliveredAt = LocalDate.now();
+        this.deliveredAt = LocalDateTime.now();
     }
 }
