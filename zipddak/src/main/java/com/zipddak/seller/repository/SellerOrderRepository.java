@@ -184,8 +184,7 @@ public class SellerOrderRepository {
 					                    item.trackingNo
 					            ))
 					            .from(item)
-					            .where(
-					                    item.orderStatus.eq(OrderStatus.배송중),
+					            .where(item.orderStatus.eq(OrderStatus.배송중),
 					                    item.firstShipDate.lt(referenceTime),
 					                    item.trackingNo.isNotNull()
 					            )

@@ -31,6 +31,7 @@ public class SellerProductController {
 	@GetMapping("/categories/all")
     public List<CategoryResponseDto> getCategories() {
         try {
+        	System.out.println("product_svc.getCategoryTree(); : " + product_svc.getCategoryTree());
 			return product_svc.getCategoryTree();
 			
 		} catch (Exception e) {
