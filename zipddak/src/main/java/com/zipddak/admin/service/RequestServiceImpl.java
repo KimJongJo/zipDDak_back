@@ -89,7 +89,6 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		// 2. 요청서 생성후 저장
-
 		// 가져온 데이터에서 카테고리 1, 2, 3 에 맞는 idx를 가져와야함
 		Integer cate1 = categoryRepository.findByName(requestForm.getCate1()).getCategoryIdx();
 
@@ -133,7 +132,7 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		Request saveRequest = requestRepository.save(request);
-
+		
 		if (!requestForm.getExpertIdx().equals("null")) {
 			saveRequest.setExpertIdx(Integer.parseInt(requestForm.getExpertIdx()));
 
@@ -142,7 +141,7 @@ public class RequestServiceImpl implements RequestService {
 
 			// 전문가 검색
 			Expert expert = expertRepository.findById(Integer.valueOf(requestForm.getExpertIdx())).get();
-
+			
 			// 알림 전송
 			NotificationDto notificationDto = NotificationDto.builder().type(NotificationType.REQUEST)
 					.title("새로운 요청 도착").content(user.getName() + "님이 요청서를 보냈습니다.")

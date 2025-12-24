@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.ToolDto;
 import com.zipddak.entity.Tool.ToolStatus;
+import com.zipddak.user.dto.ToolCardDto;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
 import com.zipddak.user.dto.ToolDetailviewDto;
@@ -20,8 +21,11 @@ public interface ToolService {
 	//공구 등록
 	Integer ToolRegist(ToolDto toolDto, MultipartFile thumbnail,List<MultipartFile> imgs)throws Exception;
 	
+	//공구 선택
+	ToolDto toolSelect (Integer toolIdx) throws Exception;
+	
 	//공구 수정
-	void ToolModify(ToolDto toolDto, MultipartFile thumbnail,List<MultipartFile> imgs)throws Exception;
+	void ToolModify(ToolDto toolDto, MultipartFile thumbnail,List<MultipartFile> imgs, List<Integer>imageIndexes)throws Exception;
 	
 	//내공구
 	ToolCardsMoreDto myTools (String username, Integer toolStatusNo, Integer size, Integer offset)throws Exception;
@@ -40,5 +44,12 @@ public interface ToolService {
 	
 	//공구 리뷰
 	Map<String,Object> toolsReview (Integer toolIdx, Integer page, Integer orderNo)throws Exception;
+	
+	//공구 좋아요
+	Long toolFavoriteCount (Integer toolIdx) throws Exception;
+	
+	//공구 리스트
+	List<ToolCardDto> toolList (String keyword) throws Exception;
+	
 
 }

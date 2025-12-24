@@ -23,6 +23,7 @@ public class RequestController {
 	public ResponseEntity<Boolean> writeRequest(RequestFormDto requestForm){
 		
 		try {
+			
 			requestService.writeRequest(requestForm);
 			
 			return ResponseEntity.ok(true);

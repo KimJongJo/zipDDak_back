@@ -19,7 +19,7 @@ public class ToolDetailviewDto {
     private Long rentalPrice;
     private Boolean freeRental;
     private String content;
-    private String tradeAddr;
+ 
     private Boolean quickRental;
     private Boolean directRental;
     private Boolean postRental;
@@ -52,5 +52,9 @@ public class ToolDetailviewDto {
 	 private String categoryName;
 	private String nickname;
 	private String ownerProfile;
+	
+	private String tradeAddr1;
+    private String tradeAddr2;
+    private String tradeZonecode;
 
 }

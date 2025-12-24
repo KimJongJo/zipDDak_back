@@ -18,6 +18,7 @@ public class OrderItemsDto {
 	private String fileRename;
 	private String storagePath;
 	private String productName;
+	private long salePrice;
 	private long productPrice;
 	private OptionDto option; // 각 주문 상품에 옵션 1개
 }
