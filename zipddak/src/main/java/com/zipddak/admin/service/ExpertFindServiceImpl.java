@@ -62,5 +62,18 @@ public class ExpertFindServiceImpl implements ExpertFindService{
 		return expert.getMainServiceIdx() != null;
 	}
 
+	@Override
+	public void modifyQuestion(String username, List<String> questions) throws Exception {
+		
+		Expert expert = expertRepository.findByUser_Username(username).get();
+		
+		expert.setQuestionAnswer1(questions.get(0));
+		expert.setQuestionAnswer2(questions.get(1));
+		expert.setQuestionAnswer3(questions.get(2));
+		
+		expertRepository.save(expert);
+		
+	}
+
 
 }

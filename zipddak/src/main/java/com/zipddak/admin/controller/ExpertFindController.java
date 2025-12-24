@@ -189,5 +189,23 @@ public class ExpertFindController {
 	    }
 	}
 
+	// 전문가 질문답변 수정
+	@PostMapping("expert/modifyQuestion")
+	public ResponseEntity<Boolean> modifyQuestion(@RequestBody Map<String, Object> map) {
+
+	    try {
+	    	
+	    	String username = (String)map.get("username");
+	    	List<String> questions = (List<String>)map.get("questionAnswers");
+	    	
+	    	expertFindService.modifyQuestion(username, questions);
+
+	        return ResponseEntity.ok(true);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body(null);
+	    }
+	}
 	
 }
