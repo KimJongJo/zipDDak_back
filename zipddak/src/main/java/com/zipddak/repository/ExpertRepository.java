@@ -7,4 +7,5 @@ import com.zipddak.entity.Expert;
 
 public interface ExpertRepository extends JpaRepository<Expert, Integer> {
 	Optional<Expert> findByUser_Username(String username);
+	
 }

@@ -46,6 +46,7 @@ public class RentalServiceImpl implements RentalService {
 		System.out.println("rental service");
 		
 		Rental rental = modelMapper.map(rentalDto, Rental.class);
+		System.out.println(">>>>>>>"+ rentalDto);
 		rental.setRentalCode(orderId);
 		rental.setSatus(RentalStatus.PRE);
 		

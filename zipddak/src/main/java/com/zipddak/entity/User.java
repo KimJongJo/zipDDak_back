@@ -22,28 +22,28 @@ public class User {
 
     @Id
     @Column(nullable = false)
-    private String username; 
+    private String username; //아이디(이메일)
 
     @Column(nullable = false)
-    private String nickname;
+    private String nickname; //닉네임
 
     @Column
-    private String password;
+    private String password; //비밀번호
 
-    @Column(nullable = false)
+    @Column(nullable = false) //이름
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false) //휴대폰
     private String phone;
 
     @Column
-    private String zonecode;
+    private String zonecode; //주소-우편번호
 
     @Column
-    private String addr1;
+    private String addr1; //주소-도로명/지번
 
     @Column
-    private String addr2;
+    private String addr2; //주소-상세주소
 
     @Column
     private String settleBank;

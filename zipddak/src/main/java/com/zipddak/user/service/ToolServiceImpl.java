@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.ToolDto;
+import com.zipddak.entity.ReportCommunity;
+import com.zipddak.entity.ReportCommunity.ReportState;
 import com.zipddak.entity.Tool;
 import com.zipddak.entity.Tool.ToolStatus;
 import com.zipddak.entity.ToolFile;
@@ -280,12 +282,39 @@ public class ToolServiceImpl implements ToolService {
 		
 		return toolCardDsl.toolFavoriteCount(toolIdx);
 	}
-
+	
+	//공구 주소기반 리스트
 	@Override
 	public List<ToolCardDto> toolList(String keyword) throws Exception {
 		
 		return toolCardDsl.toolMap(keyword);
 	}
+
+	//공구 신고
+//	@Override
+//	public void reportTool(String username, String reason, Integer toolId) throws Exception {
+//		
+//		String reasonString = null;
+//		
+//		switch(reason) {
+//		case "COMMENT_REPORT_ABUSE" : reasonString = "욕설 / 비하"; break;
+//		case "COMMENT_REPORT_AD" : reasonString = "광고 / 홍보"; break;
+//		case "COMMENT_REPORT_ILLEGAL" : reasonString = "음란 / 불법 콘텐츠"; break;
+//		case "COMMENT_REPORT_POLITICAL" : reasonString = "정치적 / 사회적 논쟁 유도"; break;
+//		case "COMMENT_REPORT_PRIVACY" : reasonString = "개인정보 유출"; break;
+//		default : reasonString = "기타 부적절한 내용";
+//		}
+//		
+//		ReportTool reportCommunity = ReportCommunity.builder()
+//											.communityIdx(communityId)
+//											.userUsername(username)
+//											.reason(reasonString)
+//											.state(ReportState.RECEIVED)
+//											.build();
+//		
+//		reportCommunityRepository.save(reportCommunity);
+//		
+//	}
 
 	
 
