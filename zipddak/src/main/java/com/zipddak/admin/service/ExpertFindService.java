@@ -18,4 +18,6 @@ public interface ExpertFindService {
 
 	boolean mainServiceCheck(String username) throws Exception;
 
+	void modifyQuestion(String username, List<String> questions) throws Exception;
+
 }

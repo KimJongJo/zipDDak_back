@@ -15,7 +15,7 @@ public class ExpertProfileDto {
 
 	private String activityName; // 전문가 활동명
 	private Integer expertIdx; // 전문가 IDX
-	private String imgFileRname; // 이미지 파일 이름
+	private String imgFileRename; // 이미지 파일 이름
 	private String imgStoragePath; // 이미지 저장 경로
 	private Integer mainServiceIdx; // 메인 서비스 idx
 	private String mainServiceName; // 메인 서비스 이름

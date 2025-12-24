@@ -199,7 +199,7 @@ public class ExpertFindDslRepository {
 		return jpaQueryFactory.select(Projections.bean(ExpertProfileDto.class,
 						expert.activityName,
 						expert.expertIdx,
-						profile.fileRename,
+						profile.fileRename.as("imgFileRename"),
 						profile.storagePath.as("imgStoragePath"),
 						expert.mainServiceIdx,
 						category.name.as("mainServiceName"),
