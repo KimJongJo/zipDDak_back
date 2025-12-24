@@ -13,7 +13,7 @@ import com.zipddak.seller.service.SellerSettleService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/settle")
+@RequestMapping("/seller/settle")
 @RequiredArgsConstructor
 public class SellerSettleController {
 	

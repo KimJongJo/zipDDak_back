@@ -5,14 +5,15 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.zipddak.entity.OrderItem;
+import com.zipddak.entity.OrderItem.OrderStatus;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 	List<OrderItem> findByOrderIdx(Integer orderIdx);
 	
-	//SELECT order_item_idx FROM order_item WHERE order_idx = ? and order_item_idx = ?
-	List<OrderItem> findOrderItemIdxByOrderIdxAndOrderItemIdxIn(Integer orderIdx, List<Integer> itemIdxs); //특정 orderIdx에 포함된 orderItemIdx리스트 select
+	//해당 주문의 해당 itemIdx 목록만 조회 (주문 소속 검증+현재 OrderStatus 확인)
+	List<OrderItem> findOrderItemsByOrderIdxAndOrderItemIdxIn(Integer orderIdx, List<Integer> itemIdxs); 
 
 	List<OrderItem> findByRefundIdx(Integer refundIdx);
 
-//	List<OrderItem> findByOrderStatusAndShippingStartedAtBefore(OrderStatus status, LocalDate referenceTime);
+	boolean existsByOrderIdxAndOrderStatusNot(Integer orderIdx, OrderStatus status);
 }

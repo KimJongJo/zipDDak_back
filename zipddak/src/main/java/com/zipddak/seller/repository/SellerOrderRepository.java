@@ -1,6 +1,7 @@
 package com.zipddak.seller.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductOption;
 import com.zipddak.entity.QUser;
+import com.zipddak.seller.dto.DeliveryGroupDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 
 import lombok.RequiredArgsConstructor;
@@ -163,18 +165,45 @@ public class SellerOrderRepository {
 								.fetch();
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//자동 배송완료 처리 
-	public List<OrderItem> findAutoCompleteTargets(LocalDate referenceTime) {
-		QOrderItem item = QOrderItem.orderItem;
-		return jpaQueryFactory.selectFrom(item)
-				                .where(item.orderStatus.eq(OrderStatus.배송중),
-				                		item.firstShipDate.lt(referenceTime)
-				                )
-				                .fetch();
+	//자동 배송완료 대상 묶음 조회
+	public List<DeliveryGroupDto> findAutoCompleteDeliveryGroups(LocalDateTime referenceTime) {
+	    QOrderItem item = QOrderItem.orderItem;
+
+	    return jpaQueryFactory.select(Projections.constructor(DeliveryGroupDto.class,
+					                    item.postComp,
+					                    item.trackingNo
+					            ))
+					            .from(item)
+					            .where(
+					                    item.orderStatus.eq(OrderStatus.배송중),
+					                    item.firstShipDate.lt(referenceTime),
+					                    item.trackingNo.isNotNull()
+					            )
+					            .groupBy(item.postComp, item.trackingNo)
+					            .fetch();
 	}
 	
-	
-	
+	//묶음 기준 실제 엔티티 조회
+	public List<OrderItem> findByCarrierAndTrackingNoAndStatus(String postComp, String trackingNo, OrderStatus status) {
+	    QOrderItem item = QOrderItem.orderItem;
+
+	    return jpaQueryFactory.selectFrom(item)
+					            .where(item.postComp.eq(postComp),
+					                    item.trackingNo.eq(trackingNo),
+					                    item.orderStatus.eq(status)
+					            )
+					            .fetch();
+	}
 	
 	
 

@@ -368,7 +368,7 @@ public class ToolCardDsl {
 				tool.rentalPrice,
 				tool.freeRental,
 				tool.content,
-				tool.tradeAddr,
+				tool.tradeAddr1,
 				tool.quickRental,
 				tool.directRental,
 				tool.postRental,

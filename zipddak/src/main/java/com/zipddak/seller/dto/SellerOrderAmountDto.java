@@ -8,7 +8,7 @@ import lombok.Getter;
 public class SellerOrderAmountDto {
 	
 	private Integer orderIdx;
-    private Long sellerProductTotal; //셀러 상품 금액 합
+    private Long sellerOrderTotal;        // 주문 당시 셀러 상품 총액
     private String sellerUsername; //셀러id
     private Long basicPostCharge; //기본 배송비 
     private Long freeChargeAmount; //무료배송금액 

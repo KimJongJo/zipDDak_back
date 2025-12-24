@@ -85,7 +85,7 @@ public class FavoriteDslRepository {
 
 		return jpaQueryFactory
 				.select(Projections.constructor(FavoriteToolDto.class, tool.toolIdx, tool.name, toolFile.fileRename,
-						tool.rentalPrice, tool.tradeAddr))
+						tool.rentalPrice, tool.tradeAddr1))
 				.from(favoritesTool).leftJoin(tool).on(tool.toolIdx.eq(favoritesTool.toolIdx)).leftJoin(toolFile)
 				.on(toolFile.toolFileIdx.eq(tool.thunbnail)).where(favoritesTool.userUsername.eq(username))
 				.offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();

@@ -15,9 +15,11 @@ import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
 import com.zipddak.dto.RefundDto;
 import com.zipddak.entity.OrderItem;
+import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.QClaimFile;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
+import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QProductOption;
@@ -87,6 +89,7 @@ public class SellerRefundRepository {
 	public RefundDto findRefundOrderId(String sellerUsername, Integer refundIdx) {
 		QOrder order = QOrder.order;
 		QRefund refund = QRefund.refund;
+		QPayment payment = QPayment.payment;
 		QClaimFile refundImage1  = new QClaimFile("refundImage1");
 		QClaimFile refundImage2  = new QClaimFile("refundImage2");
 		QClaimFile refundImage3  = new QClaimFile("refundImage3");
@@ -109,18 +112,20 @@ public class SellerRefundRepository {
 										order.orderCode,
 										order.postZonecode,
 										order.postAddr1,
-										order.postAddr1,
+										order.postAddr2,
 										order.postRecipient.as("customerName"),
 										order.phone.as("customerPhone"),
 										refundImage1.fileRename.as("refundImage1"),
 										refundImage2.fileRename.as("refundImage2"),
-										refundImage3.fileRename.as("refundImage3")
+										refundImage3.fileRename.as("refundImage3"),
+										payment.easypayProvider.as("paymentMethod")
 								))
 								.from(refund)
 								.join(order).on(order.orderIdx.eq(refund.orderIdx))
 								.leftJoin(refundImage1).on(refundImage1.claimFileIdx.eq(refund.image1Idx))
 								.leftJoin(refundImage2).on(refundImage2.claimFileIdx.eq(refund.image1Idx))
 								.leftJoin(refundImage3).on(refundImage3.claimFileIdx.eq(refund.image1Idx))
+								.leftJoin(payment).on(payment.paymentIdx.eq(order.paymentIdx))
 								.where(refund.refundIdx.eq(refundIdx))
 								.fetchOne();
 	}
@@ -171,7 +176,7 @@ public class SellerRefundRepository {
 		
 		return jpaQueryFactory.select(Projections.constructor(SellerOrderAmountDto.class,
 															order.orderIdx,
-															item.unitPrice.multiply(item.quantity).sum().as("sellerProductTotal"),
+															item.unitPrice.multiply(item.quantity).sum().as("sellerOrderTotal"),
 															seller.user.username,
 													        seller.basicPostCharge,
 													        seller.freeChargeAmount,
@@ -198,13 +203,14 @@ public class SellerRefundRepository {
 						        .join(product).on(product.productIdx.eq(item.product.productIdx))
 						        .where(item.orderIdx.eq(orderIdx),
 						        		product.sellerUsername.eq(sellerUsername),
-						        		item.refundIdx.eq(refundIdx)
+						        		item.refundIdx.eq(refundIdx),
+						        		item.orderStatus.eq(OrderStatus.반품완료)
 						        )
 						        .fetchOne();
 	    
 	    return result != null ? result : 0L;
 	}
-	
+
 	
 
 	

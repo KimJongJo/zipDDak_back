@@ -1,6 +1,6 @@
 package com.zipddak.seller.service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
 import com.zipddak.entity.OrderItem;
+import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
+import com.zipddak.seller.dto.DeliveryGroupDto;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.repository.SellerOrderRepository;
 
@@ -81,13 +83,27 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 	@Override
 	@Transactional
 	public void autoCompleteDelivery() {
-//		LocalDate ReferenceTime = LocalDate.now().minusDays(1);  //기준 날짜 
-		
-		// 테스트용: 즉시 완료
-		LocalDate referenceDate = LocalDate.now(); //배송중으로 변경 후 10분후 배송완료 처리
-        List<OrderItem> targets = sellerOrder_repo.findAutoCompleteTargets(referenceDate);
+		// 배송 시작 후 10분 경과 기준
+	    LocalDateTime referenceTime = LocalDateTime.now().minusMinutes(10);
 
-        targets.forEach(OrderItem::completeDelivery);
+	    // 배송완료 가능한 (택배사 + 운송장번호) 묶음 조회
+	    List<DeliveryGroupDto> groups = sellerOrder_repo.findAutoCompleteDeliveryGroups(referenceTime);
+
+	    if (groups.isEmpty()) {
+	        return;
+	    }
+
+	    // 묶음 단위 배송완료 처리
+	    for (DeliveryGroupDto group : groups) {
+
+	        List<OrderItem> targets = sellerOrder_repo.findByCarrierAndTrackingNoAndStatus(
+										                        group.getPostComp(),
+										                        group.getTrackingNo(),
+										                        OrderStatus.배송중
+										                );
+	        // 엔티티 상태 변경 
+	        targets.forEach(OrderItem::completeDelivery);
+	    }
         System.out.println("!!!배송완료 변경처리 완료!!!");
 		
 	}
