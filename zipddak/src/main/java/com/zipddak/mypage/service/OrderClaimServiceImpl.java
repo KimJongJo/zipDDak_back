@@ -145,7 +145,6 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 					continue;
 
 				// 1-1. 저장 경로 설정
-				String uploadDir = "/Users/eun/Documents/zipDDak_image/claim/";
 				File folder = new File(uploadDir);
 				if (!folder.exists())
 					folder.mkdirs();

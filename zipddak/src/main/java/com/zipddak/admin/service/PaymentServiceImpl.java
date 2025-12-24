@@ -37,6 +37,7 @@ import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.Payment.PaymentType;
 import com.zipddak.entity.Product.PostType;
 import com.zipddak.entity.Rental.RentalStatus;
+import com.zipddak.entity.Request;
 import com.zipddak.entity.Rental;
 import com.zipddak.entity.User;
 import com.zipddak.entity.OrderItem;
@@ -46,6 +47,7 @@ import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
 import com.zipddak.repository.PaymentRepository;
 import com.zipddak.repository.RentalRepository;
+import com.zipddak.repository.RequestRepository;
 import com.zipddak.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -63,6 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final ExpertRepository expertRepository;
 	private final UserRepository userRepository;
 	private final RentalRepository rentalRepository;
+	private final RequestRepository requestRepository;
 	
 	@Value("${toss-payment-secret-key}")
 	private String tossSecretKey;
@@ -98,15 +101,21 @@ public class PaymentServiceImpl implements PaymentService {
 	        // bundle 배송비
 	        long bundleTotalPrice = orderList.stream()
 	                .filter(o -> o.getPostType() == PostType.bundle)
-	                .mapToLong(o -> {
-
-	                    return o.getPrice() * o.getCount();
-	                })
+	                .mapToLong(o -> o.getPrice() * o.getCount())
 	                .sum();
 
-	        long bundlePost = bundleTotalPrice >= brand.getFreeChargeAmount() ? 0 : brand.getBasicPostCharge();
+	        boolean hasBundle = orderList.stream()
+	                .anyMatch(o -> o.getPostType() == PostType.bundle);
 
-	        postChargeTotal += (singlePost + bundlePost);
+	        long bundlePost = 0;
+
+	        if (hasBundle) {
+	            bundlePost = bundleTotalPrice >= brand.getFreeChargeAmount()
+	                    ? 0
+	                    : brand.getBasicPostCharge();
+	        }
+
+	        postChargeTotal += (singlePost + bundlePost);  
 	    }
 
 	    long totalPrice = productTotal + postChargeTotal;
@@ -264,6 +273,14 @@ public class PaymentServiceImpl implements PaymentService {
 				matching.setPaymentIdx(savedPayment.getPaymentIdx());
 				
 				matchingRepository.save(matching);
+				
+				// 요청서 데이터에서 요청 상태를 업데이트 해야함
+				
+				Request req = requestRepository.findById(matching.getRequestIdx()).orElseThrow(() -> new Exception("매칭에 관련된 요청서 조회 중 에러"));
+				
+				req.setStatus("RECRUITED");
+				
+				requestRepository.save(req);
 				
 			}else if(type.equals("rental")) {
 				
