@@ -167,7 +167,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료) ));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.ne(PaymentStatus.결제대기)));
 
 		// 주문 상태 조건
 		builder.and(orderItem.orderStatus.ne(OrderStatus.상품준비중));
@@ -183,23 +183,42 @@ public class OrderDslRepository {
 		}
 
 		return jpaQueryFactory
-				.select(Projections.constructor(OrderItemFlatDto.class, order.orderIdx, order.orderCode,
-						order.createdAt, seller.brandName, orderItem.receiveWay, product.postType, product.postCharge,
-						seller.freeChargeAmount, orderItem.orderItemIdx, product.productIdx, product.name,
-						productOption1.name, orderItem.quantity, orderItem.unitPrice, productFile.storagePath,
-						trackingNoExpr, postCompExpr, orderItem.orderStatus, Expressions.asBoolean(false),
-						productOption2.name))
-				.from(orderItem).leftJoin(order).on(order.orderIdx.eq(orderItem.orderIdx)).leftJoin(product)
-				.on(product.productIdx.eq(orderItem.product.productIdx)).leftJoin(seller)
-				.on(seller.user.username.eq(product.sellerUsername)).leftJoin(productOption1)
-				.on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx)).leftJoin(productOption2)
-				.on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx)).leftJoin(productFile)
-				.on(productFile.productFileIdx.eq(product.thumbnailFileIdx)).leftJoin(exchange)
-				.on(exchange.orderIdx.eq(orderItem.orderIdx)
+				.select(Projections.constructor(OrderItemFlatDto.class,
+						order.orderIdx,
+						order.orderCode,
+						order.createdAt.as("orderDate"),
+						
+						seller.brandName,
+						orderItem.receiveWay.as("deliveryType"),
+						product.postType.as("deliveryFeeType"),
+						product.postCharge.as("deliveryFeePrice"),
+						seller.freeChargeAmount,
+						
+						orderItem.orderItemIdx,
+						product.productIdx,
+						product.name.as("productName"),
+						productOption1.name.as("optionName"),
+						orderItem.quantity,
+						orderItem.unitPrice.as("price"),
+						product.salePrice.as("salePrice"),
+						product.price.as("productPrice"),
+						productFile.fileRename.as("thumbnail"),
+						trackingNoExpr,
+						postCompExpr,
+						orderItem.orderStatus,
+						Expressions.asBoolean(false),
+						productOption2.name.as("exchangeOption")))
+				.from(orderItem)
+				.leftJoin(order).on(order.orderIdx.eq(orderItem.orderIdx))
+				.leftJoin(product).on(product.productIdx.eq(orderItem.product.productIdx))
+				.leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
+				.leftJoin(productOption1).on(productOption1.productOptionIdx.eq(orderItem.productOptionIdx))
+				.leftJoin(productOption2).on(productOption2.productOptionIdx.eq(orderItem.exchangeNewOptIdx))
+				.leftJoin(productFile).on(productFile.productFileIdx.eq(product.thumbnailFileIdx))
+				.leftJoin(exchange).on(exchange.orderIdx.eq(orderItem.orderIdx)
 						.and(exchange.exchangeIdx.eq(JPAExpressions.select(exchangeSub.exchangeIdx.max())
 								.from(exchangeSub).where(exchangeSub.orderIdx.eq(orderItem.orderIdx)))))
-				.leftJoin(refund)
-				.on(refund.orderIdx.eq(orderItem.orderIdx)
+				.leftJoin(refund).on(refund.orderIdx.eq(orderItem.orderIdx)
 						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
 								.where(refundSub.orderIdx.eq(orderItem.orderIdx)))))
 				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
@@ -214,7 +233,7 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료) ));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.ne(PaymentStatus.결제대기) ));
 
 		// 주문 상태 조건
 		builder.and(orderItem.orderStatus.ne(OrderStatus.상품준비중));

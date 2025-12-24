@@ -84,7 +84,7 @@ public class Order {
 	private PaymentStatus paymentStatus;
 	
 	public enum PaymentStatus {
-		결제완료, 결제취소, 부분취소
+		결제완료, 결제취소, 부분취소, 결제대기
 	}
 
 	public OrderDto toDto() {
