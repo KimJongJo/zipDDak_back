@@ -56,7 +56,7 @@ public class PaymentOrderService implements OrderService {
 						.postRecipient(recvUser.getRecvier())
 						.postNote(recvUser.getRequestContent())
 						.createdAt(new java.sql.Date(System.currentTimeMillis()))
-						.paymentStatus(PaymentStatus.결제취소)
+						.paymentStatus(PaymentStatus.결제대기)
 						.build();
 		
 		// 주문 저장

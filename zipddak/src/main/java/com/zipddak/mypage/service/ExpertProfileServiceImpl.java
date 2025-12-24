@@ -109,7 +109,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(expertFilePath + rename);
+				File saveFile = new File(expertFilePath + "/" + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -144,7 +144,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(expertFilePath + rename);
+				File saveFile = new File(expertFilePath + "/" + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -179,7 +179,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(expertFilePath + rename);
+				File saveFile = new File(expertFilePath + "/" + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -188,6 +188,10 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 
 				ExpertFile savedFile = expertFileRepository.save(expertFile);
 
+				Expert expert = expertRepository.findById(expertDto.getExpertIdx()).get();
+				expert.setProfileImageIdx(savedFile.getExpertFileIdx());
+				
+				expertRepository.save(expert);
 				// 1-6. Expert 테이블 FK 설정
 				profileFileIdxArr = savedFile.getExpertFileIdx();
 			}
@@ -257,7 +261,7 @@ public class ExpertProfileServiceImpl implements ExpertProfileService {
 					img1Rename = rename;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(expertFilePath + rename);
+				File saveFile = new File(expertFilePath +"/" + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장

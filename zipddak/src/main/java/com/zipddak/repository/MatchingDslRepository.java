@@ -178,7 +178,10 @@ public class MatchingDslRepository {
 
 		// 사용자 아이디 조건
 		builder.and(matching.userUsername.eq(username));
-
+		
+		// 결제 취소된건 제외
+		builder.and(matching.status.ne(MatchingStatus.PAYMENT_CANCELLED));
+		
 		// 날짜 조건
 		if (startDate != null) {
 			builder.and(matching.createdAt.goe(startDate));
