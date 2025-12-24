@@ -79,6 +79,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	    for (BrandDto brand : brandList) {
 	        List<OptionListDto> orderList = brand.getOrderList();
+	        System.out.println("orderList : " + orderList);
 	        if (orderList == null || orderList.isEmpty()) continue;
 	        
 	        // 1. 상품 금액 합계
@@ -89,24 +90,27 @@ public class PaymentServiceImpl implements PaymentService {
 	                .sum();
 
 	        productTotal += brandProductTotal;
+	        
+	       
 
 
 	        // 2. 배송비 합계
 	        // single 배송비
 	        long singlePost = orderList.stream()
 	                .filter(o -> o.getPostType() == PostType.single)
-	                .mapToLong(OptionListDto::getPostCharge)
+	                .mapToLong(o -> o.getPostCharge() * o.getCount())
 	                .sum();
+
 
 	        // bundle 배송비
 	        long bundleTotalPrice = orderList.stream()
 	                .filter(o -> o.getPostType() == PostType.bundle)
-	                .mapToLong(o -> o.getPrice() * o.getCount())
+	                .mapToLong(o -> brand.getBasicPostCharge() * o.getCount())
 	                .sum();
 
 	        boolean hasBundle = orderList.stream()
 	                .anyMatch(o -> o.getPostType() == PostType.bundle);
-
+	        
 	        long bundlePost = 0;
 
 	        if (hasBundle) {
@@ -114,8 +118,9 @@ public class PaymentServiceImpl implements PaymentService {
 	                    ? 0
 	                    : brand.getBasicPostCharge();
 	        }
-
+	        
 	        postChargeTotal += (singlePost + bundlePost);  
+	        
 	    }
 
 	    long totalPrice = productTotal + postChargeTotal;

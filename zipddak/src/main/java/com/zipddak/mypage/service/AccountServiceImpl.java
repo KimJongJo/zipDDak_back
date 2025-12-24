@@ -70,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
 				String rename = UUID.randomUUID().toString();
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(profileFilePath + rename);
+				File saveFile = new File(profileFilePath + "/" +  rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장

@@ -76,6 +76,7 @@ public class PaymentController {
 			
 			// 주문 테이블 + 주문 상품 테이블에 저장
 			RecvUserDto recvUser = paymentDto.getRecvUser();
+			recvUser.setTel("010"+recvUser.getTel());
 			String username = paymentDto.getUsername();
 			paymentOrderService.addOrder(username, orderId, amount, recvUser, brandList);
 			
