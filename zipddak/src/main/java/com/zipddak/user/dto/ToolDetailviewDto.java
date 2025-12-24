@@ -48,7 +48,8 @@ public class ToolDetailviewDto {
     private String settleHost;
 	
 	 private Boolean favorite; // 관심 표시
-	 private Integer favoriteCount; //관심 수
+	 private Long favoriteCount; //관심 수
+	 private Long rentalCount;
 	 private String categoryName;
 	private String nickname;
 	private String ownerProfile;

@@ -208,7 +208,7 @@ public class ToolCardDsl {
 				category.name.as("categoryName"),
 				toolFile.fileRename.as("thunbnail"),
 				
-				 favorite.toolIdx.count().as("favoriteCount"),
+				favorite.toolIdx.count().as("favoriteCount"),
 			    rental.count().as("rentalCount"),
 				isFavoriteTool
 				
@@ -376,6 +376,7 @@ public class ToolCardDsl {
 		QFavoritesTool favorite = QFavoritesTool.favoritesTool;
 //		QReviewTool review = QReviewTool.reviewTool;
 		QUser ownerUser = QUser.user;
+		QRental rental = QRental.rental;
 		QProfileFile ownerProfile = QProfileFile.profileFile;
 		
 		QToolFile thunbnail = new QToolFile("thunbnail");
@@ -423,6 +424,9 @@ public class ToolCardDsl {
 				tool.tradeAddr2,
 				tool.tradeZonecode,
 				
+				favorite.toolIdx.count().as("favoriteCount"),
+			    rental.count().as("rentalCount"),
+				
 				ownerUser.nickname,
 				ownerProfile.fileRename.as("ownerProfile"),
 				
@@ -445,6 +449,7 @@ public class ToolCardDsl {
 				.leftJoin(file4).on(file4.toolFileIdx.eq(tool.img4))
 				.leftJoin(file5).on(file5.toolFileIdx.eq(tool.img5))
 				.leftJoin(ownerUser).on(ownerUser.username.eq(tool.owner))
+				.leftJoin(rental).on(rental.tool.toolIdx.eq(tool.toolIdx))
 //				.leftJoin(review).on(review.toolIdx.eq(tool.toolIdx))
 				.leftJoin(category).on(category.categoryIdx.eq(tool.category))
 				.leftJoin(ownerProfile).on(ownerProfile.profileFileIdx.eq(ownerUser.profileImg));

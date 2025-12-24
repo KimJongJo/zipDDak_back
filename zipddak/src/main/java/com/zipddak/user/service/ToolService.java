@@ -51,5 +51,8 @@ public interface ToolService {
 	//공구 리스트
 	List<ToolCardDto> toolList (String keyword) throws Exception;
 	
+	//공구 신고
+//	void reportTool(String username, String reason, Integer toolId) throws Exception;
+	
 
 }
