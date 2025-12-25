@@ -43,7 +43,6 @@ public class RentalController {
 		                + "-" + (int)(Math.random() * 9000 + 1000);
 				
 				rentalService.rentalApplication(rentalDto,orderId);
-				System.out.println("rental application controller");
 				
 				return ResponseEntity.ok(true);
 			}catch(Exception e) {

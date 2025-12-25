@@ -50,9 +50,11 @@ public class ToolDetailviewDto {
 	 private Boolean favorite; // 관심 표시
 	 private Long favoriteCount; //관심 수
 	 private Long rentalCount;
+	 
 	 private String categoryName;
 	private String nickname;
 	private String ownerProfile;
+	private String ownerAddr;
 	
 	private String tradeAddr1;
     private String tradeAddr2;

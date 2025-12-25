@@ -16,17 +16,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.ToolDto;
 import com.zipddak.entity.Tool.ToolStatus;
+import com.zipddak.entity.User;
 import com.zipddak.user.dto.ToolCardDto;
 import com.zipddak.user.dto.ToolCardsDto;
 import com.zipddak.user.dto.ToolCardsMoreDto;
 import com.zipddak.user.dto.ToolDetailviewDto;
 import com.zipddak.user.service.ToolService;
+import com.zipddak.user.service.UserService;
 
 @RestController
 public class ToolController {
 	
 	@Autowired
 	private ToolService toolService;
+	
+	@Autowired
+	private UserService userService;
 	
 	
 	//공구 메인 리스트
@@ -59,7 +64,15 @@ public class ToolController {
 			) {
 		try {
 			Integer toolIdx = toolService.ToolRegist(toolDto, thumbnail, images);
-			System.out.println("ㅎㅎ");
+			String username = toolDto.getOwner();
+			System.out.println("toolRegist>>>>"+username);
+			
+			String settleBank = toolDto.getSettleBank();
+			String settleAccount = toolDto.getSettleAccount();
+			String settleHost = toolDto.getSettleHost();
+			
+			userService.userBank(username, settleBank, settleAccount, settleHost);
+			
 			return ResponseEntity.ok(toolIdx);
 		}catch(Exception e) {
 			return ResponseEntity.badRequest().body(null);
@@ -203,6 +216,7 @@ public class ToolController {
 		ResponseEntity<Long> toolFavCount (@RequestParam("toolIdx") Integer toolIdx){
 			try {
 				Long favCount = toolService.toolFavoriteCount(toolIdx);
+				System.out.println(">>>>>>>>>>>>>>"+favCount);
 				return ResponseEntity.ok(favCount);
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -210,29 +224,28 @@ public class ToolController {
 			}
 		}
 		
-		//공구 지도에서 등록
-		@PostMapping(value="tool/directRental/map")
-		ResponseEntity<Boolean> toolDirectRentalMap (@RequestBody Map<String,Object> map){
-			
-			Integer toolIdx = (Integer)map.get("toolIdx");
-			String clickedAddress = (String)map.get("clickedAddress");
-			
-			try {
-				ToolDto tool = toolService.toolSelect(toolIdx);
-				tool.setTradeAddr1(clickedAddress);
-				return ResponseEntity.ok(true);
-			}catch(Exception e) {
-				e.printStackTrace();
-				return ResponseEntity.badRequest().body(false);
-			}
-		}
+		//공구 렌탈 수
+				@GetMapping(value="tool/rentalCount")
+				ResponseEntity<Long> toolRentalCount (@RequestParam("toolIdx") Integer toolIdx){
+					try {
+						Long rentalCnt = toolService.toolRentalCount(toolIdx);
+						System.out.println("++++++++++++"+rentalCnt);
+						return ResponseEntity.ok(rentalCnt);
+					}catch(Exception e) {
+						e.printStackTrace();
+						return ResponseEntity.badRequest().body(null);
+					}
+				}
+		
 		
 		//공구 지도 리스트
 		@GetMapping(value="tool/mapList")
-		ResponseEntity<List<ToolCardDto>> toolMapList (@RequestParam("keyword") String keyword){
+		ResponseEntity<List<ToolCardDto>> toolMapList (
+				@RequestParam("keyword") String keyword,
+				@RequestParam("username") String username){
 			try {
 				System.out.println(">>>>>>>>>>>");
-				List<ToolCardDto> tools = toolService.toolList(keyword);
+				List<ToolCardDto> tools = toolService.toolList(keyword, username);
 				return ResponseEntity.ok(tools);
 			}catch(Exception e) {
 				e.printStackTrace();

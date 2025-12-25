@@ -48,8 +48,11 @@ public interface ToolService {
 	//공구 좋아요
 	Long toolFavoriteCount (Integer toolIdx) throws Exception;
 	
+	//공구 대여수
+	Long toolRentalCount (Integer toolIdx) throws Exception;
+	
 	//공구 리스트
-	List<ToolCardDto> toolList (String keyword) throws Exception;
+	List<ToolCardDto> toolList (String keyword, String username) throws Exception;
 	
 	//공구 신고
 //	void reportTool(String username, String reason, Integer toolId) throws Exception;

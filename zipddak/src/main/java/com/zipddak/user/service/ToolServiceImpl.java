@@ -283,12 +283,20 @@ public class ToolServiceImpl implements ToolService {
 		return toolCardDsl.toolFavoriteCount(toolIdx);
 	}
 	
+	//공구 렌탈 수 
+	@Override
+	public Long toolRentalCount(Integer toolIdx) throws Exception {
+
+		return toolCardDsl.toolRentalCount(toolIdx);
+	}
+	
 	//공구 주소기반 리스트
 	@Override
-	public List<ToolCardDto> toolList(String keyword) throws Exception {
+	public List<ToolCardDto> toolList(String keyword, String username) throws Exception {
 		
-		return toolCardDsl.toolMap(keyword);
+		return toolCardDsl.toolMap(keyword, username);
 	}
+
 
 	//공구 신고
 //	@Override
