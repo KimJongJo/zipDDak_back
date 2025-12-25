@@ -45,8 +45,6 @@ public class ProductCardDsl {
 			QSeller seller = QSeller.seller;
 			// 상품 카테고리
 			QCategory category = QCategory.category;
-			// 카드 노출 수
-			Integer limit = 4;
 			
 
 			// 로그인 했을때 안했을때 구분
@@ -70,7 +68,6 @@ public class ProductCardDsl {
 			//키워드
 			if (keyword != null && !keyword.isBlank()) {
 				where.and(product.name.contains(keyword));
-				limit = 6;
 			}
 
 			// 평점 높은순
@@ -113,7 +110,7 @@ public class ProductCardDsl {
 		            .where(where)
 		            .groupBy(product.productIdx)
 		            .orderBy(order)
-		            .limit(limit)
+		            .limit(6)
 		            .offset(0)
 		            .fetch();
 		 

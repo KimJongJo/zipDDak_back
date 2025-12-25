@@ -17,6 +17,7 @@ public class ToolCardDto {
 	 private String name;
 	 private Long rentalPrice;
 	 private String addr1;
+	 private String tradeAddr1;
 	 private ToolStatus satus;
 	 private String categoryName;
 	 

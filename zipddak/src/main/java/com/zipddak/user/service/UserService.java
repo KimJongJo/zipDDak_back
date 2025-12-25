@@ -10,10 +10,8 @@ public interface UserService {
 
 	// 전문가 전환
 	UserInfoDto expertYN(Boolean isExpert, String username) throws Exception;
-
-	// 주소 불러오기
-	Boolean checkAddr(String username) throws Exception;
 	
-	// 유저정보 불러오기
+	// 유저 계좌 업데이트
+	void userBank (String username, String settleBank, String settleAccount, String settleHost) throws Exception;
 
 }

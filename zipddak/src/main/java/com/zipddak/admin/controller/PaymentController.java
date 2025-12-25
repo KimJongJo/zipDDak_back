@@ -208,10 +208,10 @@ public class PaymentController {
 			String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 	                + "-" + (int)(Math.random() * 9000 + 1000);
 			
-			String toolIdx = paymentDto.getToolIdx().toString();
+			String toolIdxStr = paymentDto.getToolIdx().toString();
 			
 			// 주문 테이블 + 주문 상품 테이블에 저장
-			String orderName = "Rental"+toolIdx;
+			String orderName = "Rental"+toolIdxStr;
 			
 //			RecvUserDto recvUser = paymentDto.getRecvUser();
 			String username = paymentDto.getUsername();
@@ -244,7 +244,7 @@ public class PaymentController {
 				Integer toolIdx = paymentComplateDto.getToolIdx();
 				String orderId = paymentComplateDto.getOrderId();
 				
-			    String redirectUrl = reactServer + "zipddak/tool/apply/"+toolIdx;
+			    String redirectUrl = reactServer + "zipddak/mypage/tools/rentals";
 				
 				return ResponseEntity.status(HttpStatus.FOUND)
 						.location(URI.create(redirectUrl))

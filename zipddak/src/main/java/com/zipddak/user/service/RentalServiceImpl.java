@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 import com.zipddak.dto.RentalDto;
 import com.zipddak.entity.Rental;
 import com.zipddak.entity.Rental.RentalStatus;
+import com.zipddak.entity.Settlement;
 import com.zipddak.entity.Settlement.SettlementState;
 import com.zipddak.entity.Settlement.TargetType;
-import com.zipddak.entity.Settlement;
+import com.zipddak.entity.Tool.ToolStatus;
+import com.zipddak.entity.Tool;
 import com.zipddak.repository.RentalRepository;
 import com.zipddak.repository.SettlementRepository;
+import com.zipddak.repository.ToolRepository;
 import com.zipddak.user.dto.BorrowPaymentDto;
 import com.zipddak.user.dto.BorrowRentalDto;
 import com.zipddak.user.dto.BorrowSettlementDto;
@@ -38,16 +41,20 @@ public class RentalServiceImpl implements RentalService {
 	
 	@Autowired
 	private SettlementRepository settlementRepository;
+	
+	@Autowired
+	private ToolRepository toolRepository;
 
 	//대여 등록
 	@Override
 	@Transactional
 	public void rentalApplication(RentalDto rentalDto, String orderId) throws Exception {
-		System.out.println("rental service");
 		
 		Rental rental = modelMapper.map(rentalDto, Rental.class);
-		System.out.println(">>>>>>>"+ rentalDto);
 		rental.setRentalCode(orderId);
+		if(rental.getDirectRental()) {
+			rental.setSatus(RentalStatus.PAYED);
+		}
 		rental.setSatus(RentalStatus.PRE);
 		
 		rentalRepository.save(rental);
