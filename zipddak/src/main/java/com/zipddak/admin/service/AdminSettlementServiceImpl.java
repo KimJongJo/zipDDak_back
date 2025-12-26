@@ -53,7 +53,6 @@ public class AdminSettlementServiceImpl implements SettlementService{
         // 판매업체 정산 리스트
         List<SettlementSellerTargetListDto> sellerSettlementList = paymentDslRepository.sellerSettlementsTarget(targetMonth);
         
-        
         Date targetDate = Date.valueOf(targetMonth.atDay(1));
         
         // 전문가 정산 리스트를 통해서 정산 테이블에 저장
@@ -76,6 +75,7 @@ public class AdminSettlementServiceImpl implements SettlementService{
         									    target.getTotalAmount() * 95 / 100
         									)
         								.targetType(TargetType.EXPERT)
+        								.targetUsername(target.getUsername())
         								.settlementMonth(targetDate)
         								.build();
         		
@@ -103,6 +103,7 @@ public class AdminSettlementServiceImpl implements SettlementService{
         									    ((int)target.getTotalAmount()) * 95 / 100
         									)
         								.targetType(TargetType.SELLER)
+        								.targetUsername(target.getUsername())
         								.settlementMonth(targetDate)
         								.build();
         		
