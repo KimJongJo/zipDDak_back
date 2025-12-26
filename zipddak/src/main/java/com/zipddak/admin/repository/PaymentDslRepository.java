@@ -20,6 +20,8 @@ import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QSeller;
 import com.zipddak.entity.QUser;
+import com.zipddak.entity.Payment;
+import com.zipddak.entity.Payment.PaymentType;
 
 @Repository
 public class PaymentDslRepository {
@@ -50,7 +52,8 @@ public class PaymentDslRepository {
 				.from(payment)
 				.where(payment.approvedAt.goe(start),
 						payment.approvedAt.lt(end),
-						payment.status.eq("DONE")
+						payment.status.eq("DONE"),
+						payment.paymentType.eq(PaymentType.MATCHING)
 					)
 				.groupBy(payment.sellUsername, payment.sellUserType)
 				.fetch();

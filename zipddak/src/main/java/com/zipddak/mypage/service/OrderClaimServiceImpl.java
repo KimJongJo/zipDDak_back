@@ -88,7 +88,7 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(uploadDir + "/" + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
@@ -157,7 +157,7 @@ public class OrderClaimServiceImpl implements OrderClaimService {
 				String rename = UUID.randomUUID().toString() + ext;
 
 				// 1-4. 실제 파일 저장
-				File saveFile = new File(uploadDir + rename);
+				File saveFile = new File(uploadDir + "/" + rename);
 				file.transferTo(saveFile);
 
 				// 1-5. DB 저장
