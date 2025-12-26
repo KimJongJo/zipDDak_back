@@ -5,7 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.entity.ProductFile;
+import com.zipddak.entity.SellerFile;
 import com.zipddak.repository.ProductFileRepository;
+import com.zipddak.repository.SellerFileRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +18,7 @@ public class FileSaveService {
 
     private final FileSaveUtil fileSaveUtil;
     private final ProductFileRepository productFile_repo;
+    private final SellerFileRepository sellerFile_repo;
 
     // 상품관련 파일 저장 + File INSERT + PK 리턴
     public Integer uploadFile(MultipartFile multipartFile, String uploadPath, String FileType) throws Exception {
@@ -43,6 +46,15 @@ public class FileSaveService {
 									
 			return productFileEntity.getProductFileIdx();
         	
+        } else if(FileType.equals("seller")){
+        	SellerFile sellerFileEntity = sellerFile_repo.save(SellerFile.builder()
+											                    .fileName(originalFileName)
+											                    .fileRename(storedFileName)
+											                    .storagePath(uploadPath)
+											                    .build());
+
+    		return sellerFileEntity.getSellerFileIdx();
+    		
         } else {
         	
         	return null;
@@ -71,6 +83,8 @@ public class FileSaveService {
         // DB에서도 삭제
         if (FileType.equals("product")) {
             productFile_repo.deleteById(fileIdx);
+        }else if(FileType.equals("seller")) {
+        	sellerFile_repo.deleteById(fileIdx);
         }
 
         return true;

@@ -1,6 +1,5 @@
 package com.zipddak.seller.repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -18,10 +17,13 @@ import com.zipddak.entity.OrderItem.OrderStatus;
 import com.zipddak.entity.QOrder;
 import com.zipddak.entity.QOrderItem;
 import com.zipddak.entity.QProduct;
+import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QProductOption;
+import com.zipddak.entity.QSeller;
 import com.zipddak.entity.QUser;
 import com.zipddak.seller.dto.DeliveryGroupDto;
 import com.zipddak.seller.dto.SearchConditionDto;
+import com.zipddak.seller.dto.SellerOrderRowDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -140,6 +142,7 @@ public class SellerOrderRepository {
 		QOrderItem item = QOrderItem.orderItem;
 		QProduct product = QProduct.product;
 		QProductOption pdOption =  QProductOption.productOption;
+        QProductFile thumb = QProductFile.productFile;
 		
 		return jpaQueryFactory.select(Projections.fields(OrderItemDto.class,
 								        item.orderItemIdx,
@@ -150,22 +153,51 @@ public class SellerOrderRepository {
 								        item.orderStatus.stringValue().as("orderStatus"),
 								        item.postComp,
 								        item.trackingNo,
+								        product.productIdx,
 								        product.name.as("productName"),
 								        product.postCharge, 
 								        product.postType.stringValue().as("postType"), // 배송방식 
 								        pdOption.name.as("optionName"), // 옵션명 추가
 								        pdOption.value.as("optionValue"), //옵션선택종류
-								        pdOption.price.as("optionPrice") //옵션 추가가격 
+								        pdOption.price.as("optionPrice"), //옵션 추가가격 
+				                        thumb.fileRename.as("thumbnailFileRename")
 								))
 								.from(item)
 								.join(product).on(item.product.productIdx.eq(product.productIdx))
 								.join(pdOption).on(item.productOptionIdx.eq(pdOption.productOptionIdx)) 
+				                .leftJoin(thumb).on(thumb.productFileIdx.eq(product.thumbnailFileIdx))
 								.where(product.sellerUsername.eq(sellerUsername)
 								        .and(item.orderIdx.eq(orderIdx)))
 								.fetch();
 	}
 	
-	
+	// ============================
+	// 셀러 기준 주문 row 추출
+	// ============================
+	public List<SellerOrderRowDto> findSellerOrderRows(String sellerUsername,Integer orderIdx) {
+	    QOrder order = QOrder.order;
+	    QOrderItem item = QOrderItem.orderItem;
+	    QProduct product = QProduct.product;
+	    QSeller seller = QSeller.seller;
+
+	    return jpaQueryFactory.select(Projections.constructor(SellerOrderRowDto.class,
+	    								item.orderItemIdx,
+							            product.postType,
+							            product.postCharge,
+							            item.unitPrice,
+							            item.quantity,
+							            seller.basicPostCharge,
+							            seller.freeChargeAmount
+						        ))
+						        .from(item)
+						        .join(order).on(item.orderIdx.eq(order.orderIdx))
+						        .join(product).on(item.product.productIdx.eq(product.productIdx))
+						        .join(seller).on(product.sellerUsername.eq(seller.user.username))
+						        .where(order.orderIdx.eq(orderIdx),
+						        		seller.user.username.eq(sellerUsername)
+						        )
+						        .fetch();
+	}
 	
 	
 	
@@ -205,6 +237,7 @@ public class SellerOrderRepository {
 	}
 	
 	
+	
 
 	// ============================
 	// 문자열 → Enum 변환
@@ -221,6 +254,8 @@ public class SellerOrderRepository {
 			}
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
+
+	
 
 	
 

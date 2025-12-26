@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.SellerDto;
 import com.zipddak.entity.QSeller;
 import com.zipddak.entity.QSellerFile;
+import com.zipddak.entity.QUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,11 +21,12 @@ public class SellerMypageRepository {
 	public SellerDto findBySellerIdxAndSellerId(String sellerUsername) {
 		QSeller seller = QSeller.seller;
 		QSellerFile logo = QSellerFile.sellerFile;
+		QUser user = QUser.user;
 		
 		
 		return jpaQueryFactory.select(Projections.fields(SellerDto.class,
 										seller.sellerIdx,
-										seller.logoFileIdx.as("logoFileIdx"),
+										seller.logoFileIdx,
 										seller.brandName,
 										seller.handleItemCateIdx,
 										seller.introduction,
@@ -39,6 +41,7 @@ public class SellerMypageRepository {
 										logo.fileRename.as("logoFileRename")
 						        ))
 						        .from(seller)
+						        .join(user).on(user.username.eq(seller.user.username))
 						        .leftJoin(logo).on(logo.sellerFileIdx.eq(seller.logoFileIdx))
 						        .where(seller.user.username.eq(sellerUsername))
 						        .fetchOne();
