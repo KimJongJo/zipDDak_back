@@ -172,10 +172,9 @@ public class AdminController {
 			@RequestParam Integer page){
 
 		try {
-		
-		ResponseAdminListDto requestExpertList = adminService.requestExpertList(state, column, keyword, page);
-		
-		return ResponseEntity.ok(requestExpertList);
+			ResponseAdminListDto requestExpertList = adminService.requestExpertList(state, column, keyword, page);
+			
+			return ResponseEntity.ok(requestExpertList);
 		
 		}catch(Exception e) {
 		e.printStackTrace();
