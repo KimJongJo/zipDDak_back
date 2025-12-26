@@ -84,7 +84,7 @@ public class SellerShippingRepository {
 							                    item.trackingNo.isNotNull(),
 							                    item.orderStatus.in(shippingStatuses)
 							            )
-							            .groupBy(item.trackingNo, item.postComp)   // ★ 리스트와 동일한 기준
+							            .groupBy(item.trackingNo, item.postComp)   //리스트와 동일한 기준
 							            .fetch()
 							            .size();
 	}

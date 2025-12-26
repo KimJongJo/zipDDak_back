@@ -7,6 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.zipddak.dto.ProductDto;
+import com.zipddak.dto.SellerDto;
+import com.zipddak.entity.Product.PostType;
+
 import lombok.*;
 
 @Getter
@@ -136,4 +140,19 @@ public class Seller {
     
 	@Column
 	private String activityStatus; // ACTIVE, WAITING, STOPPED, REJECT
+	
+	
+	
+	public void profileUpdateFromDto(SellerDto dto) {
+		this.brandName = dto.getBrandName();
+        this.compHp = dto.getCompHp();
+		this.handleItemCateIdx = dto.getHandleItemCateIdx();
+		this.pickupZonecode = dto.getPickupZonecode();
+		this.pickupAddr1 = dto.getPickupAddr1();
+		this.pickupAddr2 = dto.getPickupAddr2();
+		this.basicPostCharge = dto.getBasicPostCharge();
+		this.freeChargeAmount = dto.getFreeChargeAmount();
+		this.introduction = dto.getIntroduction();
+		this.updatedAt = dto.getUpdatedAt();
+    }
 }

@@ -1,11 +1,16 @@
 package com.zipddak.seller.repository;
 
-import com.querydsl.core.types.dsl.*;
-import com.querydsl.core.types.dsl.BooleanExpression;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.BooleanPath;
+import com.querydsl.core.types.dsl.DatePath;
+import com.querydsl.core.types.dsl.EnumPath;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringExpression;
+import com.querydsl.core.types.dsl.StringPath;
 
 public class QPredicate {
 

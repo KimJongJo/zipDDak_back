@@ -1,8 +1,6 @@
 package com.zipddak.seller.repository;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -12,8 +10,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.CategoryDto;
 import com.zipddak.dto.ProductDto;
 import com.zipddak.dto.ProductOptionDto;
-import com.zipddak.entity.OrderItem;
-import com.zipddak.entity.Product;
 import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;

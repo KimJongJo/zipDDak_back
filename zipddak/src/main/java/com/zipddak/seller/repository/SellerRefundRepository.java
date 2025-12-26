@@ -2,8 +2,6 @@ package com.zipddak.seller.repository;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zipddak.dto.OrderDto;
 import com.zipddak.dto.OrderItemDto;
 import com.zipddak.dto.RefundDto;
 import com.zipddak.entity.OrderItem;
@@ -25,8 +22,6 @@ import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QProductOption;
 import com.zipddak.entity.QRefund;
 import com.zipddak.entity.QSeller;
-import com.zipddak.entity.QUser;
-import com.zipddak.entity.Refund;
 import com.zipddak.seller.dto.SearchConditionDto;
 import com.zipddak.seller.dto.SellerOrderAmountDto;
 
@@ -137,33 +132,33 @@ public class SellerRefundRepository {
 		QProductFile pdFile = QProductFile.productFile;
 		
 		return jpaQueryFactory.select(Projections.fields(OrderItemDto.class,
-								        item.orderItemIdx,
-								        item.orderIdx,
-								        item.productOptionIdx,
-								        item.quantity,
-								        item.unitPrice,
-								        item.orderStatus.stringValue().as("orderStatus"),
-								        item.postComp,
-								        item.trackingNo,
-								        pdFile.fileRename.as("thumbnailFileRename"),
-								        item.refundRejectedAt,
-								        item.refundAcceptedAt,
-								        item.refundPickupComplatedAt,
-								        item.refundComplatedAt,
-								        product.name.as("productName"),
-								        product.postCharge, 
-								        product.postType.stringValue().as("postType"), // 배송방식 
-								        pdOption.name.as("optionName"), // 옵션명 추가
-								        pdOption.value.as("optionValue"), //옵션선택종류
-								        pdOption.price.as("optionPrice") //옵션 추가가격 
-		))
-		.from(item)
-		.join(product).on(item.product.productIdx.eq(product.productIdx))
-		.join(pdOption).on(item.productOptionIdx.eq(pdOption.productOptionIdx)) 
-		.leftJoin(pdFile).on(pdFile.productFileIdx.eq(product.thumbnailFileIdx))
-		.where(product.sellerUsername.eq(sellerUsername)
-		        .and(item.refundIdx.eq(refundIdx)))
-		.fetch();
+												        item.orderItemIdx,
+												        item.orderIdx,
+												        item.productOptionIdx,
+												        item.quantity,
+												        item.unitPrice,
+												        item.orderStatus.stringValue().as("orderStatus"),
+												        item.postComp,
+												        item.trackingNo,
+												        pdFile.fileRename.as("thumbnailFileRename"),
+												        item.refundRejectedAt,
+												        item.refundAcceptedAt,
+												        item.refundPickupComplatedAt,
+												        item.refundComplatedAt,
+												        product.name.as("productName"),
+												        product.postCharge, 
+												        product.postType.stringValue().as("postType"), // 배송방식 
+												        pdOption.name.as("optionName"), // 옵션명 추가
+												        pdOption.value.as("optionValue"), //옵션선택종류
+												        pdOption.price.as("optionPrice") //옵션 추가가격 
+						))
+						.from(item)
+						.join(product).on(item.product.productIdx.eq(product.productIdx))
+						.leftJoin(pdOption).on(item.productOptionIdx.eq(pdOption.productOptionIdx)) 
+						.leftJoin(pdFile).on(pdFile.productFileIdx.eq(product.thumbnailFileIdx))
+						.where(product.sellerUsername.eq(sellerUsername)
+						        .and(item.refundIdx.eq(refundIdx)))
+						.fetch();
 	}
 	
 

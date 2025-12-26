@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,10 @@ import com.zipddak.repository.OrderItemRepository;
 import com.zipddak.repository.OrderRepository;
 import com.zipddak.seller.dto.DeliveryGroupDto;
 import com.zipddak.seller.dto.SearchConditionDto;
+import com.zipddak.seller.dto.SellerOrderRowDto;
+import com.zipddak.seller.dto.SellerOrderSummaryDto;
 import com.zipddak.seller.repository.SellerOrderRepository;
+import com.zipddak.util.SellerOrderSummaryCalculator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +32,9 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 	private final OrderRepository order_repo;
 	private final OrderItemRepository orderItem_repo;
 	private final SellerOrderRepository sellerOrder_repo;
+	
+	@Autowired
+	private final SellerMypageService mypage_svc;
 
 	//주문 리스트 
 	@Override
@@ -55,26 +62,33 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 	// 주문 내역 상세보기 
 	@Override
 	public Map<String, Object> getMyOrderDetail(String sellerUsername, Integer orderIdx) throws Exception {
-		
-		// 주문정보(orderIdx 하나니까 orders에서 order 정보 하나 가져오기)
-//		Order order = order_repo.findById(orderIdx).orElseThrow(() -> new Exception("주문 없음"));
-		OrderDto orderDto = sellerOrder_repo.findByOrderId(orderIdx);
-		if (orderDto == null) {
+		 // 1. 주문 기본 정보
+	    OrderDto orderDto = sellerOrder_repo.findByOrderId(orderIdx);
+	    if (orderDto == null) {
 	        throw new Exception("주문 없음");
 	    }
-		
-		// 주문상품정보 (셀러 소유 OrderItem만 가져오기)
+
+	    // 2. 셀러 소유 주문 상품
 	    List<OrderItemDto> itemList = sellerOrder_repo.findMyOrderItems(sellerUsername, orderIdx);
 	    if (itemList.isEmpty()) {
 	        throw new Exception("해당 주문은 이 셀러의 상품이 아님");
 	    }
-	    
-//	    System.out.println("order" + order.toDto());
-//	    System.out.println("itemList" + itemList);
 
+	    // 3. 셀러 기준 주문 row
+	    List<SellerOrderRowDto> orderRows = sellerOrder_repo.findSellerOrderRows(sellerUsername, orderIdx);
+	    if (orderRows == null || orderRows.isEmpty()) {
+	        throw new Exception("해당 판매자의 주문 없음");
+	    }
+
+	    // 4. 셀러 주문 금액 계산
+	    SellerOrderSummaryDto summary = SellerOrderSummaryCalculator.calculate(orderRows);
+
+	    // 5. 결과 구성
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("orderData", orderDto);
 	    result.put("myOrderItemList", itemList);
+	    result.put("freeChargeAmount", orderRows.get(0).getSellerFreeChargeAmount());
+	    result.put("sellerOrderSummary", summary);
 
 	    return result;
 	}
@@ -95,7 +109,6 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 
 	    // 묶음 단위 배송완료 처리
 	    for (DeliveryGroupDto group : groups) {
-
 	        List<OrderItem> targets = sellerOrder_repo.findByCarrierAndTrackingNoAndStatus(
 										                        group.getPostComp(),
 										                        group.getTrackingNo(),

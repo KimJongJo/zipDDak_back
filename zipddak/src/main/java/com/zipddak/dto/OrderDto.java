@@ -3,6 +3,7 @@ package com.zipddak.dto;
 import java.sql.Date;
 
 import com.zipddak.entity.OrderItem;
+import com.zipddak.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,6 @@ public class OrderDto {
     private String productIdx;	//productIdx
     private String productName;	//product
     private Long itemCount;
-    
+    private Product.PostType postType;
     
 }
