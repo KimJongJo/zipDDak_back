@@ -55,6 +55,8 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 	//반품요청 상세보기
 	@Override
 	public Map<String, Object> getRefundReqDetail(String sellerUsername, Integer refundIdx) {
+		System.out.println("sellerUsername : " + sellerUsername);
+		System.out.println("refundIdx : " + refundIdx);
 		// 반품 요청된 주문정보
 		RefundDto refundOrderData = sellerRefund_repo.findRefundOrderId(sellerUsername, refundIdx);
 		if (refundOrderData == null) {
