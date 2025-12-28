@@ -420,7 +420,7 @@ public class ProductDslRepository {
 			    .select(cart, product, productFile, productOption, seller)
 			    .from(cart)
 			    .leftJoin(cart.product, product) // cart와 product 조인
-			    .leftJoin(seller).on(seller.user.username.eq(product.sellerUsername))
+			    .join(seller).on(seller.user.username.eq(product.sellerUsername))
 			    .leftJoin(productFile).on(product.thumbnailFileIdx.eq(productFile.productFileIdx)) // 조인 조건
 			    .leftJoin(productOption).on(cart.optionIdx.eq(productOption.productOptionIdx))       // 조인 조건
 			    .where(cart.userUsername.eq(username))
