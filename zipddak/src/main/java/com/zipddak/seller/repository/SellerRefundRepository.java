@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.OrderItemDto;
 import com.zipddak.dto.RefundDto;
@@ -46,35 +48,79 @@ public class SellerRefundRepository {
 		QOrder order = QOrder.order;
 		QOrderItem item = QOrderItem.orderItem;
 		QProduct product = QProduct.product;
+		
+		Expression<String> refundProductName = JPAExpressions.select(product.name)
+												        .from(item)
+												        .join(product).on(product.productIdx.eq(item.product.productIdx))
+												        .where(item.refundIdx.eq(refund.refundIdx),
+												        		item.orderItemIdx.eq(JPAExpressions.select(item.orderItemIdx.min())
+																				                    .from(item)
+																				                    .where(item.refundIdx.eq(refund.refundIdx))
+												            )
+												        );
 
-		return jpaQueryFactory
-				.select(Projections.fields(RefundDto.class, 
-						refund.refundIdx, refund.orderIdx, 
-						refund.createdAt,
-						order.orderCode, 
-						order.createdAt.as("orderDate"), 
-						product.name.min().as("refundProductName"),
-						order.user.username.as("username"), 
-						refund.pickupTrackingNo.as("pickupTrackingNo"),
-						refund.pickupPostComp.as("pickupPostComp"),
-						item.orderStatus.stringValue().min().as("orderStatus"),
-						Expressions.numberTemplate(Integer.class, "count({0})", item.orderItemIdx).as("refundItemCount")))
-				.from(refund)
-				.join(order).on(order.orderIdx.eq(refund.orderIdx))
-				.join(item).on(order.orderIdx.eq(item.orderIdx))
-				.join(product).on(product.productIdx.eq(item.product.productIdx))
-				.where(item.orderStatus.in(refundStatuses), 
-						product.sellerUsername.eq(sellerUsername),
-						QPredicate.eq(order.user.username, scDto.getCustomerUsername()),
-						QPredicate.anyContains(scDto.getKeyword(), order.orderCode, order.postRecipient, order.phone, product.name),
-						QPredicate.dateEq(order.createdAt, scDto.getSearchDate()))
-				.orderBy(item.createdAt.desc()).offset(pr.getOffset()).limit(pr.getPageSize()).fetch();
+		return jpaQueryFactory.select(Projections.fields(RefundDto.class,
+				        refund.refundIdx,
+				        refund.orderIdx,
+				        refund.pickupPostComp,
+				        refund.pickupTrackingNo,
+				        refund.createdAt,
+				        order.orderCode,
+				        order.createdAt.as("orderDate"),
+				        order.user.username.as("username"),
+				        ExpressionUtils.as(refundProductName, "refundProductName"),
+				        item.orderStatus.stringValue().min().as("orderStatus"),
+				        item.orderItemIdx.count().as("refundItemCount")
+				    ))
+				    .from(refund) 
+				    .join(item).on(item.refundIdx.eq(refund.refundIdx))
+				    .join(product).on(product.productIdx.eq(item.product.productIdx))
+				    .join(order).on(order.orderIdx.eq(refund.orderIdx))
+				    .where(
+				        product.sellerUsername.eq(sellerUsername),
+				        QPredicate.eq(order.user.username, scDto.getCustomerUsername()),
+				        QPredicate.anyContains(
+				            scDto.getKeyword(),
+				            order.orderCode,
+				            order.postRecipient,
+				            order.phone,
+				            product.name
+				        ),
+				        QPredicate.dateEq(order.createdAt, scDto.getSearchDate())
+				    )
+				    .groupBy(refund.refundIdx)
+				    .orderBy(refund.createdAt.desc())
+				    .offset(pr.getOffset())
+				    .limit(pr.getPageSize())
+				    .fetch();
 	}
 
 	public Long countMyRefunds(String sellerUsername, SearchConditionDto scDto) {
-		QOrderItem item = QOrderItem.orderItem;
+		QRefund refund = QRefund.refund;
+	    QOrder order = QOrder.order;
+	    QOrderItem item = QOrderItem.orderItem;
+	    QProduct product = QProduct.product;
 
-		return jpaQueryFactory.select(item.count()).from(item).where(item.orderStatus.in(refundStatuses)).fetchOne();
+		return jpaQueryFactory.select(refund.refundIdx.countDistinct())
+		        .from(refund)
+		        .join(order).on(order.orderIdx.eq(refund.orderIdx))
+		        .join(item).on(item.refundIdx.eq(refund.refundIdx))
+		        .join(product).on(product.productIdx.eq(item.product.productIdx))
+		        .where(
+		            product.sellerUsername.eq(sellerUsername),
+		            item.orderStatus.in(refundStatuses),
+
+		            QPredicate.eq(order.user.username, scDto.getCustomerUsername()),
+		            QPredicate.anyContains(
+		                scDto.getKeyword(),
+		                order.orderCode,
+		                order.postRecipient,
+		                order.phone,
+		                product.name
+		            )
+//		            QPredicate.dateEq(order.createdAt, scDto.getSearchDate())
+		        )
+		        .fetchOne();
 	}
 
 	// ============================

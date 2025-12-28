@@ -40,6 +40,7 @@ public class RentalDto {
     private Integer paymentIdx;
     private Date createdAt;
     
+    //join용컬럼
     private Integer toolIdx;
     private String name;
     private String phone;
