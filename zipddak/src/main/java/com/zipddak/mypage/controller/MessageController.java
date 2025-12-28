@@ -85,6 +85,8 @@ public class MessageController {
 			@RequestBody CreateMessageRoomRequestDto createMessageRoomRequestDto) {
 		try {
 			Integer roomId = messageService.createOrGetMessageRoom(createMessageRoomRequestDto);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			System.out.println(roomId);
 			return ResponseEntity.ok(roomId);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -2,6 +2,7 @@ package com.zipddak.admin.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +29,17 @@ public class MatchingController {
 		try {
 			Map<String, Object> matchingState = new HashMap<String, Object>();
 			
-			Matching check = matchingService.checkMatchingState(estimateIdx);
+			Optional<Matching> check = matchingService.checkMatchingState(estimateIdx);
 			
-			matchingState.put("state", check.getStatus() != MatchingStatus.PAYMENT_CANCELLED);
-			matchingState.put("matchingIdx", check.getMatchingIdx());
+			if(check.isPresent()) {
+				Matching matching = check.get();
+				matchingState.put("state", matching.getStatus() != MatchingStatus.PAYMENT_CANCELLED);
+				matchingState.put("matchingIdx", matching.getMatchingIdx());
+				
+				return ResponseEntity.ok(matchingState);
+			}
 			
-			
-			return ResponseEntity.ok(matchingState);
+			return ResponseEntity.ok(null);
 			
 		}catch(Exception e) {
 			e.printStackTrace();

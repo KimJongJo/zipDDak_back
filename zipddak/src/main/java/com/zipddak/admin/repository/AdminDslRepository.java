@@ -39,6 +39,7 @@ import com.zipddak.entity.QRental;
 import com.zipddak.entity.QReportExpert;
 import com.zipddak.entity.QReportSeller;
 import com.zipddak.entity.QSeller;
+import com.zipddak.entity.QSellerFile;
 import com.zipddak.entity.QSettlement;
 import com.zipddak.entity.QTool;
 import com.zipddak.entity.QUser;
@@ -935,19 +936,21 @@ public class AdminDslRepository {
 	public RequestSellerInfoDto sellerInfo(Integer sellerIdx) {
 
 		QSeller seller = QSeller.seller;
+		QSellerFile file = QSellerFile.sellerFile;
 		
 		return jpaQueryFactory.select(Projections.bean(RequestSellerInfoDto.class, 
 					seller.compName,
 					seller.brandName,
 					seller.ceoName,
 					seller.managerTel.as("phone"),
-					seller.compBno.as("businessLicense"),
+					file.fileRename.as("businessLicense"),
 					seller.settleAccount.as("account"),
 					seller.settleBank.as("bank"),
 					seller.settleHost.as("host"),
 					seller.handleItemCateIdx.as("itemIdxs")
 				))
 				.from(seller)
+				.leftJoin(file).on(file.sellerFileIdx.eq(seller.compFileIdx))
 				.where(seller.sellerIdx.eq(sellerIdx))
 				.fetchOne();
 				

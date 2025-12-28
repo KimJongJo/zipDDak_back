@@ -2,6 +2,7 @@ package com.zipddak.admin.service;
 
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -64,9 +65,9 @@ public class AdminMatchingServiceImpl implements MatchingService{
 	}
 
 	@Override
-	public Matching checkMatchingState(Integer estimateIdx) throws Exception {
+	public Optional<Matching> checkMatchingState(Integer estimateIdx) throws Exception {
 
-		Matching matching = matchingRepository.findFirstByEstimateIdxOrderByMatchingIdxDesc(estimateIdx);
+		Optional<Matching> matching = matchingRepository.findFirstByEstimateIdxOrderByMatchingIdxDesc(estimateIdx);
 		
 		return matching;
 	}
