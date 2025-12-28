@@ -69,6 +69,9 @@ public class ProductCardDsl {
 			if (keyword != null && !keyword.isBlank()) {
 				where.and(product.name.contains(keyword));
 			}
+			
+			//승인된 seller
+			where.and(seller.activityStatus.eq("ACTIVE"));
 
 			// 평점 높은순
 			OrderSpecifier<?> order;

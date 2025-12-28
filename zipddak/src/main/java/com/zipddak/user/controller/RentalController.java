@@ -46,6 +46,10 @@ public class RentalController {
 				String orderId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 		                + "-" + (int)(Math.random() * 9000 + 1000);
 				
+				Integer toolIdx = rentalDto.getToolIdx();
+				System.out.println("application Rental >>>>>>"+toolIdx);
+				
+				toolService.makeInableTool(toolIdx);
 				rentalService.rentalApplication(rentalDto,orderId);
 				
 				return ResponseEntity.ok(true);

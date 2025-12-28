@@ -54,7 +54,11 @@ public interface ToolService {
 	//공구 리스트
 	List<ToolCardDto> toolList (String keyword, String username) throws Exception;
 
+	//반납시 공구 대여가능으로 변경
 	void stateReturn(Integer toolIdx) throws Exception;
+	
+	//대여시 공구 대여중으로 변경
+	void makeInableTool (Integer toolIdx) throws Exception;
 	
 	//공구 신고
 //	void reportTool(String username, String reason, Integer toolId) throws Exception;

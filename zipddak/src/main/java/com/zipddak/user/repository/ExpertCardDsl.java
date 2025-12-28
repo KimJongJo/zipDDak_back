@@ -95,7 +95,7 @@ public class ExpertCardDsl {
 					builder.and(keywordBuilder); // 모든 OR 조건을 AND로 묶음
 				}
 		
-		
+				builder.and(expert.activityStatus.eq("ACTIVE"));
 
 		List<ExpertCardDto> cards = query.where(builder)
 				.groupBy(expert.expertIdx, expert.addr1, expert.addr2, file.fileRename, file.storagePath,

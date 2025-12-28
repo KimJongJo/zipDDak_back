@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.zipddak.dto.ToolDto;
-import com.zipddak.entity.ReportCommunity;
-import com.zipddak.entity.ReportCommunity.ReportState;
 import com.zipddak.entity.Tool;
 import com.zipddak.entity.Tool.ToolStatus;
 import com.zipddak.entity.ToolFile;
@@ -297,12 +295,25 @@ public class ToolServiceImpl implements ToolService {
 		return toolCardDsl.toolMap(keyword, username);
 	}
 
+	//반납시 공구 대여가능으로 변경
 	@Override
 	public void stateReturn(Integer toolIdx) throws Exception {
 
 		Tool tool = toolRepository.findById(toolIdx).get();
 		
 		tool.setSatus(ToolStatus.ABLE);
+		
+		toolRepository.save(tool);
+		
+	}
+
+	//대여시 공구 대여중으로 변경
+	@Override
+	public void makeInableTool(Integer toolIdx) throws Exception {
+		
+		Tool tool = toolRepository.findById(toolIdx).get();
+		
+		tool.setSatus(ToolStatus.INABLE);
 		
 		toolRepository.save(tool);
 		
