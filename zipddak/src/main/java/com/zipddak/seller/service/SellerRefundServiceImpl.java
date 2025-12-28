@@ -30,12 +30,13 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 
 	//반품 요청 리스트 
 	@Override
-	public Map<String, Object> getMyRefundList(String sellerUsername, Integer page, SearchConditionDto scDto)
-			throws Exception {
+	public Map<String, Object> getMyRefundList(String sellerUsername, Integer page, SearchConditionDto scDto) throws Exception {
 		PageRequest pr = PageRequest.of(page - 1, 10);
 
 		List<RefundDto> myRefundList = sellerRefund_repo.searchMyRefunds(sellerUsername, pr, scDto); // 반품 진행 리스트
 		Long myRefundCount = sellerRefund_repo.countMyRefunds(sellerUsername, scDto); // 반품 진행 개수
+		
+System.out.println("myRefundList : " + myRefundList);
 
 		int allPage = (int) Math.ceil(myRefundCount / 10.0);
 		int startPage = (page - 1) / 10 * 10 + 1;
