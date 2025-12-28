@@ -110,7 +110,8 @@ public class OrderDslRepository {
 				.on(refund.orderIdx.eq(orderItem.orderIdx)
 						.and(refund.refundIdx.eq(JPAExpressions.select(refundSub.refundIdx.max()).from(refundSub)
 								.where(refundSub.orderIdx.eq(orderItem.orderIdx)))))
-				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize()).fetch();
+				.where(builder).offset(pageRequest.getOffset()).limit(pageRequest.getPageSize())
+				.orderBy(order.orderIdx.desc()).fetch();
 
 	}
 
@@ -265,7 +266,8 @@ public class OrderDslRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		// 사용자 이름 조건
-		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료) ));
+		builder.and(order.user.username.eq(username).and(order.paymentStatus.eq(PaymentStatus.결제완료)
+				.or(order.paymentStatus.eq(PaymentStatus.결제취소))));
 
 		// 날짜 조건
 		builder.and(orderItem.createdAt.between(sixMonthsAgoDate, todayDate));

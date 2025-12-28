@@ -20,6 +20,7 @@ import com.zipddak.mypage.service.ReviewService;
 import com.zipddak.user.dto.ResponseBorrowDetailDto;
 import com.zipddak.user.dto.ResponseRentalDetailListDto;
 import com.zipddak.user.service.RentalService;
+import com.zipddak.user.service.ToolService;
 
 @RestController
 public class RentalController {
@@ -32,6 +33,9 @@ public class RentalController {
 	
 	@Autowired
 	private SettlementService settlementService;
+	
+	@Autowired
+	private ToolService toolService;
 	
 	//대여등록
 		@PostMapping(value="/rental/application")
@@ -142,8 +146,10 @@ public class RentalController {
 		try {	
 			
 			Integer rentalIdx = (Integer)map.get("rentalIdx");
+			Integer toolIdx = (Integer)map.get("toolIdx");
 			// 반납완료 상태로 변경
 			rentalService.stateReturn(rentalIdx);
+			toolService.stateReturn(toolIdx);
 			// 바로 정산처리
 			settlementService.rentalSettlementCreate(rentalIdx);
 			

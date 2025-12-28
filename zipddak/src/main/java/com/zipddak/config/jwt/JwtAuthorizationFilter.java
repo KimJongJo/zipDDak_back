@@ -47,11 +47,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		String uri = request.getRequestURI();
 		System.out.println(uri);
 		
+		 // 결제 완료 콜백은 인증 제외
+		if (uri.startsWith("/user/payment/") ||
+			    uri.startsWith("/user/orderInfo")) {
+			    chain.doFilter(request, response);
+			    return;
+			}
+		
 		String[] parts = uri.split("/"); // "/" 기준으로 분리
 
 		// parts[1]가 admin, seller, expert 중 하나면 인증 체크
 		boolean isProtectedPath = parts.length > 1 && 
 		(parts[1].equals("admin") || parts[1].equals("seller") || parts[1].equals("expert")|| parts[1].equals("user"));
+
 
 		if (!isProtectedPath) {
 		    chain.doFilter(request, response);

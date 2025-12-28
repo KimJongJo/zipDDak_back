@@ -297,6 +297,17 @@ public class ToolServiceImpl implements ToolService {
 		return toolCardDsl.toolMap(keyword, username);
 	}
 
+	@Override
+	public void stateReturn(Integer toolIdx) throws Exception {
+
+		Tool tool = toolRepository.findById(toolIdx).get();
+		
+		tool.setSatus(ToolStatus.ABLE);
+		
+		toolRepository.save(tool);
+		
+	}
+
 
 	//공구 신고
 //	@Override

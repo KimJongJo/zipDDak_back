@@ -55,6 +55,8 @@ public class ExpertFindDslRepository {
 		
 		BooleanBuilder builder = new BooleanBuilder();
 
+		builder.and(expert.activityStatus.eq("ACTIVE"));
+		
 		// 카테고리 필터
 		switch(categoryNo) {
 		    case 23 : builder.and(expert.mainServiceIdx.gt(22).and(expert.mainServiceIdx.lt(44))); break;

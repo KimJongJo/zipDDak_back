@@ -26,7 +26,7 @@ public class RefundDto {
     private String orderCode;        // 주문번호
     private Date orderDate; 		//주문 일자
     private String refundProductName;      // 반품 상품명
-    private Integer refundItemCount;	//반품요청 상품 개수
+    private Long refundItemCount;	//반품요청 상품 개수
     private String orderStatus;      // 주문(처리)상태
     private String username;		//구매자
     private String customerName;	//수령자
