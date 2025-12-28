@@ -60,7 +60,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Autowired
 	private ExpertFileRepository expertFileRepository;
 	
-	@Value("${productFile.path}")
+	@Value("${sellerFile.path}")
 	private String sellerUpload;
 	@Autowired
 	private SellerFileRepository sellerFileRepository;

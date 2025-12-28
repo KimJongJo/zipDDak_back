@@ -127,6 +127,11 @@ public class MessageServiceImpl implements MessageService {
 		// 상대방 username
 		String otherUsername = room.getSendUsername().equals(username) ? room.getRecvUsername()
 				: room.getSendUsername();
+		
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		
+		System.out.println(otherUsername);
+		
 		User user = userRepository.findById(otherUsername).orElseThrow();
 
 		Integer imageNo = user.getProfileImg();

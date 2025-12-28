@@ -68,10 +68,15 @@ public class SecurityConfig {
 		.and()
 		.successHandler(oAuth2SuccessHandler); //인증처리 후 토큰 만들어 리엑트에 전송
 		
+		http.headers()
+        .frameOptions().disable()
+        .contentSecurityPolicy("frame-ancestors 'self' http://localhost:5173");
+
 
 		//인가(권한체크)
 		http.addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
 		.authorizeRequests()
+		
 		.antMatchers("/zipddak/**").authenticated() // 로그인 필요
 		.antMatchers("/expert/**").access("hasRole('ADMIN') or hasRole('EXPERT')")
 		.antMatchers("/seller/**").access("hasRole('ADMIN') or hasRole('APPROVAL_SELLER')")

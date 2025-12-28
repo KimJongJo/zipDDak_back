@@ -156,7 +156,7 @@ public class PaymentController {
 	
 	
 	// 서버에서 토스 최종 결제를 승인해야함
-	@GetMapping("/complate")
+	@GetMapping("/complete")
 	public ResponseEntity<?> paymentComplate(PaymentComplateDto paymentComplateDto){
 		
 		try {
@@ -178,7 +178,7 @@ public class PaymentController {
 	}
 	
 	// 서버에서 토스 최종 결제를 승인해야함
-	@GetMapping("/estimate/complate")
+	@GetMapping("/estimate/complete")
 	public ResponseEntity<?> paymentEstimateComplate(PaymentComplateDto paymentComplateDto){
 		
 		try {
@@ -235,7 +235,7 @@ public class PaymentController {
 	
 	
 	// 서버에서 토스 최종 결제를 승인해야함
-		@GetMapping("/rental/complate")
+		@GetMapping("/rental/complete")
 		public ResponseEntity<?> paymentRentalComplate(PaymentComplateDto paymentComplateDto){
 			
 			try {
