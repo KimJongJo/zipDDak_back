@@ -243,7 +243,7 @@ public class ToolCardDsl {
 			}
 			
 			
-			int limit = (size != null) ? size : 5;
+			int limit = (size != null) ? size : 15;
 			long realOffset = (offset != null) ? offset : 0;
 
 			List<ToolCardDto> cards = query.where(where).groupBy(tool.toolIdx).limit(limit).offset(realOffset).fetch();

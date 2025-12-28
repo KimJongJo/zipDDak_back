@@ -35,7 +35,7 @@ public class UserController {
 	private NotificationServiceImpl notificationService;
 	
 		//로그인
-		@PostMapping("/zipddak")
+		@PostMapping("/user")
 		public ResponseEntity<UserInfoDto> userInfo (@AuthenticationPrincipal PrincipalDetails principalDetails,
 				@RequestParam("fcmToken") String fcmToken) {
 			try {
