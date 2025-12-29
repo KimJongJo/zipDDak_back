@@ -18,6 +18,7 @@ import com.zipddak.entity.QExpertFile;
 import com.zipddak.entity.QMatching;
 import com.zipddak.entity.QPayment;
 import com.zipddak.entity.QRequest;
+import com.zipddak.entity.QReviewExpert;
 import com.zipddak.entity.QUser;
 import com.zipddak.mypage.dto.MatchingListDto;
 import com.zipddak.mypage.dto.MatchingStatusSummaryDto;
@@ -170,9 +171,12 @@ public class MatchingDslRepository {
 		QMatching matching = QMatching.matching;
 		QRequest request = QRequest.request;
 		QExpert expert = QExpert.expert;
+		QExpertFile file = QExpertFile.expertFile;
 		QUser user = QUser.user;
 		QCategory category = QCategory.category;
 		QPayment payment = QPayment.payment;
+		
+		QReviewExpert review = QReviewExpert.reviewExpert;
 
 		BooleanBuilder builder = new BooleanBuilder();
 
@@ -194,11 +198,15 @@ public class MatchingDslRepository {
 				.select(Projections.constructor(MatchingListDto.class, matching.matchingIdx, matching.matchingCode,
 						matching.createdAt, matching.workStartDate, matching.workEndDate, matching.status,
 						payment.totalAmount, user.name, expert.activityName, request.largeServiceIdx, category.name,
-						request.location, request.budget, request.preferredDate))
+						request.location, request.budget, request.preferredDate, expert.expertIdx, file.fileRename.as("expertThumbnail"),
+						review.reviewExpertIdx.isNotNull()))
 				.from(matching).leftJoin(request).on(request.requestIdx.eq(matching.requestIdx)).leftJoin(expert)
 				.on(expert.expertIdx.eq(matching.expertIdx)).leftJoin(user).on(user.username.eq(matching.userUsername))
 				.leftJoin(category).on(category.categoryIdx.eq(request.smallServiceIdx)).leftJoin(payment)
-				.on(payment.paymentIdx.eq(matching.paymentIdx)).where(builder).offset(pageRequest.getOffset())
+				.on(payment.paymentIdx.eq(matching.paymentIdx))
+				.leftJoin(file).on(file.expertFileIdx.eq(expert.profileImageIdx))
+				.leftJoin(review).on(review.matchingIdx.eq(matching.matchingIdx))
+				.where(builder).offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize()).fetch();
 	}
 

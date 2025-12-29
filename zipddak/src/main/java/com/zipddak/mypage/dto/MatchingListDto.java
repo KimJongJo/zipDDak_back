@@ -30,4 +30,9 @@ public class MatchingListDto {
 	private String location; // 장소
 	private Integer budget; // 예산
 	private Date preferredDate; // 희망일
+	
+	private Integer expertIdx; // 전문가 아이디
+	private String expertThumbnail; // 전문가 프로필
+	
+	private boolean writeReview; // 리뷰 작성 유무
 }
