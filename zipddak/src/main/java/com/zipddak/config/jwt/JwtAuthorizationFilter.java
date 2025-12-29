@@ -60,7 +60,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		boolean isProtectedPath = parts.length > 1 && 
 		(parts[1].equals("admin") || parts[1].equals("seller") || parts[1].equals("expert")|| parts[1].equals("user"));
 
-
 		if (!isProtectedPath) {
 		    chain.doFilter(request, response);
 		    return;
