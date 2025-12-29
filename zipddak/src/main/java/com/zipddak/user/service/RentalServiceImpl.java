@@ -58,6 +58,12 @@ public class RentalServiceImpl implements RentalService {
 		rental.setSatus(RentalStatus.PRE);
 		
 		rentalRepository.save(rental);
+		
+		Tool tool = toolRepository.findById(rentalDto.getToolIdx()).get();
+		
+		tool.setSatus(ToolStatus.INABLE);
+		
+		toolRepository.save(tool);
 	}
 
  

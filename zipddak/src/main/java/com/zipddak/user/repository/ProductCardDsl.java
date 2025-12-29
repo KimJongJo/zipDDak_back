@@ -71,7 +71,7 @@ public class ProductCardDsl {
 			}
 			
 			//승인된 seller
-			where.and(seller.activityStatus.eq("ACTIVE"));
+//			where.and(seller.activityStatus.eq("ACTIVE"));
 
 			// 평점 높은순
 			OrderSpecifier<?> order;
