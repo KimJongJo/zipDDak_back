@@ -422,7 +422,7 @@ public class ProductDslRepository {
 			    .leftJoin(cart.product, product) // cart와 product 조인
 			    .join(seller).on(seller.user.username.eq(product.sellerUsername))
 			    .leftJoin(productFile).on(product.thumbnailFileIdx.eq(productFile.productFileIdx)) // 조인 조건
-			    .leftJoin(productOption).on(cart.optionIdx.eq(productOption.productOptionIdx))       // 조인 조건
+			    .join(productOption).on(cart.optionIdx.eq(productOption.productOptionIdx))       // 조인 조건
 			    .where(cart.userUsername.eq(username))
 			    .fetch();
 		
