@@ -52,6 +52,8 @@ public class ProductDto {
     private String detail2FileRename;
     
     private List<ProductOptionDto> pdOptions;
+    private Long reviewCount;
+    private Double reviewAvgScore;
 
     
     

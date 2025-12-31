@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zipddak.dto.CategoryDto;
 import com.zipddak.dto.ProductDto;
@@ -14,6 +17,7 @@ import com.zipddak.entity.QCategory;
 import com.zipddak.entity.QProduct;
 import com.zipddak.entity.QProductFile;
 import com.zipddak.entity.QProductOption;
+import com.zipddak.entity.QReviewProduct;
 import com.zipddak.seller.dto.SearchConditionDto;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +50,17 @@ public class SellerProductRepository {
 
         QProduct product = QProduct.product;
         QProductFile thumb = QProductFile.productFile;
+        QReviewProduct review = QReviewProduct.reviewProduct;
+        
+        
+        Expression<Long> reviewCount = JPAExpressions.select(review.reviewProductIdx.count())
+										                .from(review)
+										                .where(review.productIdx.eq(product.productIdx));
+        
+        Expression<Double> reviewAvgScore = JPAExpressions.select(review.score.avg().coalesce(0.0))
+											                .from(review)
+											                .where(review.productIdx.eq(product.productIdx));
+        
         
         List<ProductDto> result = jpaQueryFactory.select(Projections.fields(ProductDto.class,
 									                        product.productIdx,
@@ -58,7 +73,11 @@ public class SellerProductRepository {
 									                        product.salePrice,
 									                        product.visibleYn,
 									                        product.createdAt,
-									                        thumb.fileRename.as("thumbnailFileRename")
+									                        thumb.fileRename.as("thumbnailFileRename"),
+									                        
+									                        ExpressionUtils.as(reviewCount, "reviewCount"),
+								                            
+									                        ExpressionUtils.as(reviewAvgScore, "reviewAvgScore")
 									                ))
 									                .from(product)
 									                .leftJoin(thumb).on(thumb.productFileIdx.eq(product.thumbnailFileIdx))
